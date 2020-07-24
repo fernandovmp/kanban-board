@@ -1,0 +1,1220 @@
+openapi: "3.0.0"
+info:
+  version: v1
+  title: Kanban Board
+
+paths:
+  /boards:
+    get:
+      tags:
+        - Boards
+      summary: Returns a list of boards owned by a user
+      responses:
+        "200":
+          description: A json array of boards with summary and id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/Board"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+    post:
+      tags:
+        - Boards
+      summary: Create a board
+      description: Create a board with three default lists each one with one default task and the user as admin
+      requestBody:
+        $ref: "#/components/requestBodies/BoardBody"
+      responses:
+        "201":
+          description: Created board object
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Board"
+          headers:
+            Location:
+              description: URL where the resource can be accessed
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Couldn't create the board due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400
+                message: "Couldn't create the board"
+                errors:
+                  - message: "Summary is mandatory"
+                    property: "Summary"
+
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /boards/{boardId}:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Boards
+      summary: Returns the board requested and its lists and tasks
+      responses:
+        "200":
+          description: A json object with de board data and an array with its lists containing the tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  summary:
+                    type: string
+                  members:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BoardMember"
+                  lists:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BoardList"
+
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to view this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to view this board"
+
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+    put:
+      tags:
+        - Boards
+      summary: Updates a board
+      requestBody:
+        $ref: "#/components/requestBodies/BoardBody"
+      responses:
+        "204":
+          description: The board data was updated
+        "400":
+          description: Couldn't update the board data due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't update the board data"
+                errors:
+                  - message: "Summary is mandatory"
+                    property: "Summary"
+
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to update the board data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to update this board"
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+    delete:
+      tags:
+        - Boards
+      summary: Delete a board
+      description: Delete a board and all of its lists and tasks
+      responses:
+        "204":
+          description: Board was deleted
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to delete the board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to delete this board"
+
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+
+  /boards/{boardId}/members:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Board Members
+      summary: Returns all the members of that a board
+      responses:
+        "200":
+          description: A json array containing the members of a board
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BoardMember"
+
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to view this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to view this board"
+
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+    post:
+      tags:
+        - Board Members
+      summary: Add a member to a board
+      requestBody:
+        $ref: "#/components/requestBodies/BoardMemberBody"
+      responses:
+        "204":
+          description: Member was added
+        "400":
+          description: Couldn't add the member due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't add the member"
+                errors:
+                  - message: "IsAdmin is mandatory"
+                    property: "IsAdmin"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to add a member to this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to add a member to this board"
+        "404":
+          description: Board or user not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "User not found"
+  /boards/{boardId}/members/{userId}:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: userId
+        description: Numeric id of the user
+        schema:
+          type: integer
+        required: true
+    delete:
+      tags:
+        - Board Members
+      summary: Remove a board member
+      responses:
+        "204":
+          description: User was removed from the board
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to remove a member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to remove a member"
+        "404":
+          description: Board or Member not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Member not found"
+
+  /boards/{boardId}/lists:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Lists
+      summary: Returns all the lists that a board have
+      responses:
+        "200":
+          description: A json array containing the lists of a board
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/List"
+
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to view this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to view this board"
+
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+    post:
+      tags:
+        - Lists
+      summary: Create a empty list in a board
+      requestBody:
+        $ref: "#/components/requestBodies/ListBody"
+      responses:
+        "201":
+          description: Created list object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/List"
+          headers:
+            Location:
+              description: URL where the resource can be accessed
+              schema:
+                type: string
+                format: url
+        "400":
+          description: Couldn't create the list due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't create the list"
+                errors:
+                  - message: "Summary is mandatory"
+                    property: "Summary"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to access this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to access this board"
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+
+  /boards/{boardId}/lists/{listId}:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: listId
+        description: Numeric id of the list
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Lists
+      summary: Returns the list requested and its tasks
+      responses:
+        "200":
+          description: A json object with the list data and its tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoardList"
+    put:
+      tags:
+        - Lists
+      summary: Updates a list
+      requestBody:
+        $ref: "#/components/requestBodies/ListBody"
+      responses:
+        "204":
+          description: The list data was updated
+        "400":
+          description: Couldn't update the list data due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't update the list data"
+                errors:
+                  - message: "Summary is mandatory"
+                    property: "Summary"
+
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to update the list data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to update a list"
+        "404":
+          description: Board or List not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "List not found"
+    delete:
+      tags:
+        - Lists
+      summary: Delete a list
+      description: Delete a list and all of its tasks
+      responses:
+        "204":
+          description: List was deleted
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to delete a list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to delete a list"
+        "404":
+          description: Board or List not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "List not found"
+
+  /boards/{boardId}/tasks:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Tasks
+      summary: Returns all the tasks of a board
+      responses:
+        "200":
+          description: A json array containing the tasks of a board
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SummarizedTask"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to view this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to view this board"
+
+        "404":
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
+    post:
+      tags:
+        - Tasks
+      summary: Create a task
+      requestBody:
+        $ref: "#/components/requestBodies/TaskBody"
+      responses:
+        "201":
+          description: Created Task object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            Location:
+              description: URL where the resource can be accessed
+              schema:
+                type: string
+                format: url
+        "400":
+          description: Couldn't create the task due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't create the task"
+                errors:
+                  - message: "Summary is mandatory"
+                    property: "Summary"
+                  - message: "Tag color is mandatory"
+                    property: "TagColor"
+                  - message: "TagColor must be a hexadecimal color value"
+                    property: "TagColor"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to create a task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to create a task"
+        "404":
+          description: Board or task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Task not found"
+
+  /boards/{boardId}/tasks/{taskId}:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: taskId
+        description: Numeric id of the task
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Tasks
+      summary: Returns a task with all its assigned users
+      responses:
+        "200":
+          description: A json object containing the task and all its assigned users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  summary:
+                    type: string
+                  description:
+                    type: string
+                  tagColor:
+                    type: string
+                  assignedTo:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                  list:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to view this board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to view this board"
+        "404":
+          description: Board or task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Task not found"
+    patch:
+      tags:
+        - Tasks
+      summary: Updates a task partially
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                summary:
+                  type: string
+                description:
+                  type: string
+                tagColor:
+                  type: string
+                list:
+                  type: integer
+        required: true
+      responses:
+        "204":
+          description: Task was updated
+        "400":
+          description: Couldn't create the task due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't create the task"
+                errors:
+                  - message: "TagColor must be a hexadecimal color value"
+                    property: "TagColor"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to update a task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to update a task"
+        "404":
+          description: Board or task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Task not found"
+
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a task
+      description: Delete a task
+      responses:
+        "204":
+          description: Task was deleted
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to delete a task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to delete a task"
+        "404":
+          description: Board or Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Task not found"
+  /boards/{boardId}/tasks/{taskId}/assignments/{userId}:
+    parameters:
+      - in: path
+        name: boardId
+        description: Numeric id of the board
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: taskId
+        description: Numeric id of the task
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: userId
+        description: Numeric id of the user
+        schema:
+          type: integer
+        required: true
+    put:
+      tags:
+        - Tasks
+      summary: Assign a task to an user
+      responses:
+        "204":
+          description: Assignment was added
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to assign a task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to assign a task"
+        "404":
+          description: Board, Task or User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "User not found"
+    delete:
+      tags:
+        - Tasks
+      summary: Remove an user assignment of the task
+      responses:
+        "204":
+          description: Assignment was removed
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: User doesn't have permission to remove an assignment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 403
+                message: "User doesn't have permission to remove an assignment"
+        "404":
+          description: Board or Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Task not found"
+
+  /users:
+    post:
+      security:
+        - {}: []
+      tags:
+        - Users
+      summary: Register an user
+      responses:
+        "201":
+          description: User was created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          headers:
+            Location:
+              description: URL where the resource can be accessed
+              schema:
+                type: string
+                format: url
+        "400":
+          description: Couldn't create the user due to validations errors or malformed syntax
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't create the user"
+                errors:
+                  - message: "name is mandatory"
+                    property: "name"
+                  - message: "email already in use"
+                    property: "email"
+
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        description: Numeric id of user
+        schema:
+          type: integer
+        required: true
+    get:
+      tags:
+        - Users
+      summary: Returns the requested user
+      responses:
+        "200":
+          description: A json object with the user data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "User not found"
+
+  /login:
+    post:
+      security:
+        - {}: []
+      tags:
+        - Users
+      summary: Create and return a Json Web Token
+      requestBody:
+        $ref: "#/components/requestBodies/LoginBody"
+      responses:
+        "200":
+          description: Return a valid jwt and the user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Cannot login due to invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400,
+                message: "Couldn't create the user"
+                errors:
+                  - message: "Invalid credentials"
+                    property: "Password"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "User not found"
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  requestBodies:
+    BoardBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                type: string
+            required:
+              - summary
+    ListBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                type: string
+    TaskBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                type: string
+              description:
+                type: string
+              tagColor:
+                type: string
+              assignedTo:
+                type: array
+                items:
+                  type: integer
+              list:
+                type: integer
+            required:
+              - summary
+              - tagColor
+              - list
+    UserBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+              confirmPassword:
+                type: string
+            required:
+              - name
+              - email
+              - password
+              - confirmPassword
+    LoginBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+            required:
+              - email
+              - password
+    BoardMemberBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              isAdmin:
+                type: boolean
+            required:
+              - email
+              - isAdmin
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            status: 401
+            message: "Unidentified user"
+
+  schemas:
+    Board:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        modifiedOn:
+          type: string
+          format: date-time
+      required:
+        - id
+        - summary
+        - createdOn
+        - modifiedOn
+    BoardList:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        modifiedOn:
+          type: string
+          format: date-time
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListTask"
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        tasks:
+          type: array
+          items:
+            type: string
+            format: url
+        createdOn:
+          type: string
+        modifiedOn:
+          type: string
+      required:
+        - id
+        - summary
+        - tasks
+        - createdOn
+        - modifiedOn
+    ListTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        tagColor:
+          type: string
+        assignedTo:
+          type: array
+          items:
+            type: string
+            format: url
+      required:
+        - id
+        - summary
+        - tagColor
+        - assignedTo
+    SummarizedTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        tagColor:
+          type: string
+        assignedTo:
+          type: array
+          items:
+            type: string
+            format: url
+        list:
+          type: string
+          format: url
+      required:
+        - id
+        - summary
+        - tagColor
+        - assignedTo
+        - list
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        description:
+          type: string
+        tagColor:
+          type: string
+        assignedTo:
+          type: array
+          items:
+            type: string
+            format: url
+        list:
+          type: string
+          format: url
+      required:
+        - id
+        - summary
+        - description
+        - tagColor
+        - assignedTo
+        - list
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - name
+        - email
+    BoardMember:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        isAdmin:
+          type: boolean
+      required:
+        - id
+        - name
+        - email
+        - isAdmin
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              property:
+                type: string
+            required:
+              - message
+              - property
+      required:
+        - status
+        - message
