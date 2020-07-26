@@ -2,6 +2,8 @@
 
 Kanban board application to help organize and manage tasks.
 
+![UI prototype](./docs/ui/Board.png)
+
 <p align="center">
  <a href="#why">Why?</a> •
  <a href="#technologies">Technologies</a> •
