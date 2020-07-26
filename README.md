@@ -55,6 +55,16 @@ In the [docs](./docs) directory you can find the the users histories, the Web
 API specification, the database model and the UI prototype for this project,
 this will give you a good idea of what expect of the project.
 
+## Contributing
+
+Contribution of any kind is appreciated!
+
+Some ways you can contribute with the project are by open an issue with bug
+report, giving a suggestion or open a pull request.
+
+To see the details of how contribute refer to the
+[Contribution Guide](.github/contributing.md).
+
 ## Contact
 
 If you want to contact me, you can do it in the following channels:
