@@ -49,6 +49,51 @@ Then, change to repository folder
 cd kanban-board
 ```
 
+## How to run
+
+### Run with docker
+
+Requires
+
+-   [Docker](https://docs.docker.com/get-docker/)
+
+Go to the `KanbanBoard.Frontend` directory
+
+```
+cd src/KanbanBoard.Frontend
+```
+
+Build the docker image
+
+```
+docker build -t kanban-frontend .
+```
+
+Run the image
+
+```
+docker run -p "3000:80" kanban-frontend
+```
+
+### Run without docker
+
+Requires
+
+-   [NodeJS](https://nodejs.org/en/)
+-   [Yarn](https://yarnpkg.com/)
+
+Install the dependencies by running
+
+```
+yarn --cwd src/KanbanBoard.Frontend
+```
+
+Then, start the project
+
+```
+yarn --cwd src/KanbanBoard.Frontend start
+```
+
 ### Documentation
 
 In the [docs](./docs) directory you can find the the users histories, the Web
