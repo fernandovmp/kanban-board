@@ -39,7 +39,7 @@ Pull requests needs to target the `development` branch, to do so make sure you
 are in the development branch before create a new branch.
 
 ```
-git branch development
+git checkout development
 ```
 
 In the `development` branch create a new branch to make your changes.
@@ -60,6 +60,10 @@ git push origin
 
 Then go to [Pull Requests](https://github.com/fernandovmp/kanban-board) of this
 repository and submit your pull request.
+
+As stated before, the pull request should target the `development` branch, so make sure to set your base branch to `development`.
+
+![](https://user-images.githubusercontent.com/45287292/88575193-d97f9b80-d019-11ea-96b1-acf2fde47bee.png)
 
 If your changes require updating the documentation be sure to update it before
 submit your pull request
