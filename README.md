@@ -59,16 +59,10 @@ Requires
 
 **Back-end**
 
-Go to `KanbanBoard.WebApi` directory
-
-```
-cd src/KanbanBoard.WebApi
-```
-
 Build the docker image
 
 ```
-docker build -t kanban-api .
+docker build -t kanban-api -f src/KanbanBoard.WebApi/dockerfile .
 ```
 
 Run the image
