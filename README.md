@@ -57,6 +57,28 @@ Requires
 
 -   [Docker](https://docs.docker.com/get-docker/)
 
+**Back-end**
+
+Go to `KanbanBoard.WebApi` directory
+
+```
+cd src/KanbanBoard.WebApi
+```
+
+Build the docker image
+
+```
+docker build -t kanban-api .
+```
+
+Run the image
+
+```
+docker run -d -p "5000:80" kanban-api
+```
+
+**Front-end**
+
 Go to the `KanbanBoard.Frontend` directory
 
 ```
@@ -79,8 +101,25 @@ docker run -p "3000:80" kanban-frontend
 
 Requires
 
+-   [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download)
 -   [NodeJS](https://nodejs.org/en/)
 -   [Yarn](https://yarnpkg.com/)
+
+**Back-end**
+
+Restore all dependencies running
+
+```
+dotnet restore
+```
+
+And run the web API project with the following command.
+
+```
+dotnet run --project src/KanbanBoard.WebApi
+```
+
+**Front-end**
 
 Install the dependencies by running
 
