@@ -8,4 +8,11 @@
     <PackageReference Include="NSwag.AspNetCore" Version="13.6.2" />
   </ItemGroup>
 
+  <Target Name="CopyOpenApiSpecification" BeforeTargets="PreBuildEvent">
+    <Copy
+      SourceFiles="../../docs/api/kanban-board-v1.yaml"
+      DestinationFolder="$(ProjectDir)/wwwroot/specification"
+      SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

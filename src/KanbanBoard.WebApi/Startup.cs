@@ -27,9 +27,22 @@ namespace KanbanBoard.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true,
+                DefaultContentType = "text/plain"
+            });
+
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/openapi";
+                settings.DocumentPath = "/specification/kanban-board-v1.yaml";
+            });
 
             app.UseEndpoints(endpoints =>
             {
