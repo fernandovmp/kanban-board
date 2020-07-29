@@ -16,7 +16,7 @@ trim_trailing_whitespace = true
 indent_size = 2
 
 # Typescript files
-[*.{ts, tsx}]
+[*.{ts,tsx}]
 quote_type = single
 
 # C# files
