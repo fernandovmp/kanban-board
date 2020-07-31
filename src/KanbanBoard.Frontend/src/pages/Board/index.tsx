@@ -4,6 +4,7 @@ import deleteIcon from '../../assets/delete_outline.svg';
 import groupIcon from '../../assets/group.svg';
 import { AppBar, DefaultButton } from '../../components';
 import { kanbanServiceFactory } from '../../services/kanbanService';
+import { DeleteModal } from './DeleteModal';
 import {
     BoardTitle,
     Header,
@@ -15,9 +16,13 @@ import { TaskListView } from './TaskList';
 
 export const BoardPage: React.FC = () => {
     const [board] = useState(() => kanbanServiceFactory().getBoard(1));
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleMembersClick = () => {};
-    const handleDeleteBoard = () => {};
+    const handleDeleteBoard = () => {
+        setShowDeleteModal(true);
+    };
+    const handleConfirmDeletion = () => {};
     const handleCreateList = () => {};
 
     return (
@@ -45,6 +50,12 @@ export const BoardPage: React.FC = () => {
                     </NewListButton>
                 </TaskListsWrapper>
             </Main>
+            {showDeleteModal && (
+                <DeleteModal
+                    onCancel={() => setShowDeleteModal(false)}
+                    onConfirm={handleConfirmDeletion}
+                />
+            )}
         </>
     );
 };
