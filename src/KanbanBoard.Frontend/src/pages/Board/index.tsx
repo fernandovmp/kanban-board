@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
+import addIcon from '../../assets/add.svg';
 import deleteIcon from '../../assets/delete_outline.svg';
 import groupIcon from '../../assets/group.svg';
 import { AppBar, DefaultButton } from '../../components';
 import { kanbanServiceFactory } from '../../services/kanbanService';
-import { BoardTitle, Header, Main, TaskListsWrapper } from './styles';
+import {
+    BoardTitle,
+    Header,
+    Main,
+    NewListButton,
+    TaskListsWrapper,
+} from './styles';
 import { TaskListView } from './TaskList';
 
 export const BoardPage: React.FC = () => {
@@ -11,6 +18,7 @@ export const BoardPage: React.FC = () => {
 
     const handleMembersClick = () => {};
     const handleDeleteBoard = () => {};
+    const handleCreateList = () => {};
 
     return (
         <>
@@ -31,6 +39,10 @@ export const BoardPage: React.FC = () => {
                     {board?.lists?.map((list) => (
                         <TaskListView key={list.id} taskList={list} />
                     ))}
+                    <NewListButton onClick={handleCreateList}>
+                        <img src={addIcon} alt="New List" />
+                        New list
+                    </NewListButton>
                 </TaskListsWrapper>
             </Main>
         </>
