@@ -14,3 +14,9 @@ export const Header = styled.header`
 export const BoardTitle = styled.h2`
     margin-right: 50px;
 `;
+
+export const TaskListsWrapper = styled.div`
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+`;
