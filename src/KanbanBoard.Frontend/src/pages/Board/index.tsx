@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import deleteIcon from '../../assets/delete_outline.svg';
 import groupIcon from '../../assets/group.svg';
-import { AppBar } from '../../components';
+import { AppBar, DefaultButton } from '../../components';
 import { kanbanServiceFactory } from '../../services/kanbanService';
-import { BoardTitle, Button, Header, Main } from './styles';
+import { BoardTitle, Header, Main } from './styles';
 
 export const BoardPage: React.FC = () => {
     const [board] = useState(() => kanbanServiceFactory().getBoards()[0]);
@@ -17,14 +17,14 @@ export const BoardPage: React.FC = () => {
             <Main>
                 <Header>
                     <BoardTitle>{board.summary}</BoardTitle>
-                    <Button onClick={handleMembersClick}>
+                    <DefaultButton onClick={handleMembersClick}>
                         <img src={groupIcon} alt="Members" />
                         Members
-                    </Button>
-                    <Button onClick={handleDeleteBoard}>
+                    </DefaultButton>
+                    <DefaultButton onClick={handleDeleteBoard}>
                         <img src={deleteIcon} alt="Members" />
                         Delete board
-                    </Button>
+                    </DefaultButton>
                 </Header>
             </Main>
         </>
