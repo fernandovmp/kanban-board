@@ -24,19 +24,6 @@ export const AddMemberWrapper = styled.div`
     justify-content: center;
 `;
 
-export const Input = styled.input`
-    width: 300px;
-    height: 25px;
-    border-radius: 4px;
-    border: 1px solid black;
-    padding: 0 6px;
-
-    &:focus {
-        outline: none;
-        border-color: var(--primary);
-    }
-`;
-
 export const MembersList = styled.ul`
     list-style: none;
     display: flex;

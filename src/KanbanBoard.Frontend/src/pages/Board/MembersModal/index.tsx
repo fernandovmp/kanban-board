@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import addIcon from '../../../assets/add.svg';
 import closeIcon from '../../../assets/close.svg';
 import removeIcon from '../../../assets/remove.svg';
-import { Modal } from '../../../components';
+import { Input, Modal } from '../../../components';
 import {
     AddMemberWrapper,
     CloseButton,
     Header,
     IconButton,
-    Input,
     MemberCard,
     MemberItem,
     MembersList,
