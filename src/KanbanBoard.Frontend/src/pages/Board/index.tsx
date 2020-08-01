@@ -5,6 +5,7 @@ import groupIcon from '../../assets/group.svg';
 import { AppBar, DefaultButton } from '../../components';
 import { kanbanServiceFactory } from '../../services/kanbanService';
 import { DeleteModal } from './DeleteModal';
+import { MembersModal } from './MembersModal';
 import {
     BoardTitle,
     Header,
@@ -17,8 +18,11 @@ import { TaskListView } from './TaskList';
 export const BoardPage: React.FC = () => {
     const [board] = useState(() => kanbanServiceFactory().getBoard(1));
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showMembersModal, setShowMembersModal] = useState(false);
 
-    const handleMembersClick = () => {};
+    const handleMembersClick = () => {
+        setShowMembersModal(true);
+    };
     const handleDeleteBoard = () => {
         setShowDeleteModal(true);
     };
@@ -55,6 +59,9 @@ export const BoardPage: React.FC = () => {
                     onCancel={() => setShowDeleteModal(false)}
                     onConfirm={handleConfirmDeletion}
                 />
+            )}
+            {showMembersModal && (
+                <MembersModal onClose={() => setShowMembersModal(false)} />
             )}
         </>
     );
