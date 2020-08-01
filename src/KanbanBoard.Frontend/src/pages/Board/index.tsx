@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import addIcon from '../../assets/add.svg';
 import deleteIcon from '../../assets/delete_outline.svg';
 import groupIcon from '../../assets/group.svg';
-import { AppBar, DefaultButton, Input } from '../../components';
+import { AppBar, DefaultButton } from '../../components';
+import { EditableContent } from '../../components/EditableContent';
 import { kanbanServiceFactory } from '../../services/kanbanService';
 import { DeleteModal } from './DeleteModal';
 import { MembersModal } from './MembersModal';
@@ -18,10 +19,8 @@ import { TaskListView } from './TaskList';
 export const BoardPage: React.FC = () => {
     const [board] = useState(() => kanbanServiceFactory().getBoard(1));
     const [boardTitle, setBoardTitle] = useState('');
-    const [boardTitleInput, setBoardTitleInput] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showMembersModal, setShowMembersModal] = useState(false);
-    const [isEditingBoardTitle, setIsEditingBoardTitle] = useState(false);
 
     useEffect(() => {
         setBoardTitle(board?.summary ?? '');
@@ -36,15 +35,9 @@ export const BoardPage: React.FC = () => {
     const handleConfirmDeletion = () => {};
     const handleCreateList = () => {};
 
-    const handleBeginEditBoardTitle = () => {
-        setBoardTitleInput(boardTitle);
-        setIsEditingBoardTitle(true);
-    };
-
-    const handleEditBoardTitle = () => {
-        setIsEditingBoardTitle(false);
-        if (boardTitleInput.trim() === '') return;
-        setBoardTitle(boardTitleInput.trim());
+    const handleEditBoardTitle = (value: string) => {
+        if (value.trim() === '') return;
+        setBoardTitle(value.trim());
     };
 
     return (
@@ -52,18 +45,12 @@ export const BoardPage: React.FC = () => {
             <AppBar />
             <Main>
                 <Header>
-                    {isEditingBoardTitle ? (
-                        <Input
-                            value={boardTitleInput}
-                            onChange={(e) => setBoardTitleInput(e.target.value)}
-                            onBlur={handleEditBoardTitle}
-                            autoFocus
-                        />
-                    ) : (
-                        <BoardTitle onClick={handleBeginEditBoardTitle}>
-                            {boardTitle}
-                        </BoardTitle>
-                    )}
+                    <EditableContent
+                        initialInputValue={boardTitle}
+                        onEndEdit={handleEditBoardTitle}
+                    >
+                        <BoardTitle>{boardTitle}</BoardTitle>
+                    </EditableContent>
                     <DefaultButton onClick={handleMembersClick}>
                         <img src={groupIcon} alt="Members" />
                         Members
