@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Input } from '../../../components';
 
 export const Header = styled.div`
     margin: 0;
@@ -50,4 +51,8 @@ export const MemberCard = styled.div`
     flex: 1;
     overflow: hidden;
     text-overflow: clip;
+`;
+
+export const EmailInput = styled(Input)`
+    width: 300px;
 `;

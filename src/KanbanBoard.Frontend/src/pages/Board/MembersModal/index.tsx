@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import addIcon from '../../../assets/add.svg';
 import closeIcon from '../../../assets/close.svg';
 import removeIcon from '../../../assets/remove.svg';
-import { Input, Modal } from '../../../components';
+import { Modal } from '../../../components';
 import {
     AddMemberWrapper,
     CloseButton,
+    EmailInput,
     Header,
     IconButton,
     MemberCard,
@@ -33,7 +34,7 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
                         onClick={onClose}
                     />
                     <AddMemberWrapper>
-                        <Input
+                        <EmailInput
                             placeholder="User email"
                             value={userEmail}
                             onChange={(e) => setUserEmail(e.target.value)}
