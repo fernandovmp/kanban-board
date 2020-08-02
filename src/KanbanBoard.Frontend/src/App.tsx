@@ -1,6 +1,6 @@
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
-import { UserBoards } from './pages';
+import { Routes } from './routes';
 
 const GlobalStyles = createGlobalStyle`
     :root {
@@ -34,7 +34,7 @@ function App() {
     return (
         <>
             <GlobalStyles />
-            <UserBoards />
+            <Routes />
         </>
     );
 }
