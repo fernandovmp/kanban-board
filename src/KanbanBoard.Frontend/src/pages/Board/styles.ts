@@ -5,19 +5,6 @@ export const Main = styled.main`
     padding: 0 60px;
 `;
 
-export const Header = styled.header`
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    padding: 20px 0;
-`;
-
-export const BoardTitle = styled.h2`
-    margin-right: 50px;
-    margin: 0 50px 0 0;
-`;
-
 export const TaskListsWrapper = styled.div`
     display: flex;
     gap: 20px;
