@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import deleteIcon from '../../../assets/delete_outline.svg';
 import groupIcon from '../../../assets/group.svg';
-import { DefaultButton } from '../../../components';
-import { EditableContent } from '../../../components/EditableContent';
+import { DefaultButton, EditableContent } from '../../../components';
 import { DeleteModal } from '../DeleteModal';
 import { MembersModal } from '../MembersModal';
 import { BoardTitle, Header } from './styles';
