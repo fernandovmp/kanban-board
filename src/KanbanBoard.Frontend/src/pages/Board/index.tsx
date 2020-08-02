@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import addIcon from '../../assets/add.svg';
-import { AppBar, Input } from '../../components';
+import { Input } from '../../components';
 import { TaskList } from '../../models';
 import { kanbanServiceFactory } from '../../services/kanbanService';
 import { BoardHeader } from './BoardHeader';
@@ -38,42 +38,37 @@ export const BoardPage: React.FC = () => {
     };
 
     return (
-        <>
-            <AppBar />
-            <Main>
-                <BoardHeader boardTitle={board?.summary ?? ''} />
-                <TaskListsWrapper>
-                    {boardLists.map((list) => (
-                        <TaskListView key={list.id} taskList={list} />
-                    ))}
-                    {isCreatingList ? (
-                        <ListWrapper>
-                            <Input
-                                autoFocus
-                                value={newListTitle}
-                                onChange={(e) =>
-                                    setNewListTitle(e.target.value)
-                                }
-                            />
-                            <ButtonsWrapper>
-                                <CancelButton
-                                    onClick={() => setIsCreatingList(false)}
-                                >
-                                    CANCEL
-                                </CancelButton>
-                                <SaveButton onClick={handleCreateList}>
-                                    SAVE
-                                </SaveButton>
-                            </ButtonsWrapper>
-                        </ListWrapper>
-                    ) : (
-                        <NewListButton onClick={() => setIsCreatingList(true)}>
-                            <img src={addIcon} alt="New List" />
-                            New list
-                        </NewListButton>
-                    )}
-                </TaskListsWrapper>
-            </Main>
-        </>
+        <Main>
+            <BoardHeader boardTitle={board?.summary ?? ''} />
+            <TaskListsWrapper>
+                {boardLists.map((list) => (
+                    <TaskListView key={list.id} taskList={list} />
+                ))}
+                {isCreatingList ? (
+                    <ListWrapper>
+                        <Input
+                            autoFocus
+                            value={newListTitle}
+                            onChange={(e) => setNewListTitle(e.target.value)}
+                        />
+                        <ButtonsWrapper>
+                            <CancelButton
+                                onClick={() => setIsCreatingList(false)}
+                            >
+                                CANCEL
+                            </CancelButton>
+                            <SaveButton onClick={handleCreateList}>
+                                SAVE
+                            </SaveButton>
+                        </ButtonsWrapper>
+                    </ListWrapper>
+                ) : (
+                    <NewListButton onClick={() => setIsCreatingList(true)}>
+                        <img src={addIcon} alt="New List" />
+                        New list
+                    </NewListButton>
+                )}
+            </TaskListsWrapper>
+        </Main>
     );
 };
