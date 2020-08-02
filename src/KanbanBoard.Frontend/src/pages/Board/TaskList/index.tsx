@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import addIcon from '../../../assets/add.svg';
-import { EditableContent } from '../../../components/EditableContent';
+import { EditableContent } from '../../../components';
 import { TaskList } from '../../../models';
 import {
     Button,
