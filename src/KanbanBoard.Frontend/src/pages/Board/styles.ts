@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { DefaultButton, Input } from '../../components';
+import { DefaultButton, Input, PrimaryButton } from '../../components';
 
 export const Main = styled.main`
     padding: 0 60px;
@@ -33,4 +33,27 @@ export const NewListButton = styled(DefaultButton)`
 export const BoardTitleInput = styled(Input)`
     margin-right: 50px;
     width: fit-content;
+`;
+
+export const ButtonsWrapper = styled.div`
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+`;
+
+export const CancelButton = styled(DefaultButton)`
+    background: transparent;
+    width: 80px;
+    font-size: small;
+    justify-content: center;
+
+    &:hover {
+        background: #e4e4e4;
+    }
+`;
+
+export const SaveButton = styled(PrimaryButton)`
+    width: 80px;
+    font-size: small;
+    justify-content: center;
 `;
