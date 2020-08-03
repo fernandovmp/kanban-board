@@ -1,6 +1,8 @@
+using System.Data;
 using KanbanBoard.WebApi.Configurations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace KanbanBoard.WebApi.Extensions
 {
@@ -26,5 +28,8 @@ namespace KanbanBoard.WebApi.Extensions
                     });
                 });
         }
+        public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string connectionString) =>
+            services
+                .AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
     }
 }

@@ -1,4 +1,5 @@
 using KanbanBoard.WebApi.Configurations;
+using KanbanBoard.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,7 @@ namespace KanbanBoard.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddPostgresDatabase(connectionString: Configuration.GetConnectionString("PostgresConnection"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
