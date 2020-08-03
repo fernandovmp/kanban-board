@@ -21,6 +21,7 @@ namespace KanbanBoard.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddPostgresDatabase(connectionString: Configuration.GetConnectionString("PostgresConnection"));
             services.AddApplicationCorsPolicy(configuration: Configuration);
         }
 

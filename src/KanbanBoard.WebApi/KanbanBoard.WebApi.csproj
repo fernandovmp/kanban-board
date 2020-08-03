@@ -5,14 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Npgsql" Version="4.1.4" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.6.2" />
   </ItemGroup>
 
   <Target Name="CopyOpenApiSpecification" BeforeTargets="PreBuildEvent">
-    <Copy
-      SourceFiles="../../docs/api/kanban-board-v1.yaml"
-      DestinationFolder="$(ProjectDir)/wwwroot/specification"
-      SkipUnchangedFiles="true" />
+    <Copy SourceFiles="../../docs/api/kanban-board-v1.yaml" DestinationFolder="$(ProjectDir)/wwwroot/specification" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
