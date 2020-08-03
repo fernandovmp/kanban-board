@@ -1,8 +1,10 @@
+using KanbanBoard.WebApi.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace KanbanBoard.WebApi
 {
@@ -34,6 +36,10 @@ namespace KanbanBoard.WebApi
             });
 
             app.UseRouting();
+
+            ApplicationCorsOptions corsOptions = app.ApplicationServices
+                .GetService<IOptions<ApplicationCorsOptions>>().Value;
+            app.UseCors(corsOptions.PolicyName);
 
             app.UseAuthorization();
 
