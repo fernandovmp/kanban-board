@@ -1,9 +1,7 @@
-using System.Data;
 using KanbanBoard.WebApi.Configurations;
 using KanbanBoard.WebApi.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 
 namespace KanbanBoard.WebApi.Extensions
 {
@@ -31,7 +29,9 @@ namespace KanbanBoard.WebApi.Extensions
         }
         public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string connectionString) =>
             services
-                .AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
+                .AddSingleton<IDbConnectionFactory, PostgresDbConnectionFactory>(
+                    sp => new PostgresDbConnectionFactory(connectionString));
+
         public static IServiceCollection AddPasswordHasher(this IServiceCollection services, IConfiguration configuration) =>
             services
                 .Configure<HasherOptions>(configuration.GetSection("PasswordHasherOptions"))
