@@ -23,6 +23,7 @@ namespace KanbanBoard.WebApi
             services.AddControllers();
             services.AddPostgresDatabase(connectionString: Configuration.GetConnectionString("PostgresConnection"));
             services.AddApplicationCorsPolicy(configuration: Configuration);
+            services.AddPasswordHasher(configuration: Configuration);
             services.AddDateTimeProvider();
         }
 

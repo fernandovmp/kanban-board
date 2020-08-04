@@ -32,6 +32,11 @@ namespace KanbanBoard.WebApi.Extensions
         public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string connectionString) =>
             services
                 .AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
+        public static IServiceCollection AddPasswordHasher(this IServiceCollection services, IConfiguration configuration) =>
+            services
+                .Configure<HasherOptions>(configuration.GetSection("PasswordHasherOptions"))
+                .AddScoped<IPasswordHasherService, PasswordHasherService>();
+
         public static IServiceCollection AddDateTimeProvider(this IServiceCollection services) =>
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
