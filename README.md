@@ -107,6 +107,18 @@ Restore all dependencies running
 dotnet restore
 ```
 
+Build the solution
+
+```
+dotnet build
+```
+
+To run the tests of all dotnet projects execute
+
+```
+dotnet test
+```
+
 And run the web API project with the following command.
 
 ```
