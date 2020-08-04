@@ -5,7 +5,7 @@ WORKDIR /src/app
 COPY src/KanbanBoard.WebApi/*.csproj .
 RUN mkdir /docs && \
     mkdir /docs/api && \
-    dotnet restore --verbosity d
+    dotnet restore
 
 COPY src/KanbanBoard.WebApi .
 COPY docs/api/kanban-board-v1.yaml /docs/api
