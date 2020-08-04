@@ -1,4 +1,5 @@
 using KanbanBoard.WebApi.Configurations;
+using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,11 @@ namespace KanbanBoard.WebApi.Extensions
                     });
                 });
         }
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services) =>
+            services
+                .AddSingleton<IUserRepository, UserRepository>();
+
         public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string connectionString) =>
             services
                 .AddSingleton<IDbConnectionFactory, PostgresDbConnectionFactory>(

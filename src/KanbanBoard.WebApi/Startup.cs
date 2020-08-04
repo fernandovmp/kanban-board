@@ -25,6 +25,7 @@ namespace KanbanBoard.WebApi
             services.AddApplicationCorsPolicy(configuration: Configuration);
             services.AddPasswordHasher(configuration: Configuration);
             services.AddDateTimeProvider();
+            services.AddRepositories();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
