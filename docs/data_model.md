@@ -15,19 +15,19 @@ many users.
 
 |   Field    |     type     | Key |               description               |
 | :--------: | :----------: | :-: | :-------------------------------------: |
-|     id     |     int      | PK  |                Board Id                 |
-|  summary   | varchar(150) |  -  |          Summary of the board           |
+|     id     |    serial    | PK  |                Board Id                 |
+|   title    | varchar(150) |  -  |           Title of the board            |
 | createdOn  | timestamp(2) |  -  |           Board creation date           |
 | modifiedOn | timestamp(2) |  -  | Latest date when the board was modified |
-| createdBy  |     int      | FK  |      User id who create the board       |
+| createdBy  |    serial    | FK  |      User id who create the board       |
 
 **List**
 
 |   Field    |     type     | Key |              description               |
 | :--------: | :----------: | :-: | :------------------------------------: |
-|     id     |     int      | PK  |                List Id                 |
-|  boardId   |     int      | FK  |   Board id that the list belongs to    |
-|  summary   |     text     |  -  |          Summary of the list           |
+|     id     |    serial    | PK  |                List Id                 |
+|  boardId   |    serial    | FK  |   Board id that the list belongs to    |
+|   title    | varchar(150) |  -  |           Title of the list            |
 | createdOn  | timestamp(2) |  -  |           List creation date           |
 | modifiedOn | timestamp(2) |  -  | Latest date when the list was modified |
 
@@ -35,7 +35,7 @@ many users.
 
 |    Field    |     type     | Key |                description                |
 | :---------: | :----------: | :-: | :---------------------------------------: |
-|     id      |     int      | PK  |                  Task Id                  |
+|     id      |    serial    | PK  |                  Task Id                  |
 |   summary   |     text     |  -  |            Summary of the task            |
 | description |     text     |  -  |          Description of the task          |
 |  tagColor   |  varchar(6)  |  -  | Hexadecimal that represents the tag color |
@@ -44,32 +44,32 @@ many users.
 
 **List Task**
 
-| Field  | type | Key |           description            |
-| :----: | :--: | :-: | :------------------------------: |
-| listId | int  | PFK | List Id that the task belongs to |
-| taskId | int  | PFK |             Task id              |
+| Field  |  type  | Key |           description            |
+| :----: | :----: | :-: | :------------------------------: |
+| listId | serial | PFK | List Id that the task belongs to |
+| taskId | serial | PFK |             Task id              |
 
 **User**
 
 |  Field   |     type     | Key |        description        |
 | :------: | :----------: | :-: | :-----------------------: |
-|    id    |     int      | PK  |          User Id          |
+|    id    |    serial    | PK  |          User Id          |
 |   name   | varchar(100) |  -  |     Name of the user      |
 |  email   | varchar(320) |  -  |    E-mail of the user     |
 | password | varchar(75)  |  -  | Hash of the user password |
 
-**User board**
+**Board Members**
 
-|  Field  | type | Key |            description             |
-| :-----: | :--: | :-: | :--------------------------------: |
-| userId  | int  | PFK |              User id               |
-| boardId | int  | PFK |              Board id              |
-| isAdmin | bool |  -  | If the user is admin of that board |
+|  Field  |  type  | Key |            description             |
+| :-----: | :----: | :-: | :--------------------------------: |
+| userId  | serial | PFK |              User id               |
+| boardId | serial | PFK |              Board id              |
+| isAdmin |  bool  |  -  | If the user is admin of that board |
 
-**User task**
+**Member task**
 
-|  Field  | type | Key |            description             |
-| :-----: | :--: | :-: | :--------------------------------: |
-| userId  | int  | PFK | User id that the task was assigned |
-| boardId | int  | PFK |   Board id that the task belongs   |
-| taskId  | int  | PFK |              Task id               |
+|  Field  |  type  | Key |            description             |
+| :-----: | :----: | :-: | :--------------------------------: |
+| userId  | serial | PFK | User id that the task was assigned |
+| boardId | serial | PFK |   Board id that the task belongs   |
+| taskId  | serial | PFK |              Task id               |
