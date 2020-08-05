@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using KanbanBoard.WebApi.Configurations;
 using KanbanBoard.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -20,7 +21,12 @@ namespace KanbanBoard.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddFluentValidation(configuration =>
+                {
+                    configuration.RegisterValidatorsFromAssemblyContaining<Startup>();
+                });
             services.AddPostgresDatabase(connectionString: Configuration.GetConnectionString("PostgresConnection"));
             services.AddApplicationCorsPolicy(configuration: Configuration);
             services.AddPasswordHasher(configuration: Configuration);
