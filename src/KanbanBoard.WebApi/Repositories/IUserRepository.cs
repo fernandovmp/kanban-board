@@ -6,6 +6,7 @@ namespace KanbanBoard.WebApi.Repositories
     public interface IUserRepository
     {
         Task<bool> ExistsUserWithEmail(string email);
+        Task<User> GetById(int id);
         Task<User> Insert(User user);
     }
 }

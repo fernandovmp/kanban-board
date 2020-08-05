@@ -34,6 +34,22 @@ namespace KanbanBoard.WebApi.Repositories
             return exists;
         }
 
+        public async Task<User> GetById(int id)
+        {
+            string query = @"select id, name, email from users where id = @Id;";
+            object queryParams = new
+            {
+                Id = id
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            connection.Open();
+
+            User user = await connection.QueryFirstOrDefaultAsync<User>(query, queryParams);
+
+            return user;
+        }
+
         public async Task<User> Insert(User user)
         {
             string query = @"
