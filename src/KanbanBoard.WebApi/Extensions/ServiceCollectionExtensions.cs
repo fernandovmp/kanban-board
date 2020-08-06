@@ -1,8 +1,8 @@
-using System.Data;
 using KanbanBoard.WebApi.Configurations;
+using KanbanBoard.WebApi.Repositories;
+using KanbanBoard.WebApi.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 
 namespace KanbanBoard.WebApi.Extensions
 {
@@ -28,8 +28,23 @@ namespace KanbanBoard.WebApi.Extensions
                     });
                 });
         }
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services) =>
+            services
+                .AddSingleton<IUserRepository, UserRepository>();
+
         public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string connectionString) =>
             services
-                .AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
+                .AddSingleton<IDbConnectionFactory, PostgresDbConnectionFactory>(
+                    sp => new PostgresDbConnectionFactory(connectionString));
+
+        public static IServiceCollection AddPasswordHasher(this IServiceCollection services, IConfiguration configuration) =>
+            services
+                .Configure<HasherOptions>(configuration.GetSection("PasswordHasherOptions"))
+                .AddScoped<IPasswordHasherService, PasswordHasherService>();
+
+        public static IServiceCollection AddDateTimeProvider(this IServiceCollection services) =>
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
     }
 }
