@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using KanbanBoard.WebApi.Extensions;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
@@ -13,7 +11,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
     [ApiController]
     [Route("api/v1/users")]
-    public class UsersController : ControllerBase
+    public class UsersController : V1ControllerBase
     {
         private readonly IPasswordHasherService _passwordHasher;
         private readonly IUserRepository _userRepository;
@@ -31,7 +29,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             if (user is null)
             {
-                return this.V1NotFound("User not found");
+                return V1NotFound("User not found");
             }
 
             var userViewModel = new UserViewModel
