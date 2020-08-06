@@ -1,6 +1,8 @@
+using System.Linq;
 using FluentValidation.AspNetCore;
 using KanbanBoard.WebApi.Configurations;
 using KanbanBoard.WebApi.Extensions;
+using KanbanBoard.WebApi.V1.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +63,8 @@ namespace KanbanBoard.WebApi
                 settings.Path = "/openapi";
                 settings.DocumentPath = "/specification/kanban-board-v1.yaml";
             });
+
+            app.UseMiddleware<ValidationErrorMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

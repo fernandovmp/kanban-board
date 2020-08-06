@@ -41,7 +41,7 @@ paths:
                 type: string
                 format: uri
         "400":
-          description: Couldn't create the board due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -120,7 +120,7 @@ paths:
         "204":
           description: The board data was updated
         "400":
-          description: Couldn't update the board data due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -235,7 +235,7 @@ paths:
         "204":
           description: Member was added
         "400":
-          description: Couldn't add the member due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -371,7 +371,7 @@ paths:
                 type: string
                 format: url
         "400":
-          description: Couldn't create the list due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -438,7 +438,7 @@ paths:
         "204":
           description: The list data was updated
         "400":
-          description: Couldn't update the list data due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -561,7 +561,7 @@ paths:
                 type: string
                 format: url
         "400":
-          description: Couldn't create the task due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -680,7 +680,7 @@ paths:
         "204":
           description: Task was updated
         "400":
-          description: Couldn't create the task due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
@@ -838,7 +838,7 @@ paths:
                 type: string
                 format: url
         "400":
-          description: Couldn't create the user due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:

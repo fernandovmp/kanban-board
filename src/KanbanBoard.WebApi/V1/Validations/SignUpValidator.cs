@@ -3,7 +3,7 @@ using KanbanBoard.WebApi.V1.ViewModels;
 
 namespace KanbanBoard.WebApi.V1.Validations
 {
-    public class SignUpValidator : AbstractValidator<SignUpViewModel>
+    public class SignUpValidator : ValidatorBase<SignUpViewModel>
     {
         public SignUpValidator()
         {
