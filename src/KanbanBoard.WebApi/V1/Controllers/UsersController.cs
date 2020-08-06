@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using KanbanBoard.WebApi.Extensions;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
@@ -28,7 +31,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             if (user is null)
             {
-                return NotFound();
+                return this.V1NotFound("User not found");
             }
 
             var userViewModel = new UserViewModel
@@ -50,7 +53,12 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             if (isEmailAlreadyInUse)
             {
-                return BadRequest();
+                return BadRequest(new ValidationErrorViewModel(
+                    status: 400,
+                    message: "Couldn't create the user",
+                    errors: new List<ValidationError>() { new ValidationError("Email", "Email already in use") }
+                    )
+                );
             }
 
             var user = new User
