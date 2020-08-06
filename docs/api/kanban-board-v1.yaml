@@ -822,6 +822,8 @@ paths:
       tags:
         - Users
       summary: Register an user
+      requestBody:
+        $ref: "#/components/requestBodies/UserBody"
       responses:
         "201":
           description: User was created
