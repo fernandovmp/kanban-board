@@ -849,8 +849,15 @@ paths:
                 errors:
                   - message: "name is mandatory"
                     property: "name"
-                  - message: "email already in use"
-                    property: "email"
+        "409":
+          description: An error response with 409 status code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 409
+                message: "Email already in use"
 
   /users/{userId}:
     parameters:
