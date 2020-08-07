@@ -95,6 +95,62 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
         }
 
         [Fact]
+        public async Task CreateShouldReturnConflictWhenEmailIsAlreadyInUse()
+        {
+            var model = new SignUpViewModel
+            {
+                Name = "default",
+                Email = "email@example.com",
+                Password = "password",
+                ConfirmPassword = "password"
+            };
+            var fakeUserRepository = new Mock<IUserRepository>();
+            fakeUserRepository
+                .Setup(repository => repository.ExistsUserWithEmail(It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+            var fakePasswordHasher = new Mock<IPasswordHasherService>();
+            var usersController = new UsersController(
+                fakePasswordHasher.Object,
+                fakeUserRepository.Object);
+
+            ActionResult<UserViewModel> result = await usersController.Create(model);
+
+            result
+                .Result
+                .Should()
+                .BeOfType<ConflictObjectResult>();
+        }
+
+        [Fact]
+        public async Task CreateShouldReturnErrorViewModelWhenEmailIsAlreadyInUse()
+        {
+            var model = new SignUpViewModel
+            {
+                Name = "default",
+                Email = "email@example.com",
+                Password = "password",
+                ConfirmPassword = "password"
+            };
+            var fakeUserRepository = new Mock<IUserRepository>();
+            fakeUserRepository
+                .Setup(repository => repository.ExistsUserWithEmail(It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+            var fakePasswordHasher = new Mock<IPasswordHasherService>();
+            var usersController = new UsersController(
+                fakePasswordHasher.Object,
+                fakeUserRepository.Object);
+
+            ActionResult<UserViewModel> result = await usersController.Create(model);
+
+            result
+                .Result
+                .As<ConflictObjectResult>()
+                .Value
+                .Should()
+                .BeOfType<ErrorViewModel>();
+        }
+
+        [Fact]
         public async Task ShowShouldReturnOkWhenSuccess()
         {
             int userId = 1;

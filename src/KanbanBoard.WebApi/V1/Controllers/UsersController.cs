@@ -51,12 +51,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             if (isEmailAlreadyInUse)
             {
-                return BadRequest(new ValidationErrorViewModel(
-                    status: 400,
-                    message: "Couldn't create the user",
-                    errors: new List<ValidationError>() { new ValidationError("Email", "Email already in use") }
-                    )
-                );
+                return V1Conflict(message: "Email already in use");
             }
 
             var user = new User
