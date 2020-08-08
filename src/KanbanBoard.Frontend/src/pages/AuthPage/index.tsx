@@ -3,9 +3,12 @@ import { Route, useHistory } from 'react-router-dom';
 import {
     fetchLogin,
     fetchSignUp,
-    IApiValidationError,
     isErrorResponse,
 } from '../../services/kanbanApiService';
+import {
+    mapApiErrorsToValidationErrors,
+    ValidationError,
+} from '../../validations';
 import {
     AuthInput,
     AuthPageLink,
@@ -23,20 +26,6 @@ const defaultFormData: FormData = {
     password: '',
     confirmPassword: '',
 };
-
-type ValidationError = {
-    path: string;
-    errors: string[];
-};
-
-const normalizeErrorPropertyName = (propertyName: string) =>
-    `${propertyName[0].toLowerCase()}${propertyName.substring(1)}`;
-
-const mapApiErrorsToValidationErrors = (apiErrors: IApiValidationError[]) =>
-    apiErrors.map((error) => ({
-        path: normalizeErrorPropertyName(error.property),
-        errors: [error.message],
-    }));
 
 export const AuthPage: React.FC = () => {
     const [formData, setFormData] = useState(defaultFormData);
