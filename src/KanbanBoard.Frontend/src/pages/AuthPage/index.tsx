@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Route, useHistory } from 'react-router-dom';
+import { FormField } from '../../components';
 import {
     fetchLogin,
     fetchSignUp,
@@ -10,10 +11,8 @@ import {
     ValidationError,
 } from '../../validations';
 import {
-    AuthInput,
     AuthPageLink,
     AuthPageWrapper,
-    InputError,
     Main,
     SubmitButton,
     Title,
@@ -116,65 +115,49 @@ export const AuthPage: React.FC = () => {
             <AuthPageWrapper as="form" onSubmit={handleSubmit}>
                 <Title>Kanban Board</Title>
                 <Route exact path="/signup">
-                    <AuthInput
+                    <FormField
                         name="name"
+                        onValueChange={handleInputChange}
                         placeholder="Name"
                         value={formData.name}
-                        onChange={handleInputChange}
+                        validationErrors={errors.filter(
+                            (err) => err.path === 'name'
+                        )}
                     />
-                    {errors.filter((err) => err.path === 'name') &&
-                        errors
-                            .filter((err) => err.path === 'name')
-                            .map((err, index) => (
-                                <InputError key={index}>
-                                    {err.errors[0]}
-                                </InputError>
-                            ))}
                 </Route>
 
-                <AuthInput
+                <FormField
                     name="email"
+                    onValueChange={handleInputChange}
                     placeholder="E-mail"
                     value={formData.email}
-                    onChange={handleInputChange}
+                    validationErrors={errors.filter(
+                        (err) => err.path === 'email'
+                    )}
                 />
-                {errors.filter((err) => err.path === 'email') &&
-                    errors
-                        .filter((err) => err.path === 'email')
-                        .map((err, index) => (
-                            <InputError key={index}>{err.errors[0]}</InputError>
-                        ))}
 
-                <AuthInput
+                <FormField
                     name="password"
+                    onValueChange={handleInputChange}
                     placeholder="Password"
                     type="password"
                     value={formData.password}
-                    onChange={handleInputChange}
+                    validationErrors={errors.filter(
+                        (err) => err.path === 'password'
+                    )}
                 />
-                {errors.filter((err) => err.path === 'password') &&
-                    errors
-                        .filter((err) => err.path === 'password')
-                        .map((err, index) => (
-                            <InputError key={index}>{err.errors[0]}</InputError>
-                        ))}
 
                 <Route exact path="/signup">
-                    <AuthInput
+                    <FormField
                         name="confirmPassword"
+                        onValueChange={handleInputChange}
                         placeholder="Confirm Password"
                         type="password"
                         value={formData.confirmPassword}
-                        onChange={handleInputChange}
+                        validationErrors={errors.filter(
+                            (err) => err.path === 'confirmPassword'
+                        )}
                     />
-                    {errors.filter((err) => err.path === 'confirmPassword') &&
-                        errors
-                            .filter((err) => err.path === 'confirmPassword')
-                            .map((err, index) => (
-                                <InputError key={index}>
-                                    {err.errors[0]}
-                                </InputError>
-                            ))}
 
                     <SubmitButton type="submit">SIGN UP</SubmitButton>
                     <AuthPageLink to="/login">
