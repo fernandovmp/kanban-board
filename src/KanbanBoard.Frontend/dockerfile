@@ -6,6 +6,9 @@ RUN yarn
 
 COPY . .
 
+ARG KANBAN_API_URL
+RUN sh create-env-file.sh ${KANBAN_API_URL}
+
 RUN yarn build
 
 FROM nginx
