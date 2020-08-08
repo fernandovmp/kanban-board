@@ -1,31 +1,23 @@
 import React, { useState } from 'react';
 import { Route, useHistory } from 'react-router-dom';
-import * as yup from 'yup';
+import { FormField } from '../../components';
 import {
     fetchLogin,
     fetchSignUp,
-    IApiValidationError,
     isErrorResponse,
 } from '../../services/kanbanApiService';
 import {
-    AuthInput,
+    mapApiErrorsToValidationErrors,
+    ValidationError,
+} from '../../validations';
+import {
     AuthPageLink,
     AuthPageWrapper,
-    InputError,
     Main,
     SubmitButton,
     Title,
 } from './styles';
-
-type LoginFormData = {
-    email: string;
-    password: string;
-};
-
-type FormData = {
-    name?: string;
-    confirmPassword?: string;
-} & LoginFormData;
+import { FormData, loginSchema, signUpSchema } from './validations';
 
 const defaultFormData: FormData = {
     name: '',
@@ -33,47 +25,6 @@ const defaultFormData: FormData = {
     password: '',
     confirmPassword: '',
 };
-
-const loginSchema = yup.object().shape<LoginFormData>({
-    email: yup
-        .string()
-        .required('e-mail is required')
-        .email('insert a valid email'),
-    password: yup.string().trim().required('password is required').min(8),
-});
-
-const signUpSchema = yup.object().shape<FormData>({
-    name: yup
-        .string()
-        .trim()
-        .required('name is required')
-        .max(100, "name length should be at maximum 100 character's"),
-    email: yup
-        .string()
-        .required('e-mail is required')
-        .email('insert a valid email'),
-    password: yup.string().trim().required().min(8),
-    confirmPassword: yup
-        .string()
-        .trim()
-        .required()
-        .min(8)
-        .equals([yup.ref('password')], "passwords doesn't match"),
-});
-
-type ValidationError = {
-    path: string;
-    errors: string[];
-};
-
-const normalizeErrorPropertyName = (propertyName: string) =>
-    `${propertyName[0].toLowerCase()}${propertyName.substring(1)}`;
-
-const mapApiErrorsToValidationErrors = (apiErrors: IApiValidationError[]) =>
-    apiErrors.map((error) => ({
-        path: normalizeErrorPropertyName(error.property),
-        errors: [error.message],
-    }));
 
 export const AuthPage: React.FC = () => {
     const [formData, setFormData] = useState(defaultFormData);
@@ -164,65 +115,49 @@ export const AuthPage: React.FC = () => {
             <AuthPageWrapper as="form" onSubmit={handleSubmit}>
                 <Title>Kanban Board</Title>
                 <Route exact path="/signup">
-                    <AuthInput
+                    <FormField
                         name="name"
+                        onValueChange={handleInputChange}
                         placeholder="Name"
                         value={formData.name}
-                        onChange={handleInputChange}
+                        validationErrors={errors.filter(
+                            (err) => err.path === 'name'
+                        )}
                     />
-                    {errors.filter((err) => err.path === 'name') &&
-                        errors
-                            .filter((err) => err.path === 'name')
-                            .map((err, index) => (
-                                <InputError key={index}>
-                                    {err.errors[0]}
-                                </InputError>
-                            ))}
                 </Route>
 
-                <AuthInput
+                <FormField
                     name="email"
+                    onValueChange={handleInputChange}
                     placeholder="E-mail"
                     value={formData.email}
-                    onChange={handleInputChange}
+                    validationErrors={errors.filter(
+                        (err) => err.path === 'email'
+                    )}
                 />
-                {errors.filter((err) => err.path === 'email') &&
-                    errors
-                        .filter((err) => err.path === 'email')
-                        .map((err, index) => (
-                            <InputError key={index}>{err.errors[0]}</InputError>
-                        ))}
 
-                <AuthInput
+                <FormField
                     name="password"
+                    onValueChange={handleInputChange}
                     placeholder="Password"
                     type="password"
                     value={formData.password}
-                    onChange={handleInputChange}
+                    validationErrors={errors.filter(
+                        (err) => err.path === 'password'
+                    )}
                 />
-                {errors.filter((err) => err.path === 'password') &&
-                    errors
-                        .filter((err) => err.path === 'password')
-                        .map((err, index) => (
-                            <InputError key={index}>{err.errors[0]}</InputError>
-                        ))}
 
                 <Route exact path="/signup">
-                    <AuthInput
+                    <FormField
                         name="confirmPassword"
+                        onValueChange={handleInputChange}
                         placeholder="Confirm Password"
                         type="password"
                         value={formData.confirmPassword}
-                        onChange={handleInputChange}
+                        validationErrors={errors.filter(
+                            (err) => err.path === 'confirmPassword'
+                        )}
                     />
-                    {errors.filter((err) => err.path === 'confirmPassword') &&
-                        errors
-                            .filter((err) => err.path === 'confirmPassword')
-                            .map((err, index) => (
-                                <InputError key={index}>
-                                    {err.errors[0]}
-                                </InputError>
-                            ))}
 
                     <SubmitButton type="submit">SIGN UP</SubmitButton>
                     <AuthPageLink to="/login">

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Card, Input, PrimaryButton } from '../../components';
+import { Card, PrimaryButton } from '../../components';
 
 export const Main = styled.main`
     display: flex;
@@ -27,18 +27,8 @@ export const AuthPageLink = styled(Link)`
     font-size: small;
 `;
 
-export const AuthInput = styled(Input)`
-    background: #fafafa;
-`;
-
 export const Title = styled.h1`
     align-self: center;
     margin-top: 0;
     margin-bottom: 30px;
-`;
-
-export const InputError = styled.span`
-    color: red;
-    font-size: smaller;
-    margin-top: -15px;
 `;
