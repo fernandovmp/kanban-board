@@ -81,8 +81,11 @@ cd src/KanbanBoard.Frontend
 
 Build the docker image
 
+    ARGS:
+        - KANBAN_API_URL: Base url of the backend.
+
 ```
-docker build -t kanban-frontend .
+docker build --build-arg KANBAN_API_URL=http://localhost:5000 -t kanban-frontend .
 ```
 
 Run the image
