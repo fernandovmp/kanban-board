@@ -1,8 +1,12 @@
+using System;
+using System.Text;
 using KanbanBoard.WebApi.Configurations;
 using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace KanbanBoard.WebApi.Extensions
 {
@@ -46,5 +50,33 @@ namespace KanbanBoard.WebApi.Extensions
         public static IServiceCollection AddDateTimeProvider(this IServiceCollection services) =>
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
+        public static IServiceCollection SetupJwtAuth(this IServiceCollection services, IConfiguration configuration)
+        {
+            var tokenOptions = new JwtTokenOptions();
+            configuration.Bind("JwtToken", tokenOptions);
+            byte[] key = Encoding.ASCII.GetBytes(tokenOptions.Key);
+
+            services
+                .Configure<JwtTokenOptions>(configuration.GetSection("JwtToken"))
+                .AddScoped<ITokenService, TokenService>()
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ValidAudience = tokenOptions.Audience,
+                        ValidIssuer = tokenOptions.Issuer,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+            return services;
+        }
     }
 }

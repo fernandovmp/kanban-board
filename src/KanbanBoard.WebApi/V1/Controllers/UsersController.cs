@@ -77,5 +77,43 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             return CreatedAtAction(actionName: nameof(Show), routeValues, value: userViewModel);
         }
+
+        [HttpPost("/api/v1/login")]
+        public async Task<ActionResult<LogInResponseViewModel>> Authenticate(
+            LogInViewModel model,
+            [FromServices] ITokenService tokenService
+        )
+        {
+            User user = await _userRepository.GetByEmailWithPassword(model.Email);
+
+            if (user is null)
+            {
+                return V1NotFound(message: "User not found");
+            }
+
+            bool correctPassword = _passwordHasher.VerifyPassword(user.Password, model.Password);
+
+            if (!correctPassword)
+            {
+                return V1BadRequest(message: "Invalid credentials");
+            }
+
+            string jwtToken = tokenService.GenerateToken(user);
+
+            var userViewModel = new UserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name
+            };
+
+            var responseViewModel = new LogInResponseViewModel
+            {
+                Token = jwtToken,
+                User = userViewModel
+            };
+
+            return Ok(responseViewModel);
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace KanbanBoard.WebApi
             services.AddPasswordHasher(configuration: Configuration);
             services.AddDateTimeProvider();
             services.AddRepositories();
+            services.SetupJwtAuth(configuration: Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -55,6 +56,7 @@ namespace KanbanBoard.WebApi
                 .GetService<IOptions<ApplicationCorsOptions>>().Value;
             app.UseCors(corsOptions.PolicyName);
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseOpenApi();

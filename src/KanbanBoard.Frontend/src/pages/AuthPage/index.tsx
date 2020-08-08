@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
 import * as yup from 'yup';
+import {
+    fetchLogin,
+    fetchSignUp,
+    IApiValidationError,
+    isErrorResponse,
+} from '../../services/kanbanApiService';
 import {
     AuthInput,
     AuthPageLink,
@@ -60,17 +66,46 @@ type ValidationError = {
     errors: string[];
 };
 
+const normalizeErrorPropertyName = (propertyName: string) =>
+    `${propertyName[0].toLowerCase()}${propertyName.substring(1)}`;
+
+const mapApiErrorsToValidationErrors = (apiErrors: IApiValidationError[]) =>
+    apiErrors.map((error) => ({
+        path: normalizeErrorPropertyName(error.property),
+        errors: [error.message],
+    }));
+
 export const AuthPage: React.FC = () => {
     const [formData, setFormData] = useState(defaultFormData);
     const [errors, setErrors] = useState<ValidationError[]>([]);
+    const history = useHistory();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const schemaToValidate =
-            window.location.pathname === '/login' ? loginSchema : signUpSchema;
-        schemaToValidate
+        if (window.location.pathname === '/login') {
+            loginSchema
+                .validate(formData, {
+                    abortEarly: false,
+                })
+                .then(() => {
+                    handleLogin();
+                })
+                .catch((err) => {
+                    setErrors(
+                        err.inner.map((error: any) => ({
+                            path: error.path,
+                            errors: error.errors,
+                        }))
+                    );
+                });
+            return;
+        }
+        signUpSchema
             .validate(formData, {
                 abortEarly: false,
+            })
+            .then(() => {
+                handleSignUp();
             })
             .catch((err) => {
                 setErrors(
@@ -80,6 +115,36 @@ export const AuthPage: React.FC = () => {
                     }))
                 );
             });
+    };
+
+    const handleLogin = async () => {
+        const response = await fetchLogin({
+            email: formData.email,
+            password: formData.password,
+        });
+        if (isErrorResponse(response.data)) {
+            const apiErrors = response.data.errors ?? [];
+            setErrors(mapApiErrorsToValidationErrors(apiErrors));
+            return;
+        }
+
+        localStorage.setItem('jwtToken', response.data.token);
+
+        history.push('/');
+    };
+    const handleSignUp = async () => {
+        const response = await fetchSignUp({
+            name: formData.name ?? '',
+            email: formData.email,
+            password: formData.password,
+            confirmPassword: formData.confirmPassword ?? '',
+        });
+        if (isErrorResponse(response.data)) {
+            const apiErrors = response.data.errors ?? [];
+            setErrors(mapApiErrorsToValidationErrors(apiErrors));
+            return;
+        }
+        handleLogin();
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
