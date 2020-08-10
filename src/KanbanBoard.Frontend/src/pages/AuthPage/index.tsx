@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import { FormField } from '../../components';
-import {
-    fetchLogin,
-    fetchSignUp,
-    isErrorResponse,
-} from '../../services/kanbanApiService';
+import { User } from '../../models';
+import { apiPost, isErrorResponse } from '../../services/kanbanApiService';
 import {
     mapApiErrorsToValidationErrors,
     ValidationError,
@@ -24,6 +21,11 @@ const defaultFormData: FormData = {
     email: '',
     password: '',
     confirmPassword: '',
+};
+
+type LoginResponse = {
+    token: string;
+    user: User;
 };
 
 export const AuthPage: React.FC = () => {
@@ -69,9 +71,12 @@ export const AuthPage: React.FC = () => {
     };
 
     const handleLogin = async () => {
-        const response = await fetchLogin({
-            email: formData.email,
-            password: formData.password,
+        const response = await apiPost<LoginResponse>({
+            uri: 'v1/login',
+            body: {
+                email: formData.email,
+                password: formData.password,
+            },
         });
         if (isErrorResponse(response.data)) {
             const apiErrors = response.data.errors ?? [];
@@ -84,11 +89,14 @@ export const AuthPage: React.FC = () => {
         history.push('/');
     };
     const handleSignUp = async () => {
-        const response = await fetchSignUp({
-            name: formData.name ?? '',
-            email: formData.email,
-            password: formData.password,
-            confirmPassword: formData.confirmPassword ?? '',
+        const response = await apiPost({
+            uri: 'v1/users',
+            body: {
+                name: formData.name ?? '',
+                email: formData.email,
+                password: formData.password,
+                confirmPassword: formData.confirmPassword ?? '',
+            },
         });
         if (isErrorResponse(response.data)) {
             const apiErrors = response.data.errors ?? [];
