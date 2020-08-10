@@ -79,7 +79,7 @@ export const AuthPage: React.FC = () => {
             return;
         }
 
-        localStorage.setItem('jwtToken', response.data.token);
+        sessionStorage.setItem('jwtToken', response.data.token);
 
         history.push('/');
     };
