@@ -5,6 +5,7 @@ const baseUrl = process.env.REACT_APP_KANBAN_API_URL;
 interface IApiActionParams {
     uri?: string;
     body?: any;
+    bearerToken?: string;
 }
 
 interface IApiFetchParams extends IApiActionParams {
@@ -12,18 +13,21 @@ interface IApiFetchParams extends IApiActionParams {
 }
 
 function apiFetch(params: IApiFetchParams) {
-    const { uri, method, body } = params;
+    const { uri, method, body, bearerToken } = params;
     const url = `${baseUrl}/api/${uri}`;
+    const authorizationHeader = bearerToken
+        ? [['authorization', `Bearer ${bearerToken}`]]
+        : [];
     return fetch(url, {
         method: method,
-        headers: [['content-type', 'application/json']],
+        headers: [['content-type', 'application/json'], ...authorizationHeader],
         body: body ? JSON.stringify(body) : undefined,
     });
 }
 
 function apiPost(params: IApiActionParams) {
-    const { uri, body } = params;
-    return apiFetch({ method: 'POST', uri, body });
+    const { uri, body, bearerToken } = params;
+    return apiFetch({ method: 'POST', uri, body, bearerToken });
 }
 
 export interface IApiValidationError {
@@ -76,6 +80,30 @@ export async function fetchSignUp(
     data: SignUpData
 ): Promise<IResponse<SignUpResponse>> {
     const result = await apiPost({ uri: 'v1/users', body: data });
+    const responseData = await result.json();
+    return { data: responseData };
+}
+
+type PostBoardData = {
+    title: string;
+};
+
+type PostBoardResponse = {
+    id: number;
+    title: string;
+    createOn: Date;
+    modifiedOn: Date;
+};
+
+export async function postBoard(
+    data: PostBoardData,
+    token: string
+): Promise<IResponse<PostBoardResponse>> {
+    const result = await apiPost({
+        uri: 'v1/boards',
+        body: data,
+        bearerToken: token,
+    });
     const responseData = await result.json();
     return { data: responseData };
 }
