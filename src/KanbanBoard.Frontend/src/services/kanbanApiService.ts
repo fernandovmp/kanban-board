@@ -1,11 +1,24 @@
-import { User } from '../models';
-
 const baseUrl = process.env.REACT_APP_KANBAN_API_URL;
 
 interface IApiActionParams {
     uri?: string;
     body?: any;
     bearerToken?: string;
+}
+
+export interface IApiValidationError {
+    property: string;
+    message: string;
+}
+
+export interface IErrorResponse {
+    status: number;
+    message: string;
+    errors?: IApiValidationError[];
+}
+
+export interface IApiResponse<T> {
+    data: T | IErrorResponse;
 }
 
 interface IApiFetchParams extends IApiActionParams {
@@ -25,86 +38,11 @@ function apiFetch(params: IApiFetchParams) {
     });
 }
 
-function apiPost(params: IApiActionParams) {
-    const { uri, body, bearerToken } = params;
-    return apiFetch({ method: 'POST', uri, body, bearerToken });
-}
-
-export interface IApiValidationError {
-    property: string;
-    message: string;
-}
-
-interface IErrorResponse {
-    status: number;
-    message: string;
-    errors?: IApiValidationError[];
-}
-
-export interface IResponse<T> {
-    data: T | IErrorResponse;
-}
-
-type LoginData = {
-    email: string;
-    password: string;
-};
-
-type LoginResponse = {
-    token: string;
-    user: User;
-};
-
-export async function fetchLogin(
-    data: LoginData
-): Promise<IResponse<LoginResponse>> {
-    const response = await apiPost({ uri: 'v1/login', body: data });
+export async function apiPost<TResponse = any>(
+    params: IApiActionParams
+): Promise<IApiResponse<TResponse>> {
+    const response = await apiFetch({ ...params, method: 'POST' });
     const responseData = await response.json();
-    return { data: responseData };
-}
-
-type SignUpData = {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-};
-
-type SignUpResponse = {
-    id: number;
-    name: string;
-    email: string;
-};
-
-export async function fetchSignUp(
-    data: SignUpData
-): Promise<IResponse<SignUpResponse>> {
-    const result = await apiPost({ uri: 'v1/users', body: data });
-    const responseData = await result.json();
-    return { data: responseData };
-}
-
-type PostBoardData = {
-    title: string;
-};
-
-type PostBoardResponse = {
-    id: number;
-    title: string;
-    createOn: Date;
-    modifiedOn: Date;
-};
-
-export async function postBoard(
-    data: PostBoardData,
-    token: string
-): Promise<IResponse<PostBoardResponse>> {
-    const result = await apiPost({
-        uri: 'v1/boards',
-        body: data,
-        bearerToken: token,
-    });
-    const responseData = await result.json();
     return { data: responseData };
 }
 

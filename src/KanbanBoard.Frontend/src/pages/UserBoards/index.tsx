@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Board } from '../../models';
-import { isErrorResponse, postBoard } from '../../services/kanbanApiService';
+import { apiPost, isErrorResponse } from '../../services/kanbanApiService';
 import { kanbanServiceFactory } from '../../services/kanbanService';
 import { BoardCard } from './BoardCard';
 import { BoardList, CreateBoardCard, Main } from './styles';
@@ -23,12 +23,13 @@ export const UserBoards: React.FC = () => {
             return;
         }
 
-        const response = await postBoard(
-            {
+        const response = await apiPost<Board>({
+            uri: 'v1/boards',
+            body: {
                 title: 'untitled',
             },
-            token
-        );
+            bearerToken: token,
+        });
 
         if (isErrorResponse(response.data)) {
             if (response.data.status === 401) {
