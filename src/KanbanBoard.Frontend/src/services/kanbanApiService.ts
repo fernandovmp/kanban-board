@@ -38,10 +38,22 @@ function apiFetch(params: IApiFetchParams) {
     });
 }
 
+function unauthorizedResponse() {
+    return {
+        data: {
+            message: 'Unauthorized',
+            status: 401,
+        },
+    };
+}
+
 export async function apiPost<TResponse = any>(
     params: IApiActionParams
 ): Promise<IApiResponse<TResponse>> {
     const response = await apiFetch({ ...params, method: 'POST' });
+    if (response.status === 401) {
+        return unauthorizedResponse();
+    }
     const responseData = await response.json();
     return { data: responseData };
 }
