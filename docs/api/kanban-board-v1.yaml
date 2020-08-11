@@ -1040,13 +1040,11 @@ components:
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
-      content:
-        application/json:
+      headers:
+        www-authenticate:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            status: 401
-            message: "Unidentified user"
+            type: string
+          example: 'Bearer error="invalid_token"'
 
   schemas:
     Board:
