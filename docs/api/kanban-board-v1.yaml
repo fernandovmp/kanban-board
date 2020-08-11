@@ -11,7 +11,7 @@ paths:
       summary: Returns a list of boards owned by a user
       responses:
         "200":
-          description: A json array of boards with summary and id
+          description: A json array of boards with title and id
           content:
             application/json:
               schema:
@@ -50,8 +50,8 @@ paths:
                 status: 400
                 message: "Couldn't create the board"
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
+                  - message: "Title is mandatory"
+                    property: "Title"
 
         "401":
           $ref: "#/components/responses/UnauthorizedError"
@@ -78,7 +78,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  summary:
+                  title:
                     type: string
                   members:
                     type: array
@@ -380,8 +380,8 @@ paths:
                 status: 400,
                 message: "Couldn't create the list"
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
+                  - message: "Title is mandatory"
+                    property: "Title"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
@@ -447,8 +447,8 @@ paths:
                 status: 400,
                 message: "Couldn't update the list data"
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
+                  - message: "Title is mandatory"
+                    property: "Title"
 
         "401":
           $ref: "#/components/responses/UnauthorizedError"
@@ -1054,7 +1054,7 @@ components:
       properties:
         id:
           type: integer
-        summary:
+        title:
           type: string
         createdOn:
           type: string
@@ -1072,7 +1072,7 @@ components:
       properties:
         id:
           type: integer
-        summary:
+        title:
           type: string
         createdOn:
           type: string
@@ -1089,7 +1089,7 @@ components:
       properties:
         id:
           type: integer
-        summary:
+        title:
           type: string
         tasks:
           type: array
@@ -1102,7 +1102,7 @@ components:
           type: string
       required:
         - id
-        - summary
+        - title
         - tasks
         - createdOn
         - modifiedOn
