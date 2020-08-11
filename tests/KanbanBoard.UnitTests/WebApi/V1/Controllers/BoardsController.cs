@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using KanbanBoard.WebApi.Models;
@@ -132,6 +133,145 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
                 .Id
                 .Should()
                 .Be(expectedId);
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnOkWhenSuccess()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>
+                {
+                    new Board {
+                        Id = 1,
+                        Title = "Board #1",
+                    },
+                    new Board {
+                        Id = 2,
+                        Title = "Board #2",
+                    },
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnListOfBoardsWhenSuccess()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>
+                {
+                    new Board {
+                        Id = 1,
+                        Title = "Board #1",
+                    },
+                    new Board {
+                        Id = 2,
+                        Title = "Board #2",
+                    },
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .Should()
+                .BeAssignableTo<IEnumerable<BoardViewModel>>();
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnFilledListWhenUserAreMemberOfBoards()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>
+                {
+                    new Board {
+                        Id = 1,
+                        Title = "Board #1",
+                    },
+                    new Board {
+                        Id = 2,
+                        Title = "Board #2",
+                    },
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .As<IEnumerable<BoardViewModel>>()
+                .Should()
+                .NotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnEmptyListWhenUserAreNotMemberOfBoards()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>());
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .As<IEnumerable<BoardViewModel>>()
+                .Should()
+                .BeEmpty();
         }
 
         private ControllerContext GetFakeControlerContextWithFakeUser(string identityName)
