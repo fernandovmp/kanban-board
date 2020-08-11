@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using KanbanBoard.WebApi.Models;
@@ -134,6 +135,145 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
                 .Be(expectedId);
         }
 
+        [Fact]
+        public async Task IndexShouldReturnOkWhenSuccess()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>
+                {
+                    new Board {
+                        Id = 1,
+                        Title = "Board #1",
+                    },
+                    new Board {
+                        Id = 2,
+                        Title = "Board #2",
+                    },
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnListOfBoardsWhenSuccess()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>
+                {
+                    new Board {
+                        Id = 1,
+                        Title = "Board #1",
+                    },
+                    new Board {
+                        Id = 2,
+                        Title = "Board #2",
+                    },
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .Should()
+                .BeAssignableTo<IEnumerable<BoardViewModel>>();
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnFilledListWhenUserAreMemberOfBoards()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>
+                {
+                    new Board {
+                        Id = 1,
+                        Title = "Board #1",
+                    },
+                    new Board {
+                        Id = 2,
+                        Title = "Board #2",
+                    },
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .As<IEnumerable<BoardViewModel>>()
+                .Should()
+                .NotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public async Task IndexShouldReturnEmptyListWhenUserAreNotMemberOfBoards()
+        {
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.GetAllUserBoards(It.IsAny<int>()))
+                .ReturnsAsync(new List<Board>());
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult<IEnumerable<BoardViewModel>> result = await boardsController.Index();
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .As<IEnumerable<BoardViewModel>>()
+                .Should()
+                .BeEmpty();
+        }
+
         private ControllerContext GetFakeControlerContextWithFakeUser(string identityName)
         {
             var fakeHttpContext = new Mock<HttpContext>();
@@ -146,105 +286,6 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
             };
             return fakeControllerContext;
         }
-        /*
-                [Fact]
-                public async Task CreateShouldReturnUserWithAnIdWhenSuccess()
-                {
-                    int expectedId = 1;
-                    var model = new SignUpViewModel
-                    {
-                        Name = "default",
-                        Email = "email@example.com",
-                        Password = "password",
-                        ConfirmPassword = "password"
-                    };
-                    var fakeUserRepository = new Mock<IUserRepository>();
-                    fakeUserRepository
-                        .Setup(repository => repository.Insert(It.IsAny<User>()))
-                        .ReturnsAsync((User user) => new User
-                        {
-                            Id = expectedId,
-                            Name = user.Name,
-                            Email = user.Email,
-                            Password = user.Password
-                        });
-                    fakeUserRepository
-                        .Setup(repository => repository.ExistsUserWithEmail(It.IsAny<string>()))
-                        .Returns(Task.FromResult(false));
-                    var fakePasswordHasher = new Mock<IPasswordHasherService>();
-                    fakePasswordHasher
-                        .Setup(passwordHasher => passwordHasher.Hash(It.IsAny<string>()))
-                        .Returns("HashedPassword");
-                    var usersController = new UsersController(
-                        fakePasswordHasher.Object,
-                        fakeUserRepository.Object);
 
-                    ActionResult<UserViewModel> result = await usersController.Create(model);
-
-                    result
-                        .Result
-                        .As<CreatedAtActionResult>()
-                        .Value
-                        .As<UserViewModel>()
-                        .Id
-                        .Should()
-                        .Be(expectedId);
-                }
-
-                [Fact]
-                public async Task CreateShouldReturnConflictWhenEmailIsAlreadyInUse()
-                {
-                    var model = new SignUpViewModel
-                    {
-                        Name = "default",
-                        Email = "email@example.com",
-                        Password = "password",
-                        ConfirmPassword = "password"
-                    };
-                    var fakeUserRepository = new Mock<IUserRepository>();
-                    fakeUserRepository
-                        .Setup(repository => repository.ExistsUserWithEmail(It.IsAny<string>()))
-                        .Returns(Task.FromResult(true));
-                    var fakePasswordHasher = new Mock<IPasswordHasherService>();
-                    var usersController = new UsersController(
-                        fakePasswordHasher.Object,
-                        fakeUserRepository.Object);
-
-                    ActionResult<UserViewModel> result = await usersController.Create(model);
-
-                    result
-                        .Result
-                        .Should()
-                        .BeOfType<ConflictObjectResult>();
-                }
-
-                [Fact]
-                public async Task CreateShouldReturnErrorViewModelWhenEmailIsAlreadyInUse()
-                {
-                    var model = new SignUpViewModel
-                    {
-                        Name = "default",
-                        Email = "email@example.com",
-                        Password = "password",
-                        ConfirmPassword = "password"
-                    };
-                    var fakeUserRepository = new Mock<IUserRepository>();
-                    fakeUserRepository
-                        .Setup(repository => repository.ExistsUserWithEmail(It.IsAny<string>()))
-                        .Returns(Task.FromResult(true));
-                    var fakePasswordHasher = new Mock<IPasswordHasherService>();
-                    var usersController = new UsersController(
-                        fakePasswordHasher.Object,
-                        fakeUserRepository.Object);
-
-                    ActionResult<UserViewModel> result = await usersController.Create(model);
-
-                    result
-                        .Result
-                        .As<ConflictObjectResult>()
-                        .Value
-                        .Should()
-                        .BeOfType<ErrorViewModel>();
-                }*/
     }
 }

@@ -39,7 +39,7 @@ export const BoardPage: React.FC = () => {
 
     return (
         <Main>
-            <BoardHeader boardTitle={board?.summary ?? ''} />
+            <BoardHeader boardTitle={board?.title ?? ''} />
             <TaskListsWrapper>
                 {boardLists.map((list) => (
                     <TaskListView key={list.id} taskList={list} />

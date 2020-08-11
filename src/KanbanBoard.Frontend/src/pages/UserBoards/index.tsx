@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Board } from '../../models';
-import { apiPost, isErrorResponse } from '../../services/kanbanApiService';
-import { kanbanServiceFactory } from '../../services/kanbanService';
+import {
+    apiGet,
+    apiPost,
+    isErrorResponse,
+} from '../../services/kanbanApiService';
 import { BoardCard } from './BoardCard';
 import { BoardList, CreateBoardCard, Main } from './styles';
 
@@ -11,10 +14,27 @@ export const UserBoards: React.FC = () => {
     const history = useHistory();
 
     useEffect(() => {
-        const { getBoards } = kanbanServiceFactory();
-        const _boards = getBoards();
-        setBoards(_boards);
-    }, []);
+        const fetchUserBoards = async () => {
+            const token = sessionStorage.getItem('jwtToken');
+            if (!token) {
+                history.push('/login');
+                return;
+            }
+            const response = await apiGet<Board[]>({
+                uri: 'v1/boards',
+                bearerToken: token,
+            });
+            if (isErrorResponse(response.data)) {
+                if (response.data.status === 401) {
+                    history.push('/login');
+                }
+                return;
+            }
+            const _boards = response.data;
+            setBoards(_boards);
+        };
+        fetchUserBoards();
+    }, [history]);
 
     const handleCreateBoard = async () => {
         const token = sessionStorage.getItem('jwtToken');

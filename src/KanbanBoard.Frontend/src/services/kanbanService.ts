@@ -11,7 +11,7 @@ const boardsData = {
     boards: [
         {
             id: 1,
-            summary: 'Project Tasks',
+            title: 'Project Tasks',
             lists: [
                 {
                     id: 1,
@@ -50,7 +50,7 @@ const boardsData = {
         },
         {
             id: 2,
-            summary: 'Template Board',
+            title: 'Template Board',
         },
     ],
 };
@@ -59,9 +59,9 @@ export const kanbanServiceFactory = (): IKanbanService => ({
     getBoards() {
         return boardsData.boards;
     },
-    postBoard(summary: string) {
+    postBoard(title: string) {
         boardsData.boards = [
-            { id: boardsData.nextId, summary },
+            { id: boardsData.nextId, title },
             ...boardsData.boards,
         ];
         boardsData.nextId += 1;

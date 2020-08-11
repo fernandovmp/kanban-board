@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
@@ -25,6 +26,23 @@ namespace KanbanBoard.WebApi.V1.Controllers
         {
             _boardRepository = boardRepository;
             _dateTimeProvider = dateTimeProvider;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<BoardViewModel>>> Index()
+        {
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+
+            IEnumerable<Board> boards = await _boardRepository.GetAllUserBoards(userId);
+            IEnumerable<BoardViewModel> boardsViewModel = boards.Select(board => new BoardViewModel
+            {
+                Id = board.Id,
+                Title = board.Title,
+                CreatedOn = board.CreatedOn,
+                ModifiedOn = board.ModifiedOn
+            });
+
+            return Ok(boardsViewModel);
         }
 
         [HttpGet("{boardId}")]
