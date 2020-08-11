@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import deleteIcon from '../../../assets/delete_outline.svg';
 import groupIcon from '../../../assets/group.svg';
 import { DefaultButton, EditableContent } from '../../../components';
+import { apiPut } from '../../../services/kanbanApiService';
 import { DeleteModal } from '../DeleteModal';
 import { MembersModal } from '../MembersModal';
 import { BoardTitle, Header } from './styles';
@@ -14,6 +16,8 @@ export const BoardHeader: React.FC<IBoardHeaderProps> = ({ boardTitle }) => {
     const [title, setTitle] = useState(boardTitle);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showMembersModal, setShowMembersModal] = useState(false);
+    const { boardId } = useParams();
+    const history = useHistory();
 
     const handleMembersClick = () => {
         setShowMembersModal(true);
@@ -23,9 +27,22 @@ export const BoardHeader: React.FC<IBoardHeaderProps> = ({ boardTitle }) => {
     };
     const handleConfirmDeletion = () => {};
 
-    const handleEditBoardTitle = (value: string) => {
-        if (value.trim() === '') return;
-        setTitle(value.trim());
+    const handleEditBoardTitle = async (value: string) => {
+        const newTitle = value.trim();
+        if (newTitle === '' || newTitle === title) return;
+        setTitle(newTitle);
+        const token = sessionStorage.getItem('jwtToken');
+        if (!token) {
+            history.push('/login');
+            return;
+        }
+        await apiPut({
+            uri: `v1/boards/${boardId}`,
+            bearerToken: token,
+            body: {
+                title: newTitle,
+            },
+        });
     };
 
     return (

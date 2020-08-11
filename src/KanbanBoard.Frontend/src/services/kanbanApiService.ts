@@ -55,6 +55,10 @@ export async function apiPost<TResponse = any>(params: IApiActionParams) {
     return await _apiAction<TResponse>({ ...params, method: 'POST' });
 }
 
+export async function apiPut<TResponse = any>(params: IApiActionParams) {
+    return await _apiAction<TResponse>({ ...params, method: 'PUT' });
+}
+
 async function _apiAction<TResponse = any>(
     params: IApiFetchParams
 ): Promise<IApiResponse<TResponse>> {
