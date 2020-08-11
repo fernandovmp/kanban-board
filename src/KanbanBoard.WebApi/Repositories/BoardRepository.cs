@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
@@ -13,6 +14,24 @@ namespace KanbanBoard.WebApi.Repositories
         public BoardRepository(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
+        }
+
+        public async Task<IEnumerable<Board>> GetAllUserBoards(int userId)
+        {
+            string query = @"
+            select boards.id, boards.title, boards.createdOn, boards.modifiedOn from boards
+                inner join boardmembers on boardmembers.boardId = boards.id
+                where boardmembers.userId = @UserId;";
+            object queryParams = new
+            {
+                UserId = userId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            IEnumerable<Board> boards = await connection.QueryAsync<Board>(query, queryParams);
+
+            return boards;
         }
 
         public async Task<Board> Insert(Board board)
