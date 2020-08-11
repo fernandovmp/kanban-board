@@ -30,7 +30,7 @@ export const UserBoards: React.FC = () => {
                 }
                 return;
             }
-            const _boards = response.data;
+            const _boards = response.data!;
             setBoards(_boards);
         };
         fetchUserBoards();
@@ -60,7 +60,7 @@ export const UserBoards: React.FC = () => {
             return;
         }
 
-        const board = response.data;
+        const board = response.data!;
 
         history.push(`/board/${board.id}`);
     };
