@@ -47,10 +47,14 @@ function unauthorizedResponse() {
     };
 }
 
-export async function apiPost<TResponse = any>(
-    params: IApiActionParams
+export async function apiPost<TResponse = any>(params: IApiActionParams) {
+    return await _apiAction<TResponse>({ ...params, method: 'POST' });
+}
+
+async function _apiAction<TResponse = any>(
+    params: IApiFetchParams
 ): Promise<IApiResponse<TResponse>> {
-    const response = await apiFetch({ ...params, method: 'POST' });
+    const response = await apiFetch(params);
     if (response.status === 401) {
         return unauthorizedResponse();
     }
