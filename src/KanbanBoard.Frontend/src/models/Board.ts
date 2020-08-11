@@ -2,6 +2,6 @@ import { TaskList } from './TaskList';
 
 export interface Board {
     id: number;
-    summary: string;
+    title: string;
     lists?: TaskList[];
 }

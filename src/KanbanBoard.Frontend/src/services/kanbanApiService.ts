@@ -47,6 +47,10 @@ function unauthorizedResponse() {
     };
 }
 
+export async function apiGet<TResponse = any>(params: IApiActionParams) {
+    return await _apiAction<TResponse>({ ...params, method: 'GET' });
+}
+
 export async function apiPost<TResponse = any>(params: IApiActionParams) {
     return await _apiAction<TResponse>({ ...params, method: 'POST' });
 }

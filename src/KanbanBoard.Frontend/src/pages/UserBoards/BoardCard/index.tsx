@@ -11,7 +11,7 @@ export const BoardCard: React.FC<IBoardCardProps> = ({ board }) => {
 
     return (
         <SBoardCard onClick={handleClick}>
-            <BoardTitle>{board.summary}</BoardTitle>
+            <BoardTitle>{board.title}</BoardTitle>
         </SBoardCard>
     );
 };
