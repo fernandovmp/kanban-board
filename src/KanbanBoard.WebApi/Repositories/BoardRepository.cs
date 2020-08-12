@@ -49,6 +49,30 @@ namespace KanbanBoard.WebApi.Repositories
             return boards;
         }
 
+        public async Task<KanbanList> GetBoardList(int boardId, int listId)
+        {
+            string query = @"select title from lists where boardId = @BoardId and id = @ListId";
+            object queryParams = new
+            {
+                BoardId = boardId,
+                ListId = listId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            KanbanList list = await connection.QueryFirstOrDefaultAsync<KanbanList>(query, queryParams);
+            if (list is { })
+            {
+                list.Id = listId;
+                list.Board = new Board
+                {
+                    Id = boardId
+                };
+            }
+
+            return list;
+        }
+
         public async Task<BoardMember> GetBoardMember(int boardId, int userId)
         {
             string query = @"select isAdmin from boardMembers where boardId = @BoardId and userId = @UserId";
