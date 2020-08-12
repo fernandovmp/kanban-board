@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../assets/add.svg';
 import { Input } from '../../components';
 import { TaskList } from '../../models';
+import { apiPost, isErrorResponse } from '../../services/kanbanApiService';
 import { kanbanServiceFactory } from '../../services/kanbanService';
 import { BoardHeader } from './BoardHeader';
 import {
@@ -20,20 +22,39 @@ export const BoardPage: React.FC = () => {
     const [boardLists, setBoardLists] = useState<TaskList[]>([]);
     const [newListTitle, setNewListTitle] = useState('');
     const [isCreatingList, setIsCreatingList] = useState(false);
+    const history = useHistory();
+    const { boardId } = useParams();
 
     useEffect(() => {
         setBoardLists(board?.lists ?? []);
     }, [board]);
 
-    const handleCreateList = () => {
+    const handleCreateList = async () => {
         setIsCreatingList(false);
-        if (newListTitle.trim() === '') return;
-        const taskList: TaskList = {
-            id: 70,
-            title: newListTitle.trim(),
-            tasks: [],
-        };
+        const listTitle = newListTitle.trim();
+
         setNewListTitle('');
+
+        if (listTitle === '') return;
+
+        const token = sessionStorage.getItem('jwtToken');
+        if (!token) {
+            history.push('/login');
+            return;
+        }
+
+        const response = await apiPost<TaskList>({
+            uri: `v1/boards/${boardId}/lists`,
+            body: {
+                title: listTitle,
+            },
+            bearerToken: token,
+        });
+        if (isErrorResponse(response.data)) {
+            return;
+        }
+
+        const taskList = response.data!;
         setBoardLists([...boardLists, taskList]);
     };
 
