@@ -45,7 +45,7 @@ create table if not exists Lists (
 
 create table if not exists Tasks (
     id serial,
-    summary text not null, 
+    summary text not null,
     description text not null,
     tagColor varchar(6) not null,
     createdOn timestamp(2) not null,
@@ -56,7 +56,11 @@ create table if not exists Tasks (
 
 create table if not exists ListTasks (
     listId serial not null,
-    taskId serial not null
+    taskId serial not null,
+
+    constraint PK_ListTasks_listId_taskId primary key (listId, taskId),
+    constraint FK_ListTasks_listId foreign key (listId) references Lists,
+    constraint FK_ListTasks_taskId foreign key (taskId) references Tasks,
 );
 
 create table if not exists MemberTasks (
