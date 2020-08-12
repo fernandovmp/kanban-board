@@ -123,6 +123,32 @@ namespace KanbanBoard.WebApi.Repositories
             await connection.ExecuteAsync(query, queryParams);
         }
 
+        public async Task<KanbanList> InsertKanbanList(KanbanList list)
+        {
+            string query = @"insert into lists (boardId, title, createdOn, modifiedOn)
+                values (@BoardId, @Title, @CreatedOn, @ModifiedOn) returning id;";
+            object queryParams = new
+            {
+                BoardId = list.Board.Id,
+                list.Title,
+                list.CreatedOn,
+                list.ModifiedOn
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            int listId = await connection.ExecuteScalarAsync<int>(query, queryParams);
+
+            return new KanbanList
+            {
+                Id = listId,
+                Title = list.Title,
+                Board = list.Board,
+                CreatedOn = list.CreatedOn,
+                ModifiedOn = list.ModifiedOn
+            };
+        }
+
         public async Task Update(Board board)
         {
             string query = @"update boards set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
