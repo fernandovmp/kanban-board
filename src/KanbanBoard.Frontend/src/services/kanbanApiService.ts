@@ -18,7 +18,7 @@ export interface IErrorResponse {
 }
 
 export interface IApiResponse<T> {
-    data: T | IErrorResponse;
+    data?: T | IErrorResponse;
 }
 
 interface IApiFetchParams extends IApiActionParams {
@@ -55,12 +55,22 @@ export async function apiPost<TResponse = any>(params: IApiActionParams) {
     return await _apiAction<TResponse>({ ...params, method: 'POST' });
 }
 
+export async function apiPut<TResponse = any>(params: IApiActionParams) {
+    return await _apiAction<TResponse>({ ...params, method: 'PUT' });
+}
+
 async function _apiAction<TResponse = any>(
     params: IApiFetchParams
 ): Promise<IApiResponse<TResponse>> {
     const response = await apiFetch(params);
     if (response.status === 401) {
         return unauthorizedResponse();
+    }
+    if (response.status === 403) {
+        return { data: { status: 403, message: 'Forbidden' } };
+    }
+    if (response.status === 204) {
+        return { data: undefined };
     }
     const responseData = await response.json();
     return { data: responseData };

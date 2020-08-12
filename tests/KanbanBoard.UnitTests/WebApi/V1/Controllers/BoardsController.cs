@@ -274,6 +274,177 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
                 .BeEmpty();
         }
 
+        [Fact]
+        public async Task UpdateShouldReturnNoContentWhenSuccess()
+        {
+            var model = new PostBoardViewModel
+            {
+                Title = "Title #1"
+            };
+            int boardId = 1;
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.ExistsBoard(It.IsAny<int>()))
+                .ReturnsAsync(true);
+            fakeBoardRepository
+                .Setup(repository => repository.GetBoardMember(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new BoardMember
+                {
+                    IsAdmin = true,
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult result = await boardsController.Update(model, boardId);
+
+            result.Should().BeOfType<NoContentResult>();
+        }
+
+        [Fact]
+        public async Task UpdateShouldReturnNotFoundWhenBoardNotExists()
+        {
+            var model = new PostBoardViewModel
+            {
+                Title = "Title #1"
+            };
+            int boardId = 1;
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.ExistsBoard(It.IsAny<int>()))
+                .ReturnsAsync(false);
+            fakeBoardRepository
+                .Setup(repository => repository.GetBoardMember(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new BoardMember
+                {
+                    IsAdmin = true,
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult result = await boardsController.Update(model, boardId);
+
+            result.Should().BeOfType<NotFoundObjectResult>();
+        }
+
+        [Fact]
+        public async Task UpdateShouldReturnErrorViewModelWhenBoardNotExists()
+        {
+            var model = new PostBoardViewModel
+            {
+                Title = "Title #1"
+            };
+            int boardId = 1;
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.ExistsBoard(It.IsAny<int>()))
+                .ReturnsAsync(false);
+            fakeBoardRepository
+                .Setup(repository => repository.GetBoardMember(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new BoardMember
+                {
+                    IsAdmin = true,
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult result = await boardsController.Update(model, boardId);
+
+            result
+                .As<NotFoundObjectResult>()
+                .Value
+                .Should()
+                .BeOfType<ErrorViewModel>();
+        }
+
+        [Fact]
+        public async Task UpdateShouldReturnForbidWhenUserIsNotMemberOfTheBoard()
+        {
+            var model = new PostBoardViewModel
+            {
+                Title = "Title #1"
+            };
+            int boardId = 1;
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.ExistsBoard(It.IsAny<int>()))
+                .ReturnsAsync(true);
+            fakeBoardRepository
+                .Setup(repository => repository.GetBoardMember(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(Task.FromResult<BoardMember>(null));
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult result = await boardsController.Update(model, boardId);
+
+            result.Should().BeOfType<ForbidResult>();
+        }
+
+        [Fact]
+        public async Task UpdateShouldReturnForbidWhenUserIsNotBoardAdmin()
+        {
+            var model = new PostBoardViewModel
+            {
+                Title = "Title #1"
+            };
+            int boardId = 1;
+            var fakeBoardRepository = new Mock<IBoardRepository>();
+            fakeBoardRepository
+                .Setup(repository => repository.ExistsBoard(It.IsAny<int>()))
+                .ReturnsAsync(true);
+            fakeBoardRepository
+                .Setup(repository => repository.GetBoardMember(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new BoardMember
+                {
+                    IsAdmin = false,
+                });
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext
+            };
+
+            ActionResult result = await boardsController.Update(model, boardId);
+
+            result.Should().BeOfType<ForbidResult>();
+        }
+
         private ControllerContext GetFakeControlerContextWithFakeUser(string identityName)
         {
             var fakeHttpContext = new Mock<HttpContext>();

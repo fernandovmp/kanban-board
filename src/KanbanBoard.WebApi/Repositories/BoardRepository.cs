@@ -16,6 +16,21 @@ namespace KanbanBoard.WebApi.Repositories
             _connectionFactory = connectionFactory;
         }
 
+        public async Task<bool> ExistsBoard(int boardId)
+        {
+            string query = @"select 1 from boards where id = @Id;";
+            object queryParams = new
+            {
+                Id = boardId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            bool exists = await connection.ExecuteScalarAsync<bool>(query, queryParams);
+
+            return exists;
+        }
+
         public async Task<IEnumerable<Board>> GetAllUserBoards(int userId)
         {
             string query = @"
@@ -32,6 +47,33 @@ namespace KanbanBoard.WebApi.Repositories
             IEnumerable<Board> boards = await connection.QueryAsync<Board>(query, queryParams);
 
             return boards;
+        }
+
+        public async Task<BoardMember> GetBoardMember(int boardId, int userId)
+        {
+            string query = @"select isAdmin from boardMembers where boardId = @BoardId and userId = @UserId";
+            object queryParams = new
+            {
+                BoardId = boardId,
+                UserId = userId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            BoardMember boardMember = await connection.QueryFirstOrDefaultAsync<BoardMember>(query, queryParams);
+            if (boardMember is { })
+            {
+                boardMember.Board = new Board
+                {
+                    Id = boardId
+                };
+                boardMember.User = new User
+                {
+                    Id = userId
+                };
+            }
+
+            return boardMember;
         }
 
         public async Task<Board> Insert(Board board)
@@ -79,6 +121,14 @@ namespace KanbanBoard.WebApi.Repositories
             using IDbConnection connection = _connectionFactory.CreateConnection();
 
             await connection.ExecuteAsync(query, queryParams);
+        }
+
+        public async Task Update(Board board)
+        {
+            string query = @"update boards set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
+            using IDbConnection connetion = _connectionFactory.CreateConnection();
+
+            await connetion.ExecuteAsync(query, board);
         }
     }
 }
