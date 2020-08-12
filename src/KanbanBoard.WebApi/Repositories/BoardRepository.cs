@@ -149,6 +149,38 @@ namespace KanbanBoard.WebApi.Repositories
             };
         }
 
+        public async Task<KanbanTask> InsertKanbanTask(KanbanTask task)
+        {
+            string query = @"insert into tasks (summary, description, tagColor, createdOn, modifiedOn)
+                values (@Summary, @Description, @TagColor, @CreatedOn, @ModifiedOn)
+                returning id;";
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            int taskId = await connection.ExecuteScalarAsync<int>(query, task);
+
+            string taskListQuery = @"insert into listTasks (listId, taskId) values (@ListId, @TaskId);";
+            object queryParams = new
+            {
+                TaskId = taskId,
+                ListId = task.List.Id
+            };
+
+            await connection.ExecuteAsync(taskListQuery, queryParams);
+
+            return new KanbanTask
+            {
+                Id = taskId,
+                Summary = task.Summary,
+                Description = task.Description,
+                TagColor = task.TagColor,
+                Board = task.Board,
+                List = task.List,
+                CreatedOn = task.CreatedOn,
+                ModifiedOn = task.ModifiedOn
+            };
+        }
+
         public async Task Update(Board board)
         {
             string query = @"update boards set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
