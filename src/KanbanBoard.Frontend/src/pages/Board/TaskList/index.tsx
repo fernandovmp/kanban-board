@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
 import { EditableContent } from '../../../components';
 import { TaskList } from '../../../models';
+import { apiPost, isErrorResponse } from '../../../services/kanbanApiService';
 import {
     Button,
     ButtonsWrapper,
@@ -23,16 +25,34 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
     const [tasks, setTasks] = useState(taskList.tasks);
     const [isCreatingTask, setIsCreatingTask] = useState(false);
     const [newTaskSummary, setNewTaskSummary] = useState('');
+    const history = useHistory();
+    const { boardId } = useParams();
 
-    const handleCreateTask = () => {
+    const handleCreateTask = async () => {
         setIsCreatingTask(false);
-        if (newTaskSummary.trim() === '') return;
-        const newTask = {
-            id: 70,
-            summary: newTaskSummary.trim(),
-            tagColor: 'FFEA31',
-        };
+        const summary = newTaskSummary.trim();
         setNewTaskSummary('');
+        if (summary === '') return;
+
+        const token = sessionStorage.getItem('jwtToken') ?? '';
+        const response = await apiPost({
+            uri: `v1/boards/${boardId}/tasks`,
+            body: {
+                summary,
+                description: '',
+                tagColor: 'FFEA31',
+                assignedTo: [],
+                list: taskList.id,
+            },
+            bearerToken: token,
+        });
+        if (isErrorResponse(response.data)) {
+            if (response.data?.status === 401) {
+                history.push('/login');
+            }
+            return;
+        }
+        const newTask = response.data!;
         setTasks([...tasks, newTask]);
     };
 
