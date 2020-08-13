@@ -41,5 +41,39 @@ namespace KanbanBoard.UnitTests.WebApi.Mocks
                 .ReturnsAsync(returnValueFactory);
             return mock;
         }
+
+        public static Mock<IBoardRepository> MockInsertKanbanTask(
+            this Mock<IBoardRepository> mock,
+            int withId) => mock.MockInsertKanbanTask(task => new KanbanTask
+            {
+                Id = withId,
+                Board = task.Board,
+                CreatedOn = task.CreatedOn,
+                Description = task.Description,
+                List = task.List,
+                ModifiedOn = task.ModifiedOn,
+                Summary = task.Summary,
+                TagColor = task.TagColor
+            });
+
+        public static Mock<IBoardRepository> MockInsertKanbanTask(
+            this Mock<IBoardRepository> mock,
+            Func<KanbanTask, KanbanTask> returnValueFactory)
+        {
+            mock
+                .Setup(repository => repository.InsertKanbanTask(It.IsAny<KanbanTask>()))
+                .ReturnsAsync(returnValueFactory);
+            return mock;
+        }
+
+        public static Mock<IBoardRepository> MockGetBoardList(
+            this Mock<IBoardRepository> mock,
+            KanbanList returnValue)
+        {
+            mock
+            .Setup(repository => repository.GetBoardList(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(returnValue);
+            return mock;
+        }
     }
 }
