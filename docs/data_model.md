@@ -66,7 +66,7 @@ many users.
 | boardId | serial | PFK |              Board id              |
 | isAdmin |  bool  |  -  | If the user is admin of that board |
 
-**Member task**
+**Assignments**
 
 |  Field  |  type  | Key |            description             |
 | :-----: | :----: | :-: | :--------------------------------: |
