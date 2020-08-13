@@ -46,9 +46,49 @@ namespace KanbanBoard.WebApi.V1.Controllers
         }
 
         [HttpGet("{boardId}")]
-        public Task<ActionResult> Show(int boardId)
+        public async Task<ActionResult<DetailedBoardViewModel>> Show(int boardId)
         {
-            throw new NotImplementedException();
+            Board board = await _boardRepository.GetBoardByIdWithListsTasksAndMembers(boardId);
+            if (board is null)
+            {
+                return V1NotFound("Board not found");
+            }
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            if (!board.Members.Exists(member => member.User.Id == userId))
+            {
+                return Forbid();
+            }
+
+            IEnumerable<BoardMemberViewModel> boardMembersViewModel = board.Members.Select(member => new BoardMemberViewModel
+            {
+                Id = member.User.Id,
+                Name = member.User.Name,
+                Email = member.User.Email,
+                IsAdmin = member.IsAdmin
+            });
+            IEnumerable<BoardListViewModel> listsViewModel = board.Lists.Select(list => new BoardListViewModel
+            {
+                Id = list.Id,
+                Title = list.Title,
+                Tasks = list.Tasks.Select(task => new ListTaskViewModel
+                {
+                    Id = task.Id,
+                    Description = task.Description ?? "",
+                    Summary = task.Summary,
+                    TagColor = task.TagColor,
+                    AssignedTo = task.Assignments
+                        .Select(member => Url
+                            .ActionLink(action: nameof(UsersController.Show), controller: "Users", new { userId = member.User.Id }))
+                })
+            });
+            var boardViewModel = new DetailedBoardViewModel
+            {
+                Id = board.Id,
+                Title = board.Title,
+                Lists = listsViewModel,
+                Members = boardMembersViewModel
+            };
+            return Ok(boardViewModel);
         }
 
         [HttpPost]
