@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using KanbanBoard.UnitTests.WebApi.Mocks;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
 using KanbanBoard.WebApi.V1.Controllers;
 using KanbanBoard.WebApi.V1.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -14,7 +14,7 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
 {
     [Trait("Category", "BoardsController")]
-    public class BoardsControllerTests
+    public class BoardsControllerTests : ControllerTestsBase
     {
 
         [Fact]
@@ -445,18 +445,215 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
             result.Should().BeOfType<ForbidResult>();
         }
 
-        private ControllerContext GetFakeControlerContextWithFakeUser(string identityName)
+        [Fact]
+        public async Task ShowShouldReturnOkWhenSuccess()
         {
-            var fakeHttpContext = new Mock<HttpContext>();
-            fakeHttpContext
-                .Setup(httpContext => httpContext.User.Identity.Name)
-                .Returns(identityName);
-            var fakeControllerContext = new ControllerContext
+            int boardId = 1;
+            Mock<IBoardRepository> fakeBoardRepository = IBoardRepositoryMock
+                .Mock()
+                .MockGetBoardByIdWithListsTasksAndMembers(GetDefaultBoard(withId: boardId, withMemberId: 1));
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            IUrlHelper fakeUrlHelper = GetFakeUrlHelper("Url");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
             {
-                HttpContext = fakeHttpContext.Object
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
-            return fakeControllerContext;
+
+            ActionResult<DetailedBoardViewModel> result = await boardsController.Show(boardId);
+
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
 
+        [Fact]
+        public async Task ShowShouldReturnDetailedBoardViewModelWhenSuccess()
+        {
+            int boardId = 1;
+            Mock<IBoardRepository> fakeBoardRepository = IBoardRepositoryMock
+                .Mock()
+                .MockGetBoardByIdWithListsTasksAndMembers(GetDefaultBoard(withId: boardId, withMemberId: 1));
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            IUrlHelper fakeUrlHelper = GetFakeUrlHelper("Url");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
+            };
+
+            ActionResult<DetailedBoardViewModel> result = await boardsController.Show(boardId);
+
+            result
+                .Result
+                .As<OkObjectResult>()
+                .Value
+                .Should()
+                .BeOfType<DetailedBoardViewModel>();
+        }
+
+        [Fact]
+        public async Task ShowShouldReturnNotFoundWhenBoardNotExists()
+        {
+            int boardId = 1;
+            Mock<IBoardRepository> fakeBoardRepository = IBoardRepositoryMock
+                .Mock()
+                .MockGetBoardByIdWithListsTasksAndMembers(null);
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            IUrlHelper fakeUrlHelper = GetFakeUrlHelper("Url");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
+            };
+
+            ActionResult<DetailedBoardViewModel> result = await boardsController.Show(boardId);
+
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
+        }
+
+        [Fact]
+        public async Task ShowShouldReturnErrorViewModelWhenBoardNotExists()
+        {
+            int boardId = 1;
+            Mock<IBoardRepository> fakeBoardRepository = IBoardRepositoryMock
+                .Mock()
+                .MockGetBoardByIdWithListsTasksAndMembers(null);
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            IUrlHelper fakeUrlHelper = GetFakeUrlHelper("Url");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
+            };
+
+            ActionResult<DetailedBoardViewModel> result = await boardsController.Show(boardId);
+
+            result
+                .Result
+                .As<NotFoundObjectResult>()
+                .Value
+                .Should()
+                .BeOfType<ErrorViewModel>();
+        }
+
+        [Fact]
+        public async Task ShowShouldReturnErrorViewModelWithStatus404WhenBoardNotExists()
+        {
+            int boardId = 1;
+            Mock<IBoardRepository> fakeBoardRepository = IBoardRepositoryMock
+                .Mock()
+                .MockGetBoardByIdWithListsTasksAndMembers(null);
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            IUrlHelper fakeUrlHelper = GetFakeUrlHelper("Url");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
+            };
+
+            ActionResult<DetailedBoardViewModel> result = await boardsController.Show(boardId);
+
+            result
+                .Result
+                .As<NotFoundObjectResult>()
+                .Value
+                .As<ErrorViewModel>()
+                .Status
+                .Should()
+                .Be(404);
+        }
+
+        [Fact]
+        public async Task ShowShouldReturnForbidWhenUserIsNotMemberOfTheBoard()
+        {
+            int boardId = 1;
+            Mock<IBoardRepository> fakeBoardRepository = IBoardRepositoryMock
+                .Mock()
+                .MockExistsBoard(exists: false)
+                .MockGetBoardByIdWithListsTasksAndMembers(GetDefaultBoard(withId: boardId, withMemberId: 1));
+            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
+
+            ControllerContext fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "2");
+            IUrlHelper fakeUrlHelper = GetFakeUrlHelper("Url");
+
+            var boardsController = new BoardsController(
+                fakeBoardRepository.Object,
+                fakeDateTimeProvider.Object)
+            {
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
+            };
+
+            ActionResult<DetailedBoardViewModel> result = await boardsController.Show(boardId);
+
+            result.Result.Should().BeOfType<ForbidResult>();
+        }
+
+        public Board GetDefaultBoard(int withId, int withMemberId)
+        {
+            var boardMember = new BoardMember
+            {
+                User = new User
+                {
+                    Id = withMemberId
+                },
+                IsAdmin = false
+            };
+            var task = new KanbanTask
+            {
+                Id = 1,
+                Summary = "Task #1",
+                Description = "Description",
+                TagColor = "FFFFF",
+                Assignments = new List<BoardMember> {
+                    boardMember
+                }
+            };
+            var list = new KanbanList
+            {
+                Id = 1,
+                Title = "Todo",
+                Tasks = new List<KanbanTask>
+                {
+                    task
+                }
+            };
+            var board = new Board
+            {
+                Id = withId,
+                Title = "Title",
+                Members = new List<BoardMember> {
+                    boardMember
+                },
+                Lists = new List<KanbanList> {
+                    list
+                }
+            };
+            return board;
+        }
     }
 }
