@@ -10,7 +10,8 @@ namespace KanbanBoard.WebApi.V1.Controllers
 {
 
     [ApiController]
-    [Route("api/v1/users")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/users")]
     public class UsersController : V1ControllerBase
     {
         private readonly IPasswordHasherService _passwordHasher;
@@ -72,13 +73,14 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             object routeValues = new
             {
+                version = "1",
                 userId = userViewModel.Id
             };
 
             return CreatedAtAction(actionName: nameof(Show), routeValues, value: userViewModel);
         }
 
-        [HttpPost("/api/v1/login")]
+        [HttpPost("/api/v{version:ApiVersion}/login")]
         public async Task<ActionResult<LogInResponseViewModel>> Authenticate(
             LogInViewModel model,
             [FromServices] ITokenService tokenService

@@ -14,7 +14,8 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
     [ApiController]
     [Authorize]
-    [Route("api/v1/boards/{boardId}/lists")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/boards/{boardId}/lists")]
     public class ListsController : V1ControllerBase
     {
         private readonly IBoardRepository _boardRepository;
@@ -66,6 +67,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             object routeValues = new
             {
+                version = "1",
                 boardId,
                 listId = createdList.Id
             };
