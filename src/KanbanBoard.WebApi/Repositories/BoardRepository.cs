@@ -191,6 +191,68 @@ namespace KanbanBoard.WebApi.Repositories
             return boardMember;
         }
 
+        public async Task<KanbanTask> GetBoardTask(int boardId, int taskId)
+        {
+            string query = @"select tasks.summary, tasks.description, tasks.tagColor,
+            listTasks.listId, users.id, users.name, users.email from tasks
+            left join assignments on assignments.taskId = tasks.id
+            left join users on users.id = assignments.userId
+            left join listTasks on listTasks.taskId = tasks.id
+            where tasks.boardId = @BoardId and tasks.id = @TaskId";
+
+            object queryParams = new
+            {
+                BoardId = boardId,
+                TaskId = taskId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            IEnumerable<KanbanTask> tasks = await connection.QueryAsync<KanbanTask, int, User, KanbanTask>(
+                query,
+                map: (task, listId, user) =>
+                {
+                    task.List = new KanbanList
+                    {
+                        Id = listId
+                    };
+                    task.Assignments.Add(new BoardMember
+                    {
+                        User = user
+                    });
+                    return task;
+                },
+                queryParams,
+                splitOn: "listId,id");
+            KanbanTask result = tasks
+                .GroupBy(task => taskId)
+                .Select(taskGroup =>
+                {
+                    KanbanTask task = taskGroup.FirstOrDefault();
+                    if (task is { })
+                    {
+                        task.Assignments = taskGroup
+                            .Select(_task => _task.Assignments.Single())
+                            .Where(member => member.User is { })
+                            .GroupBy(member => member.User.Id)
+                            .Select(memberGroup => memberGroup.FirstOrDefault())
+                            .ToList();
+                    }
+                    return task;
+                })
+                .FirstOrDefault();
+            if (result is { })
+            {
+                result.Id = taskId;
+                result.Board = new Board
+                {
+                    Id = boardId
+                };
+            }
+
+            return result;
+        }
+
         public async Task<Board> Insert(Board board)
         {
             string query = @"insert into boards (title, createdOn, modifiedOn, createdBy)
@@ -266,13 +328,22 @@ namespace KanbanBoard.WebApi.Repositories
 
         public async Task<KanbanTask> InsertKanbanTask(KanbanTask task)
         {
-            string query = @"insert into tasks (summary, description, tagColor, createdOn, modifiedOn)
-                values (@Summary, @Description, @TagColor, @CreatedOn, @ModifiedOn)
+            string query = @"insert into tasks (summary, description, tagColor, boardId, createdOn, modifiedOn)
+                values (@Summary, @Description, @TagColor, @BoardId, @CreatedOn, @ModifiedOn)
                 returning id;";
+            object insertParams = new
+            {
+                task.Summary,
+                task.Description,
+                task.TagColor,
+                task.CreatedOn,
+                task.ModifiedOn,
+                BoardId = task.Board.Id
+            };
 
             using IDbConnection connection = _connectionFactory.CreateConnection();
 
-            int taskId = await connection.ExecuteScalarAsync<int>(query, task);
+            int taskId = await connection.ExecuteScalarAsync<int>(query, insertParams);
 
             string taskListQuery = @"insert into listTasks (listId, taskId) values (@ListId, @TaskId);";
             object queryParams = new
