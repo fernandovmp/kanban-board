@@ -48,10 +48,12 @@ create table if not exists Tasks (
     summary text not null,
     description text not null,
     tagColor varchar(6) not null,
+    boardId serial not null,
     createdOn timestamp(2) not null,
     modifiedOn timestamp(2) not null,
 
-    constraint PK_Tasks_id primary key (id)
+    constraint PK_Tasks_id primary key (id),
+    constraint FK_Tasks_boardId foreign key (boardId) references Boards
 );
 
 create table if not exists ListTasks (
