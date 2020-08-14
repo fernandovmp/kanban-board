@@ -35,6 +35,7 @@ namespace KanbanBoard.WebApi
             services.AddDateTimeProvider();
             services.AddRepositories();
             services.SetupJwtAuth(configuration: Configuration);
+            services.SetupApiVersioning();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
