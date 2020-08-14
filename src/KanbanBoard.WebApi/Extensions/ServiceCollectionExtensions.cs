@@ -4,6 +4,7 @@ using KanbanBoard.WebApi.Configurations;
 using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -79,5 +80,17 @@ namespace KanbanBoard.WebApi.Extensions
                 });
             return services;
         }
+
+        public static IServiceCollection SetupApiVersioning(this IServiceCollection services) =>
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(majorVersion: 1, minorVersion: 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+            })
+            .AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+            });
     }
 }
