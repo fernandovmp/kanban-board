@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using KanbanBoard.WebApi.Models;
@@ -47,6 +48,96 @@ namespace KanbanBoard.WebApi.Repositories
             IEnumerable<Board> boards = await connection.QueryAsync<Board>(query, queryParams);
 
             return boards;
+        }
+
+        public async Task<Board> GetBoardByIdWithListsTasksAndMembers(int boardId)
+        {
+            string query = @"
+            select boards.title, users.id, users.name, users.email, boardMembers.isAdmin,
+            lists.id, lists.title, tasks.id, tasks.summary, tasks.tagColor, assignments.userId from boards
+            left join boardMembers on boardMembers.boardId = boards.Id
+            left join users on users.id = boardMembers.userId
+            left join lists on lists.boardId = boards.id
+            left join listTasks on listTasks.listId = lists.id
+            left join tasks on listTasks.taskId = tasks.id
+            left join assignments on assignments.taskId = tasks.id
+            where boards.id = @BoardId;
+            ";
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+
+            IEnumerable<Board> boards = await connection
+                .QueryAsync<Board, User, BoardMember, KanbanList, KanbanTask, int?, Board>(
+                    query,
+                    map: (board, user, member, list, task, userId) =>
+                    {
+                        if (member is { })
+                        {
+                            member.User = user;
+                        }
+                        board.Members.Add(member);
+                        if (list is { })
+                        {
+                            if (task is { } && userId.HasValue)
+                            {
+                                task.Assignments.Add(new BoardMember
+                                {
+                                    User = new User
+                                    {
+                                        Id = userId.Value
+                                    }
+                                });
+                            }
+                            list.Tasks.Add(task);
+                        }
+                        board.Lists.Add(list);
+                        return board;
+                    },
+                    queryParams,
+                    splitOn: "id,isAdmin,id,id,userId");
+            Board result = boards
+                .GroupBy(board => board.Id)
+                .Select(boardsGroup =>
+                {
+                    Board board = boardsGroup.FirstOrDefault();
+                    if (board is { })
+                    {
+                        board.Members = boardsGroup
+                            .Select(_board => _board.Members.Single())
+                            .Where(member => member is { })
+                            .GroupBy(member => member.User.Id)
+                            .Select(memberGroup => memberGroup.FirstOrDefault())
+                            .ToList();
+                        board.Lists = boardsGroup
+                            .Select(_board => _board.Lists.Single())
+                            .Where(list => list is { })
+                            .GroupBy(list => list.Id)
+                            .Select(listsGroup =>
+                            {
+                                KanbanList list = listsGroup.FirstOrDefault();
+                                if (list is { })
+                                {
+                                    list.Tasks = listsGroup
+                                        .Select(_list => _list.Tasks.Single())
+                                        .Where(task => task is { })
+                                        .ToList();
+                                }
+                                return list;
+                            })
+                            .ToList();
+                    }
+                    return board;
+                })
+                .FirstOrDefault();
+            if (result is { })
+            {
+                result.Id = boardId;
+            }
+            return result;
         }
 
         public async Task<KanbanList> GetBoardList(int boardId, int listId)

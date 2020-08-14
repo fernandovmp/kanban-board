@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../assets/add.svg';
 import { Input } from '../../components';
-import { TaskList } from '../../models';
-import { apiPost, isErrorResponse } from '../../services/kanbanApiService';
-import { kanbanServiceFactory } from '../../services/kanbanService';
+import { Board, TaskList } from '../../models';
+import {
+    apiGet,
+    apiPost,
+    isErrorResponse,
+} from '../../services/kanbanApiService';
 import { BoardHeader } from './BoardHeader';
 import {
     ButtonsWrapper,
@@ -18,12 +21,36 @@ import { TaskListView } from './TaskList';
 import { ListWrapper } from './TaskList/styles';
 
 export const BoardPage: React.FC = () => {
-    const [board] = useState(() => kanbanServiceFactory().getBoard(1));
+    const [board, setBoard] = useState<Board>();
     const [boardLists, setBoardLists] = useState<TaskList[]>([]);
     const [newListTitle, setNewListTitle] = useState('');
     const [isCreatingList, setIsCreatingList] = useState(false);
     const history = useHistory();
     const { boardId } = useParams();
+
+    useEffect(() => {
+        const fetchBoard = async () => {
+            const token = sessionStorage.getItem('jwtToken') ?? '';
+            const response = await apiGet<Board>({
+                uri: `v1/boards/${boardId}`,
+                bearerToken: token,
+            });
+            if (!response.data) {
+                return;
+            }
+            if (isErrorResponse(response.data)) {
+                if (
+                    response.data.status === 401 ||
+                    response.data.status === 403
+                ) {
+                    history.push('/login');
+                }
+                return;
+            }
+            setBoard(response.data);
+        };
+        fetchBoard();
+    }, [boardId, history]);
 
     useEffect(() => {
         setBoardLists(board?.lists ?? []);

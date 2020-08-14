@@ -75,5 +75,15 @@ namespace KanbanBoard.UnitTests.WebApi.Mocks
             .ReturnsAsync(returnValue);
             return mock;
         }
+
+        public static Mock<IBoardRepository> MockGetBoardByIdWithListsTasksAndMembers(
+            this Mock<IBoardRepository> mock,
+            Board returnValue)
+        {
+            mock
+            .Setup(repository => repository.GetBoardByIdWithListsTasksAndMembers(It.IsAny<int>()))
+            .ReturnsAsync(returnValue);
+            return mock;
+        }
     }
 }

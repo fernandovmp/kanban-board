@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import deleteIcon from '../../../assets/delete_outline.svg';
 import groupIcon from '../../../assets/group.svg';
@@ -18,6 +18,8 @@ export const BoardHeader: React.FC<IBoardHeaderProps> = ({ boardTitle }) => {
     const [showMembersModal, setShowMembersModal] = useState(false);
     const { boardId } = useParams();
     const history = useHistory();
+
+    useEffect(() => setTitle(boardTitle), [boardTitle]);
 
     const handleMembersClick = () => {
         setShowMembersModal(true);

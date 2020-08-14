@@ -60,15 +60,15 @@ create table if not exists ListTasks (
 
     constraint PK_ListTasks_listId_taskId primary key (listId, taskId),
     constraint FK_ListTasks_listId foreign key (listId) references Lists,
-    constraint FK_ListTasks_taskId foreign key (taskId) references Tasks,
+    constraint FK_ListTasks_taskId foreign key (taskId) references Tasks
 );
 
-create table if not exists MemberTasks (
+create table if not exists Assignments (
     userId serial not null,
     boardId serial not null,
     taskId serial not null,
 
-    constraint PK_MemberTasks_userId_boardId_taskId primary key (userId, boardId, taskId),
-    constraint FK_MemberTasks_userId_boardId foreign key (userId, boardId) references BoardMembers,
-    constraint FK_MemberTasks_taskId foreign key (taskId) references Tasks
+    constraint PK_Assignments_userId_boardId_taskId primary key (userId, boardId, taskId),
+    constraint FK_Assignments_userId_boardId foreign key (userId, boardId) references BoardMembers,
+    constraint FK_Assignments_taskId foreign key (taskId) references Tasks
 );
