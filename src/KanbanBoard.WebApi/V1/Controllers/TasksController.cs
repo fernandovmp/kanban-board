@@ -47,8 +47,14 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
 
+            if (task is null)
+            {
+                return V1NotFound("Task not found");
+            }
+
             var taskViewModel = new BoardTaskViewModel
             {
+                Id = task.Id,
                 Summary = task.Summary,
                 Description = task.Description,
                 TagColor = task.TagColor,
