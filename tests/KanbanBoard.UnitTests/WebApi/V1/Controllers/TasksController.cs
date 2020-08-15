@@ -13,7 +13,7 @@ using Xunit;
 
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers
 {
-    public class TasksControllerTests : ControllerTestsBase
+    public class _TasksControllerTests : ControllerTestsBase
     {
         [Fact]
         public async Task CreateShouldReturnCreatedAtWhenSuccess()

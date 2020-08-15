@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { Route, useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../assets/add.svg';
 import { Input } from '../../components';
 import { Board, TaskList } from '../../models';
@@ -17,6 +17,7 @@ import {
     SaveButton,
     TaskListsWrapper,
 } from './styles';
+import { TaskDetailModal } from './TaskDetailModal';
 import { TaskListView } from './TaskList';
 import { ListWrapper } from './TaskList/styles';
 
@@ -117,6 +118,11 @@ export const BoardPage: React.FC = () => {
                     </NewListButton>
                 )}
             </TaskListsWrapper>
+            <Route
+                exact
+                path="/board/:boardId/task/:taskId"
+                component={TaskDetailModal}
+            />
         </Main>
     );
 };

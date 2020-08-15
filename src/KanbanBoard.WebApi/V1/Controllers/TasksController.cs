@@ -30,9 +30,44 @@ namespace KanbanBoard.WebApi.V1.Controllers
         }
 
         [HttpGet("{taskId}")]
-        public Task<ActionResult> Show(int boardId, int taskId)
+        public async Task<ActionResult<BoardTaskViewModel>> Show(int boardId, int taskId)
         {
-            throw new NotImplementedException();
+            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember member = await _boardRepository.GetBoardMember(boardId, userId);
+            if (member is null)
+            {
+                return Forbid();
+            }
+
+            KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
+
+            if (task is null)
+            {
+                return V1NotFound("Task not found");
+            }
+
+            var taskViewModel = new BoardTaskViewModel
+            {
+                Id = task.Id,
+                Summary = task.Summary,
+                Description = task.Description,
+                TagColor = task.TagColor,
+                List = task.List.Id,
+                Assignments = task.Assignments.Select(member => new UserViewModel
+                {
+                    Id = member.User.Id,
+                    Name = member.User.Name,
+                    Email = member.User.Email
+                })
+            };
+
+            return Ok(taskViewModel);
         }
 
         [HttpPost]

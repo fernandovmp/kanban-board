@@ -11,6 +11,7 @@ namespace KanbanBoard.WebApi.Repositories
         Task<Board> GetBoardByIdWithListsTasksAndMembers(int boardId);
         Task<KanbanList> GetBoardList(int boardId, int listId);
         Task<BoardMember> GetBoardMember(int boardId, int userId);
+        Task<KanbanTask> GetBoardTask(int boardId, int taskId);
         Task<Board> Insert(Board board);
         Task InsertBoardMember(BoardMember boardMember);
         Task<KanbanList> InsertKanbanList(KanbanList list);
