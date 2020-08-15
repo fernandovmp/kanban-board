@@ -71,7 +71,7 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             {
                 Board = board,
                 User = defaultUser,
-                IsAdmin = false,
+                IsAdmin = true,
                 CreatedOn = defaultDate,
                 ModifiedOn = defaultDate
             };
