@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using KanbanBoard.UnitTests.WebApi.Fakes;
@@ -12,128 +13,112 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
 {
     [Trait("Category", "TasksController")]
-    public class ShowTests : ControllerTestsBase
+    public class CreateTests : ControllerTestsBase
     {
         private readonly IBoardRepository _fakeBoardRepository;
         private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _controllerContext;
+        private readonly ControllerContext _fakeControllerContext;
+        private readonly PostTaskViewModel _validPostTaskViewModel;
 
-        public ShowTests()
+        public CreateTests()
         {
             _fakeBoardRepository = new FakeBoardRepository();
             _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _controllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
+            _validPostTaskViewModel = new PostTaskViewModel
+            {
+                Summary = "Task",
+                Description = "Important Task",
+                AssignedTo = new List<int>(),
+                List = 1,
+                TagColor = "FFFFFF"
+            };
         }
 
         [Fact]
-        public async Task ShouldReturnOkWhenSuccess()
+        public async Task ShouldReturnCreatedAtWhenSuccess()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 1;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
-            result.Result.Should().BeOfType<OkObjectResult>();
+            result.Result.Should().BeOfType<CreatedAtActionResult>();
         }
 
         [Fact]
-        public async Task ShouldReturnBoardTaskViewModelWhenSuccess()
+        public async Task ShouldReturnKanbanTaskViewModelWhenSuccess()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 1;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
             result
                 .Result
-                .As<OkObjectResult>()
+                .As<CreatedAtActionResult>()
                 .Value
                 .Should()
-                .BeOfType<BoardTaskViewModel>();
+                .BeOfType<KanbanTaskViewModel>();
         }
 
         [Fact]
-        public async Task ShouldNotReturnNullViewModelWhenSuccess()
+        public async Task ShouldReturnKanbanTaskWithIdWhenSuccess()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 1;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
             result
                 .Result
-                .As<OkObjectResult>()
+                .As<CreatedAtActionResult>()
                 .Value
-                .As<BoardTaskViewModel>()
-                .Should()
-                .NotBeNull();
-        }
-
-        [Fact]
-        public async Task ShouldReturnBoardTaskViewModelWithIdWhenSuccess()
-        {
-            int boardId = 1;
-            int taskId = 1;
-            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
-            var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
-            {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
-            };
-
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
-
-            result
-                .Result
-                .As<OkObjectResult>()
-                .Value
-                .As<BoardTaskViewModel>()
+                .As<KanbanTaskViewModel>()
                 .Id
                 .Should()
-                .Be(1);
+                .NotBe(0);
         }
 
         [Fact]
         public async Task ShouldReturnNotFoundWhenBoardNotExists()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 10;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
             result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
@@ -141,42 +126,42 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
         [Fact]
         public async Task ShouldReturnErrorViewModelWhenBoardNotExists()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 10;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
             result
                 .Result
                 .As<NotFoundObjectResult>()
                 .Value
                 .Should()
-                .BeAssignableTo<ErrorViewModel>();
+                .BeOfType<ErrorViewModel>();
         }
 
         [Fact]
         public async Task ShouldReturnErrorViewModelWithStatus404WhenBoardNotExists()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 10;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
             result
                 .Result
@@ -191,12 +176,10 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
         [Fact]
         public async Task ShouldReturnForbidWhenUserIsNotMemberOfTheBoard()
         {
+            PostTaskViewModel model = _validPostTaskViewModel;
             int boardId = 1;
-            int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
-
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
-
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
@@ -205,78 +188,35 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
             result.Result.Should().BeOfType<ForbidResult>();
         }
 
         [Fact]
-        public async Task ShouldReturnNotFoundWhenTaskNotExists()
+        public async Task CreateShouldReturnForbidWhenListNotBelongsToTheBoard()
         {
+            var model = new PostTaskViewModel
+            {
+                Summary = "Task",
+                Description = "Important Task",
+                AssignedTo = new List<int>(),
+                List = 10,
+                TagColor = "FFFFFF"
+            };
             int boardId = 1;
-            int taskId = 10;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
                 _fakeBoardRepository,
                 fakeDateTimeProvider.Object)
             {
-                ControllerContext = _controllerContext,
+                ControllerContext = _fakeControllerContext,
                 Url = _fakeUrlHelper
             };
 
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
-            result.Result.Should().BeOfType<NotFoundObjectResult>();
-        }
-
-        [Fact]
-        public async Task ShouldReturnErrorViewModelWhenTaskNotExists()
-        {
-            int boardId = 1;
-            int taskId = 10;
-            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
-            var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
-            {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
-            };
-
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
-
-            result
-                .Result
-                .As<NotFoundObjectResult>()
-                .Value
-                .Should()
-                .BeAssignableTo<ErrorViewModel>();
-        }
-
-        [Fact]
-        public async Task ShouldReturnErrorViewModelWithStatus404WhenTaskNotExists()
-        {
-            int boardId = 1;
-            int taskId = 10;
-            var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
-            var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
-            {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
-            };
-
-            ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
-
-            result
-                .Result
-                .As<NotFoundObjectResult>()
-                .Value
-                .As<ErrorViewModel>()
-                .Status
-                .Should()
-                .Be(404);
+            result.Result.Should().BeOfType<ForbidResult>();
         }
     }
 }
