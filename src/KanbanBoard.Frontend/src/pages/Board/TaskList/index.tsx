@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
-import { EditableContent } from '../../../components';
 import { TaskList } from '../../../models';
 import { apiPost, isErrorResponse } from '../../../services/kanbanApiService';
 import {
     Button,
     ButtonsWrapper,
     CancelButton,
+    EditableListTitle,
     ListTitle,
     ListWrapper,
     NewTaskInput,
@@ -63,12 +63,12 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
 
     return (
         <ListWrapper>
-            <EditableContent
+            <EditableListTitle
                 onEndEdit={handleEditListTitle}
                 initialInputValue={listTitle}
             >
                 <ListTitle>{listTitle}</ListTitle>
-            </EditableContent>
+            </EditableListTitle>
             {tasks.map((task) => (
                 <TaskCard key={task.id} task={task} />
             ))}

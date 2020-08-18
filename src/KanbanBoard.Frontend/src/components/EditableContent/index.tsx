@@ -3,12 +3,14 @@ import { Input } from '..';
 
 interface IEditableContentProps {
     onEndEdit(value: string): void;
+    className?: string;
     initialInputValue?: string;
 }
 
 export const EditableContent: React.FC<IEditableContentProps> = ({
     initialInputValue,
     onEndEdit,
+    className,
     children,
 }) => {
     const [inputValue, setInputValue] = useState('');
@@ -25,7 +27,7 @@ export const EditableContent: React.FC<IEditableContentProps> = ({
     };
 
     return (
-        <div onClick={handleBeginEditBoardTitle}>
+        <div className={className} onClick={handleBeginEditBoardTitle}>
             {isEditing ? (
                 <Input
                     value={inputValue}
