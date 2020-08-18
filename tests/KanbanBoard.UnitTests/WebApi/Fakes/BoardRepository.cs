@@ -164,5 +164,7 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             .Max(task => task.Id);
 
         public Task Update(Board board) => Task.CompletedTask;
+
+        public Task UpdateKanbanList(KanbanList list) => Task.CompletedTask;
     }
 }

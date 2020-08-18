@@ -374,5 +374,13 @@ namespace KanbanBoard.WebApi.Repositories
 
             await connetion.ExecuteAsync(query, board);
         }
+
+        public async Task UpdateKanbanList(KanbanList list)
+        {
+            string query = @"update lists set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
+            using IDbConnection connetion = _connectionFactory.CreateConnection();
+
+            await connetion.ExecuteAsync(query, list);
+        }
     }
 }

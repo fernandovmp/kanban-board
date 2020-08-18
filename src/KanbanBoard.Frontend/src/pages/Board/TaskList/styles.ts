@@ -1,5 +1,11 @@
 import styled from 'styled-components';
-import { Card, DefaultButton, PrimaryButton } from '../../../components';
+import {
+    Card,
+    DefaultButton,
+    EditableContent,
+    Input,
+    PrimaryButton,
+} from '../../../components';
 
 export const ListWrapper = styled(Card)`
     background: #f0f0f0;
@@ -49,4 +55,10 @@ export const SaveButton = styled(PrimaryButton)`
     width: 80px;
     font-size: small;
     justify-content: center;
+`;
+
+export const EditableListTitle = styled(EditableContent)`
+    ${Input} {
+        width: 100%;
+    }
 `;
