@@ -82,5 +82,42 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             return CreatedAtAction(actionName: nameof(Show), routeValues, value: kanbanListViewModel);
         }
+
+        [HttpPut("{listId}")]
+        public async Task<ActionResult> Update(PostListViewModel model, int boardId, int listId)
+        {
+            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember member = await _boardRepository.GetBoardMember(boardId, userId);
+            if (member is null)
+            {
+                return Forbid();
+            }
+
+            KanbanList storedList = await _boardRepository.GetBoardList(boardId, listId);
+            if (storedList is null)
+            {
+                return V1NotFound("List not found");
+            }
+
+            if (storedList.Title != model.Title)
+            {
+                DateTime modifiedDate = _dateTimeProvider.UtcNow();
+                var kanbanList = new KanbanList
+                {
+                    Id = listId,
+                    Title = model.Title,
+                    ModifiedOn = modifiedDate,
+                };
+                await _boardRepository.UpdateKanbanList(kanbanList);
+            }
+
+            return NoContent();
+        }
     }
 }

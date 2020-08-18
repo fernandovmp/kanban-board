@@ -17,5 +17,6 @@ namespace KanbanBoard.WebApi.Repositories
         Task<KanbanList> InsertKanbanList(KanbanList list);
         Task<KanbanTask> InsertKanbanTask(KanbanTask task);
         Task Update(Board board);
+        Task UpdateKanbanList(KanbanList list);
     }
 }
