@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
 import { TaskList } from '../../../models';
-import { apiPost, isErrorResponse } from '../../../services/kanbanApiService';
+import {
+    apiPost,
+    apiPut,
+    isErrorResponse,
+} from '../../../services/kanbanApiService';
 import {
     Button,
     ButtonsWrapper,
@@ -56,9 +60,24 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
         setTasks([...tasks, newTask]);
     };
 
-    const handleEditListTitle = (value: string) => {
-        if (value.trim() === '') return;
-        setListTitle(value.trim());
+    const handleEditListTitle = async (value: string) => {
+        const newTitle = value.trim();
+        if (newTitle === '') return;
+        setListTitle(newTitle);
+        const token = sessionStorage.getItem('jwtToken') ?? '';
+        const response = await apiPut({
+            uri: `v1/boards/${boardId}/lists/${taskList.id}`,
+            body: {
+                title: newTitle,
+            },
+            bearerToken: token,
+        });
+        if (response.data === undefined) return;
+        if (isErrorResponse(response.data)) {
+            if (response.data.status === 401 || response.data.status === 403) {
+                history.push('/login');
+            }
+        }
     };
 
     return (
