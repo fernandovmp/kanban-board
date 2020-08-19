@@ -32,6 +32,31 @@ namespace KanbanBoard.WebApi.Repositories
             return exists;
         }
 
+        public async Task<IEnumerable<BoardMember>> GetAllBoardMembers(int boardId)
+        {
+            string query = @"select users.id, users.name, users.email, boardMembers.isAdmin from boardMembers
+            inner join users on users.id = boardMembers.userId
+            where boardMembers.boardId = @BoardId";
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            IEnumerable<BoardMember> boardMembers = await connection.QueryAsync<User, BoardMember, BoardMember>(
+                query,
+                map: (user, member) =>
+                {
+                    member.User = user;
+                    return member;
+                },
+                queryParams,
+                splitOn: "id,isAdmin"
+            );
+
+            return boardMembers;
+        }
+
         public async Task<IEnumerable<Board>> GetAllUserBoards(int userId)
         {
             string query = @"

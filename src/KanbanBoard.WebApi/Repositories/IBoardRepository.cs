@@ -7,6 +7,7 @@ namespace KanbanBoard.WebApi.Repositories
     public interface IBoardRepository
     {
         Task<bool> ExistsBoard(int boardId);
+        Task<IEnumerable<BoardMember>> GetAllBoardMembers(int boardId);
         Task<IEnumerable<Board>> GetAllUserBoards(int userId);
         Task<Board> GetBoardByIdWithListsTasksAndMembers(int boardId);
         Task<KanbanList> GetBoardList(int boardId, int listId);

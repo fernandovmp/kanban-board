@@ -166,5 +166,10 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
         public Task Update(Board board) => Task.CompletedTask;
 
         public Task UpdateKanbanList(KanbanList list) => Task.CompletedTask;
+
+        public Task<IEnumerable<BoardMember>> GetAllBoardMembers(int boardId) => Async(_boards
+            .FirstOrDefault(board => board.Id == boardId)
+            .Members
+            .AsEnumerable());
     }
 }
