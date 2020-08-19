@@ -20,6 +20,18 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
                     Name = "Nero",
                     Email = "email@example.com",
                     Password = "SecretPassword"
+                },
+                new User {
+                    Id = 2,
+                    Name = "Kanban",
+                    Email = "kanban@example.com",
+                    Password = "SecretPassword"
+                },
+                new User {
+                    Id = 3,
+                    Name = "Default",
+                    Email = "default@example.com",
+                    Password = "SecretPassword"
                 }
             };
         }

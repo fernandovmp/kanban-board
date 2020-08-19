@@ -58,8 +58,52 @@ namespace KanbanBoard.WebApi.V1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BoardViewModel>> Create(PostBoardViewModel model)
+        public async Task<ActionResult> Create(
+            PostBoardMemberViewModel model,
+            int boardId,
+            [FromServices] IUserRepository userRepository)
         {
+            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            if (userMember is null || !userMember.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            User newMemberUser = await userRepository.GetByEmailWithPassword(model.Email);
+            if (newMemberUser is null)
+            {
+                return V1NotFound("User not found");
+            }
+
+            bool alreadyIsMember = await _boardRepository.GetBoardMember(boardId, newMemberUser.Id) is { };
+            if (alreadyIsMember)
+            {
+                return NoContent();
+            }
+
+            DateTime createdDate = _dateTimeProvider.UtcNow();
+            var member = new BoardMember
+            {
+                Board = new Board
+                {
+                    Id = boardId
+                },
+                User = new User
+                {
+                    Id = newMemberUser.Id,
+                },
+                IsAdmin = model.IsAdmin,
+                CreatedOn = createdDate,
+                ModifiedOn = createdDate
+            };
+            await _boardRepository.InsertBoardMember(member);
+
             return NoContent();
         }
 
