@@ -110,6 +110,35 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpDelete("{memberId}")]
         public async Task<ActionResult> Delete(int boardId, int memberId)
         {
+            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            if (userMember is null || !userMember.IsAdmin)
+            {
+                return Forbid();
+            }
+            int membersCount = await _boardRepository.CountBoardMembers(boardId);
+            if (membersCount <= 1)
+            {
+                return V1BadRequest("Board require at least one member");
+            }
+
+            var member = new BoardMember
+            {
+                Board = new Board
+                {
+                    Id = boardId
+                },
+                User = new User
+                {
+                    Id = memberId
+                }
+            };
+            await _boardRepository.RemoveBoardMember(member);
             return NoContent();
         }
     }

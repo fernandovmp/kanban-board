@@ -17,6 +17,19 @@ namespace KanbanBoard.WebApi.Repositories
             _connectionFactory = connectionFactory;
         }
 
+        public async Task<int> CountBoardMembers(int boardId)
+        {
+            string query = @"select Count(*) from boardMembers where boardId = @BoardId;";
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            int count = await connection.ExecuteScalarAsync<int>(query, queryParams);
+            return count;
+        }
+
         public async Task<bool> ExistsBoard(int boardId)
         {
             string query = @"select 1 from boards where id = @Id;";
@@ -390,6 +403,20 @@ namespace KanbanBoard.WebApi.Repositories
                 CreatedOn = task.CreatedOn,
                 ModifiedOn = task.ModifiedOn
             };
+        }
+
+        public async Task RemoveBoardMember(BoardMember boardMember)
+        {
+            string query = @"delete from assignments where boardId = @BoardId and userId = @UserId;
+            delete from boardMembers where boardId = @BoardId and userId = @UserId;";
+            object queryParams = new
+            {
+                UserId = boardMember.User.Id,
+                BoardId = boardMember.Board.Id
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, queryParams);
         }
 
         public async Task Update(Board board)

@@ -176,5 +176,12 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             .FirstOrDefault(board => board.Id == boardId)
             .Members
             .AsEnumerable());
+
+        public Task RemoveBoardMember(BoardMember boardMember) => Task.CompletedTask;
+
+        public Task<int> CountBoardMembers(int boardId) => Async(_boards
+            .FirstOrDefault(board => board.Id == boardId)
+            .Members
+            .Count);
     }
 }
