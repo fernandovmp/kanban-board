@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
 import closeIcon from '../../../assets/close.svg';
 import removeIcon from '../../../assets/remove.svg';
 import { Modal } from '../../../components';
+import { BoardMember } from '../../../models';
+import { apiGet, isErrorResponse } from '../../../services/kanbanApiService';
 import {
     AddMemberWrapper,
     CloseButton,
@@ -20,9 +23,37 @@ interface IMembersModalProps {
 
 export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
     const [userEmail, setUserEmail] = useState('');
+    const [members, setMembers] = useState<BoardMember[]>([]);
+    const [token] = useState(sessionStorage.getItem('jwtToken') ?? '');
+    const history = useHistory();
+    const { boardId } = useParams();
+
+    useEffect(() => {
+        const fetchMembers = async () => {
+            const response = await apiGet<BoardMember[]>({
+                uri: `v1/boards/${boardId}/members`,
+                bearerToken: token,
+            });
+            if (!response.data) {
+                onClose();
+                return;
+            }
+            if (isErrorResponse(response.data)) {
+                if (
+                    response.data.status === 401 ||
+                    response.data.status === 403
+                ) {
+                    history.push('/login');
+                }
+                return;
+            }
+            setMembers(response.data);
+        };
+        fetchMembers();
+    }, [boardId, history, token, onClose]);
 
     const handleAddMember = () => {};
-    const handleRemoveMember = () => {};
+    const handleRemoveMember = (member: BoardMember) => {};
 
     return (
         <Modal
@@ -49,14 +80,16 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
             }
         >
             <MembersList>
-                <MemberItem>
-                    <MemberCard>Name (email@example.com)</MemberCard>
-                    <IconButton
-                        src={removeIcon}
-                        alt="Remove"
-                        onClick={handleRemoveMember}
-                    />
-                </MemberItem>
+                {members.map((member) => (
+                    <MemberItem key={member.id}>
+                        <MemberCard>{`${member.name} (${member.email})`}</MemberCard>
+                        <IconButton
+                            src={removeIcon}
+                            alt="Remove"
+                            onClick={(e) => handleRemoveMember(member)}
+                        />
+                    </MemberItem>
+                ))}
             </MembersList>
         </Modal>
     );
