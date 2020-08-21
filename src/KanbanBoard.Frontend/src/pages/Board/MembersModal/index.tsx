@@ -6,6 +6,7 @@ import removeIcon from '../../../assets/remove.svg';
 import { Modal } from '../../../components';
 import { BoardMember } from '../../../models';
 import {
+    apiDelete,
     apiGet,
     apiPost,
     isErrorResponse,
@@ -82,7 +83,26 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
             return;
         }
     };
-    const handleRemoveMember = (member: BoardMember) => {};
+    const handleRemoveMember = async (member: BoardMember) => {
+        const response = await apiDelete({
+            uri: `v1/boards/${boardId}/members/${member.id}`,
+            bearerToken: token,
+        });
+        if (!response.data) {
+            setMembers(members.filter((_member) => _member.id !== member.id));
+            return;
+        }
+        if (isErrorResponse(response.data)) {
+            if (response.data.status === 401) {
+                history.push('/login');
+                return;
+            }
+            if (response.data.status === 404) {
+                setError(response.data.message);
+            }
+            return;
+        }
+    };
 
     return (
         <Modal

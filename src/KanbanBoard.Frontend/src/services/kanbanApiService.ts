@@ -59,6 +59,10 @@ export async function apiPut<TResponse = any>(params: IApiActionParams) {
     return await _apiAction<TResponse>({ ...params, method: 'PUT' });
 }
 
+export async function apiDelete<TResponse = any>(params: IApiActionParams) {
+    return await _apiAction<TResponse>({ ...params, method: 'DELETE' });
+}
+
 async function _apiAction<TResponse = any>(
     params: IApiFetchParams
 ): Promise<IApiResponse<TResponse>> {
