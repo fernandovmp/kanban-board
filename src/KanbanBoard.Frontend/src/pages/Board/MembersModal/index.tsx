@@ -5,11 +5,16 @@ import closeIcon from '../../../assets/close.svg';
 import removeIcon from '../../../assets/remove.svg';
 import { Modal } from '../../../components';
 import { BoardMember } from '../../../models';
-import { apiGet, isErrorResponse } from '../../../services/kanbanApiService';
+import {
+    apiGet,
+    apiPost,
+    isErrorResponse,
+} from '../../../services/kanbanApiService';
 import {
     AddMemberWrapper,
     CloseButton,
     EmailInput,
+    ErrorMessage,
     Header,
     IconButton,
     MemberCard,
@@ -25,6 +30,7 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
     const [userEmail, setUserEmail] = useState('');
     const [members, setMembers] = useState<BoardMember[]>([]);
     const [token] = useState(sessionStorage.getItem('jwtToken') ?? '');
+    const [error, setError] = useState('');
     const history = useHistory();
     const { boardId } = useParams();
 
@@ -52,7 +58,30 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
         fetchMembers();
     }, [boardId, history, token, onClose]);
 
-    const handleAddMember = () => {};
+    const handleAddMember = async () => {
+        setError('');
+        const response = await apiPost({
+            uri: `v1/boards/${boardId}/members`,
+            body: {
+                email: userEmail,
+                isAdmin: false,
+            },
+            bearerToken: token,
+        });
+        if (!response.data) {
+            return;
+        }
+        if (isErrorResponse(response.data)) {
+            if (response.data.status === 401 || response.data.status === 403) {
+                history.push('/login');
+                return;
+            }
+            if (response.data.status === 404) {
+                setError(response.data.message);
+            }
+            return;
+        }
+    };
     const handleRemoveMember = (member: BoardMember) => {};
 
     return (
@@ -76,6 +105,7 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
                             onClick={handleAddMember}
                         />
                     </AddMemberWrapper>
+                    {error && <ErrorMessage>{error}</ErrorMessage>}
                 </Header>
             }
         >
