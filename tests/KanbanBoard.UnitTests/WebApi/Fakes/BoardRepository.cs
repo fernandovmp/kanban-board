@@ -14,13 +14,8 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
         public FakeBoardRepository()
         {
             var defaultDate = new DateTime(2020, 1, 1);
-            var defaultUser = new User
-            {
-                Id = 1,
-                Name = "Nero",
-                Email = "email@example.com",
-                Password = "SecretPassword"
-            };
+            FakeUserRepository userRepository = new FakeUserRepository();
+            User defaultUser = userRepository.GetById(1).Result;
             _boards = new List<Board>();
             var board = new Board
             {
@@ -75,12 +70,22 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
                 CreatedOn = defaultDate,
                 ModifiedOn = defaultDate
             };
+            User user = userRepository.GetById(2).Result;
+            var member2 = new BoardMember
+            {
+                Board = board,
+                User = user,
+                IsAdmin = false,
+                CreatedOn = defaultDate,
+                ModifiedOn = defaultDate
+            };
             task.Assignments.Add(member);
             list.Tasks.Add(task);
             list.Tasks.Add(task2);
             board.Lists.Add(list);
             board.Lists.Add(list2);
             board.Members.Add(member);
+            board.Members.Add(member2);
             _boards.Add(board);
         }
 
@@ -166,5 +171,17 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
         public Task Update(Board board) => Task.CompletedTask;
 
         public Task UpdateKanbanList(KanbanList list) => Task.CompletedTask;
+
+        public Task<IEnumerable<BoardMember>> GetAllBoardMembers(int boardId) => Async(_boards
+            .FirstOrDefault(board => board.Id == boardId)
+            .Members
+            .AsEnumerable());
+
+        public Task RemoveBoardMember(BoardMember boardMember) => Task.CompletedTask;
+
+        public Task<int> CountBoardMembers(int boardId) => Async(_boards
+            .FirstOrDefault(board => board.Id == boardId)
+            .Members
+            .Count);
     }
 }
