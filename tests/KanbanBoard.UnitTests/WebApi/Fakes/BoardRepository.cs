@@ -183,5 +183,15 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             .FirstOrDefault(board => board.Id == boardId)
             .Members
             .Count);
+
+        public Task CreateAssignment(int taskId, BoardMember member) => Task.CompletedTask;
+
+        public Task<bool> ExistsAssignment(int taskId, BoardMember member) => Async(_boards
+            .FirstOrDefault(board => board.Id == member.Board.Id)
+            ?.Lists
+            .SelectMany(list => list.Tasks)
+            .FirstOrDefault(task => task.Id == taskId)
+            ?.Assignments
+            .Any(assignment => assignment.User.Id == member.User.Id) ?? false);
     }
 }

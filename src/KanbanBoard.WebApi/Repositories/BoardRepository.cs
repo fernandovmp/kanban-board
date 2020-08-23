@@ -30,6 +30,35 @@ namespace KanbanBoard.WebApi.Repositories
             return count;
         }
 
+        public async Task CreateAssignment(int taskId, BoardMember member)
+        {
+            string query = @"insert into assignments (boardId, userId, taskId) values (@BoardId, @UserId, @TaskId);";
+            object queryParams = new
+            {
+                BoardId = member.Board.Id,
+                UserId = member.User.Id,
+                TaskId = taskId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, queryParams);
+        }
+
+        public async Task<bool> ExistsAssignment(int taskId, BoardMember member)
+        {
+            string query = @"select 1 from assignments where taskId = @TaskId and boardId = @BoardId and userId = @UserId;";
+            object queryParams = new
+            {
+                BoardId = member.Board.Id,
+                UserId = member.User.Id,
+                TaskId = taskId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            bool exists = await connection.ExecuteScalarAsync<bool>(query, queryParams);
+            return exists;
+        }
+
         public async Task<bool> ExistsBoard(int boardId)
         {
             string query = @"select 1 from boards where id = @Id;";
