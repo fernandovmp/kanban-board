@@ -189,8 +189,23 @@ namespace KanbanBoard.WebApi.Repositories
                                 if (list is { })
                                 {
                                     list.Tasks = listsGroup
-                                        .Select(_list => _list.Tasks.Single())
+                                        .SelectMany(_list => _list.Tasks)
                                         .Where(task => task is { })
+                                        .GroupBy(task => task.Id)
+                                        .Select(taskGroup =>
+                                        {
+                                            KanbanTask task = taskGroup.FirstOrDefault();
+                                            if (task is { })
+                                            {
+                                                task.Assignments = taskGroup
+                                                    .SelectMany(_task => task.Assignments)
+                                                    .Where(assignment => assignment is { })
+                                                    .GroupBy(assignment => assignment.User.Id)
+                                                    .Select(assignmentGroup => assignmentGroup.FirstOrDefault())
+                                                    .ToList();
+                                            }
+                                            return task;
+                                        })
                                         .ToList();
                                 }
                                 return list;
