@@ -67,6 +67,11 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 Email = member.User.Email,
                 IsAdmin = member.IsAdmin
             });
+
+            Func<BoardMember, string> getUserLink = member => Url
+                .ActionLink(action: nameof(UsersController.Show),
+                            controller: "Users",
+                            values: new { version = "1", userId = member.User.Id });
             IEnumerable<BoardListViewModel> listsViewModel = board.Lists.Select(list => new BoardListViewModel
             {
                 Id = list.Id,
@@ -77,9 +82,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                     Description = task.Description ?? "",
                     Summary = task.Summary,
                     TagColor = task.TagColor,
-                    AssignedTo = task.Assignments
-                        .Select(member => Url
-                            .ActionLink(action: nameof(UsersController.Show), controller: "Users", new { userId = member.User.Id }))
+                    AssignedTo = task.Assignments.Select(getUserLink)
                 })
             });
             var boardViewModel = new DetailedBoardViewModel

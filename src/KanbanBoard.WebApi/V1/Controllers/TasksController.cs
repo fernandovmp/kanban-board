@@ -117,6 +117,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
             };
             object listLinkValues = new
             {
+                version = "1",
                 boardId,
                 listId = createdTask.List.Id
             };
