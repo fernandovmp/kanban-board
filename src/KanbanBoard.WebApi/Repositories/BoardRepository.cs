@@ -135,6 +135,10 @@ namespace KanbanBoard.WebApi.Repositories
                 BoardId = boardId
             };
 
+            Board boardCache = null;
+            Dictionary<int, KanbanList> listCache = new Dictionary<int, KanbanList>();
+            Dictionary<int, KanbanTask> taskCache = new Dictionary<int, KanbanTask>();
+
             using IDbConnection connection = _connectionFactory.CreateConnection();
 
             IEnumerable<Board> boards = await connection
@@ -142,16 +146,34 @@ namespace KanbanBoard.WebApi.Repositories
                     query,
                     map: (board, user, member, list, task, userId) =>
                     {
-                        if (member is { })
+                        if (boardCache is null)
+                        {
+                            boardCache = board;
+                        }
+                        if (member is { } && !boardCache.Members.Any(_member => _member.User.Id == user.Id))
                         {
                             member.User = user;
+                            boardCache.Members.Add(member);
                         }
-                        board.Members.Add(member);
                         if (list is { })
                         {
-                            if (task is { } && userId.HasValue)
+                            if (!listCache.ContainsKey(list.Id))
                             {
-                                task.Assignments.Add(new BoardMember
+                                listCache.Add(list.Id, list);
+                            }
+                            board.Lists.Add(list);
+                        }
+                        if (task is { })
+                        {
+                            task.List = list;
+                            if (!taskCache.ContainsKey(task.Id))
+                            {
+                                taskCache.Add(task.Id, task);
+                            }
+                            KanbanTask cachedTask = taskCache[task.Id];
+                            if (userId.HasValue && !cachedTask.Assignments.Any(assignedMember => assignedMember.User.Id == userId))
+                            {
+                                cachedTask.Assignments.Add(new BoardMember
                                 {
                                     User = new User
                                     {
@@ -159,67 +181,31 @@ namespace KanbanBoard.WebApi.Repositories
                                     }
                                 });
                             }
-                            list.Tasks.Add(task);
                         }
-                        board.Lists.Add(list);
+
                         return board;
                     },
                     queryParams,
                     splitOn: "id,isAdmin,id,id,userId");
-            Board result = boards
-                .GroupBy(board => board.Id)
-                .Select(boardsGroup =>
-                {
-                    Board board = boardsGroup.FirstOrDefault();
-                    if (board is { })
-                    {
-                        board.Members = boardsGroup
-                            .Select(_board => _board.Members.Single())
-                            .Where(member => member is { })
-                            .GroupBy(member => member.User.Id)
-                            .Select(memberGroup => memberGroup.FirstOrDefault())
-                            .ToList();
-                        board.Lists = boardsGroup
-                            .Select(_board => _board.Lists.Single())
-                            .Where(list => list is { })
-                            .GroupBy(list => list.Id)
-                            .Select(listsGroup =>
-                            {
-                                KanbanList list = listsGroup.FirstOrDefault();
-                                if (list is { })
-                                {
-                                    list.Tasks = listsGroup
-                                        .SelectMany(_list => _list.Tasks)
-                                        .Where(task => task is { })
-                                        .GroupBy(task => task.Id)
-                                        .Select(taskGroup =>
-                                        {
-                                            KanbanTask task = taskGroup.FirstOrDefault();
-                                            if (task is { })
-                                            {
-                                                task.Assignments = taskGroup
-                                                    .SelectMany(_task => task.Assignments)
-                                                    .Where(assignment => assignment is { })
-                                                    .GroupBy(assignment => assignment.User.Id)
-                                                    .Select(assignmentGroup => assignmentGroup.FirstOrDefault())
-                                                    .ToList();
-                                            }
-                                            return task;
-                                        })
-                                        .ToList();
-                                }
-                                return list;
-                            })
-                            .ToList();
-                    }
-                    return board;
-                })
-                .FirstOrDefault();
-            if (result is { })
+            if (boardCache is null)
             {
-                result.Id = boardId;
+                return boardCache;
             }
-            return result;
+
+            IEnumerable<KanbanList> lists = listCache.Select(item => item.Value);
+            IEnumerable<KanbanTask> tasks = taskCache.Select(item => item.Value);
+            IEnumerable<KanbanList> boardLists = lists.GroupJoin(
+                inner: tasks,
+                outerKeySelector: list => list.Id,
+                innerKeySelector: task => task.List.Id,
+                resultSelector: (list, tasks) =>
+                {
+                    list.Tasks = tasks.ToList();
+                    return list;
+                });
+            boardCache.Lists = boardLists.ToList();
+            boardCache.Id = boardId;
+            return boardCache;
         }
 
         public async Task<KanbanList> GetBoardList(int boardId, int listId)
