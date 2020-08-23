@@ -193,5 +193,7 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             .FirstOrDefault(task => task.Id == taskId)
             ?.Assignments
             .Any(assignment => assignment.User.Id == member.User.Id) ?? false);
+
+        public Task RemoveAssignment(int taskId, BoardMember boardMember) => Task.CompletedTask;
     }
 }

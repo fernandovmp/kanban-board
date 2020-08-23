@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
-using KanbanBoard.WebApi.V1.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,6 +52,43 @@ namespace KanbanBoard.WebApi.V1.Controllers
             {
                 await _boardRepository.CreateAssignment(taskId, member);
             }
+            return NoContent();
+        }
+
+        [HttpDelete("{memberId}")]
+        public async Task<ActionResult> Delete(int boardId, int taskId, int memberId)
+        {
+            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            if (userMember is null)
+            {
+                return Forbid();
+            }
+            KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
+            if (task is null)
+            {
+                return V1NotFound("Task not found");
+            }
+
+            var member = new BoardMember
+            {
+                User = new User
+                {
+                    Id = memberId
+                },
+                Board = new Board
+                {
+                    Id = boardId
+                }
+            };
+            await _boardRepository.RemoveAssignment(taskId, member);
+
             return NoContent();
         }
     }

@@ -434,6 +434,20 @@ namespace KanbanBoard.WebApi.Repositories
             };
         }
 
+        public async Task RemoveAssignment(int taskId, BoardMember boardMember)
+        {
+            string query = @"delete from assignments where userId = @UserId and taskId = @TaskId and boardId = @BoardId;";
+            object queryParams = new
+            {
+                BoardId = boardMember.Board.Id,
+                UserId = boardMember.User.Id,
+                TaskId = taskId
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, queryParams);
+        }
+
         public async Task RemoveBoardMember(BoardMember boardMember)
         {
             string query = @"delete from assignments where boardId = @BoardId and userId = @UserId;
