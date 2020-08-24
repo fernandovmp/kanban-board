@@ -1,16 +1,26 @@
 import React from 'react';
+import { IOverlayProps } from '../Overlay';
 import { ModalCard, ModalPanel } from './styles';
 
 export { ModalPanel };
 
-interface IModalProps {
-    title: JSX.Element | string;
-}
+interface IModalProps extends IOverlayProps {}
 
-export const Modal: React.FC<IModalProps> = ({ title, children }) => {
+export const Modal: React.FC<IModalProps> = ({
+    showCloseButton,
+    title,
+    children,
+    onClose,
+}) => {
     return (
         <ModalPanel>
-            <ModalCard title={title}>{children}</ModalCard>
+            <ModalCard
+                onClose={onClose}
+                showCloseButton={showCloseButton}
+                title={title}
+            >
+                {children}
+            </ModalCard>
         </ModalPanel>
     );
 };

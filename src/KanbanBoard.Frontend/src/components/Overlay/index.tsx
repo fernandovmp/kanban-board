@@ -1,14 +1,29 @@
 import React from 'react';
-import { Header, Main, OverlayWrapper, Separator } from './styles';
+import closeIcon from '../../assets/close.svg';
+import { CloseButton, Header, Main, OverlayWrapper, Separator } from './styles';
 
-interface IOverlayProps {
+export interface IOverlayProps {
+    onClose?: () => void;
+    showCloseButton?: boolean;
     title: JSX.Element | string;
 }
 
-export const Overlay: React.FC<IOverlayProps> = ({ title, children }) => {
+export const Overlay: React.FC<IOverlayProps> = ({
+    title,
+    children,
+    onClose,
+    showCloseButton,
+}) => {
     return (
         <OverlayWrapper>
             <Header>
+                {showCloseButton && (
+                    <CloseButton
+                        src={closeIcon}
+                        alt="Close"
+                        onClick={onClose}
+                    />
+                )}
                 {title}
                 <Separator />
             </Header>

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Card } from '..';
+import { Card, IconButton } from '..';
 
 export const OverlayWrapper = styled(Card)`
     position: fixed;
@@ -23,4 +23,9 @@ export const Separator = styled.div`
     height: 1px;
     width: 100%;
     margin: 0;
+`;
+
+export const CloseButton = styled(IconButton)`
+    align-self: flex-end;
+    margin-bottom: 10px;
 `;

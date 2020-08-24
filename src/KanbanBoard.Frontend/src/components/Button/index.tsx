@@ -28,3 +28,9 @@ export const PrimaryButton = styled(DefaultButton)`
         background: #e6d32c;
     }
 `;
+
+export const IconButton = styled.img`
+    &:hover {
+        cursor: pointer;
+    }
+`;
