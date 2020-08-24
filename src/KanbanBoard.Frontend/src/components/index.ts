@@ -5,3 +5,4 @@ export * from './EditableContent';
 export * from './FormField';
 export * from './Input';
 export * from './Modal';
+export * from './Overlay';

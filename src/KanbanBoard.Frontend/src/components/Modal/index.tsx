@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Main, ModalCard, ModalPanel, Separator } from './styles';
+import { ModalCard, ModalPanel } from './styles';
 
 export { ModalPanel };
 
@@ -10,13 +10,7 @@ interface IModalProps {
 export const Modal: React.FC<IModalProps> = ({ title, children }) => {
     return (
         <ModalPanel>
-            <ModalCard>
-                <Header>
-                    {title}
-                    <Separator />
-                </Header>
-                <Main>{children}</Main>
-            </ModalCard>
+            <ModalCard title={title}>{children}</ModalCard>
         </ModalPanel>
     );
 };
