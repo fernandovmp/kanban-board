@@ -7,7 +7,9 @@ namespace KanbanBoard.WebApi.Repositories
     public interface IBoardRepository
     {
         Task<int> CountBoardMembers(int boardId);
+        Task CreateAssignment(int taskId, BoardMember member);
         Task<bool> ExistsBoard(int boardId);
+        Task<bool> ExistsAssignment(int taskId, BoardMember member);
         Task<IEnumerable<BoardMember>> GetAllBoardMembers(int boardId);
         Task<IEnumerable<Board>> GetAllUserBoards(int userId);
         Task<Board> GetBoardByIdWithListsTasksAndMembers(int boardId);
@@ -18,6 +20,7 @@ namespace KanbanBoard.WebApi.Repositories
         Task InsertBoardMember(BoardMember boardMember);
         Task<KanbanList> InsertKanbanList(KanbanList list);
         Task<KanbanTask> InsertKanbanTask(KanbanTask task);
+        Task RemoveAssignment(int taskId, BoardMember boardMember);
         Task RemoveBoardMember(BoardMember boardMember);
         Task Update(Board board);
         Task UpdateKanbanList(KanbanList list);
