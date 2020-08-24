@@ -4,5 +4,6 @@ export * from './Card';
 export * from './EditableContent';
 export * from './FormField';
 export * from './Input';
+export * from './Members';
 export * from './Modal';
 export * from './Overlay';

@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
-import closeIcon from '../../../assets/close.svg';
 import removeIcon from '../../../assets/remove.svg';
-import { Modal } from '../../../components';
+import {
+    IconButton,
+    MemberCard,
+    MemberItem,
+    MembersList,
+    Modal,
+} from '../../../components';
 import { BoardMember } from '../../../models';
 import {
     apiDelete,
@@ -11,17 +16,7 @@ import {
     apiPost,
     isErrorResponse,
 } from '../../../services/kanbanApiService';
-import {
-    AddMemberWrapper,
-    CloseButton,
-    EmailInput,
-    ErrorMessage,
-    Header,
-    IconButton,
-    MemberCard,
-    MemberItem,
-    MembersList,
-} from './styles';
+import { AddMemberWrapper, EmailInput, ErrorMessage } from './styles';
 
 interface IMembersModalProps {
     onClose(): void;
@@ -106,13 +101,10 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
 
     return (
         <Modal
+            showCloseButton
+            onClose={onClose}
             title={
-                <Header>
-                    <CloseButton
-                        src={closeIcon}
-                        alt="Close"
-                        onClick={onClose}
-                    />
+                <>
                     <AddMemberWrapper>
                         <EmailInput
                             placeholder="User email"
@@ -126,7 +118,7 @@ export const MembersModal: React.FC<IMembersModalProps> = ({ onClose }) => {
                         />
                     </AddMemberWrapper>
                     {error && <ErrorMessage>{error}</ErrorMessage>}
-                </Header>
+                </>
             }
         >
             <MembersList>
