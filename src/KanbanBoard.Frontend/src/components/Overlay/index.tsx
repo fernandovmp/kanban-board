@@ -6,16 +6,18 @@ export interface IOverlayProps {
     onClose?: () => void;
     showCloseButton?: boolean;
     title: JSX.Element | string;
+    className?: string;
 }
 
 export const Overlay: React.FC<IOverlayProps> = ({
     title,
     children,
+    className,
     onClose,
     showCloseButton,
 }) => {
     return (
-        <OverlayWrapper>
+        <OverlayWrapper className={className}>
             <Header>
                 {showCloseButton && (
                     <CloseButton
