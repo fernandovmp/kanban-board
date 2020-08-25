@@ -59,11 +59,10 @@ namespace KanbanBoard.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseOpenApi();
             app.UseSwaggerUi3(settings =>
             {
-                settings.Path = "/openapi";
-                settings.DocumentPath = "/specification/kanban-board-v1.yaml";
+                settings.Path = "/docs";
+                settings.DocumentPath = "/docs/v1/openapi.yaml";
             });
 
             app.UseMiddleware<ValidationErrorMiddleware>();
