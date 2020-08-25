@@ -20,7 +20,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#components/schemas/Board"
+                  $ref: "#/components/schemas/Board"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
     post:
@@ -36,7 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#components/schemas/Board"
+                $ref: "#/components/schemas/Board"
           headers:
             Location:
               description: URL where the resource can be accessed
