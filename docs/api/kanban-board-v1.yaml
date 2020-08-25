@@ -820,8 +820,7 @@ paths:
 
   /users:
     post:
-      security:
-        - {}: []
+      security: []
       tags:
         - Users
       summary: Register an user
@@ -895,8 +894,7 @@ paths:
 
   /login:
     post:
-      security:
-        - {}: []
+      security: []
       tags:
         - Users
       summary: Create and return a Json Web Token
