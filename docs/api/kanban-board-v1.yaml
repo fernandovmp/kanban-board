@@ -950,7 +950,7 @@ components:
           schema:
             type: object
             properties:
-              summary:
+              title:
                 type: string
             required:
               - summary
@@ -961,7 +961,7 @@ components:
           schema:
             type: object
             properties:
-              summary:
+              title:
                 type: string
     TaskBody:
       required: true
@@ -1072,12 +1072,6 @@ components:
           type: integer
         title:
           type: string
-        createdOn:
-          type: string
-          format: date-time
-        modifiedOn:
-          type: string
-          format: date-time
         tasks:
           type: array
           items:
