@@ -51,7 +51,7 @@ paths:
                 $ref: "#/components/schemas/Error"
               example:
                 status: 400
-                message: "Couldn't create the board"
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "Title is mandatory"
                     property: "Title"
@@ -129,12 +129,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't update the board data"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
-
+                  - message: "Title is mandatory"
+                    property: "Title"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
@@ -244,8 +243,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't add the member"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "IsAdmin is mandatory"
                     property: "IsAdmin"
@@ -380,8 +379,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the list"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "Title is mandatory"
                     property: "Title"
@@ -447,8 +446,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't update the list data"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "Title is mandatory"
                     property: "Title"
@@ -570,8 +569,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the task"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "Summary is mandatory"
                     property: "Summary"
@@ -689,8 +688,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the task"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "TagColor must be a hexadecimal color value"
                     property: "TagColor"
@@ -846,8 +845,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the user"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "name is mandatory"
                     property: "name"
