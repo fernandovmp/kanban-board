@@ -3,6 +3,9 @@ info:
   version: v1
   title: Kanban Board
 
+servers:
+  - url: '/api/v1'
+
 paths:
   /boards:
     get:
