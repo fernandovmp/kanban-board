@@ -91,19 +91,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/BoardList"
-
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -137,14 +128,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to update the board data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to update this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -165,15 +149,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to delete the board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to delete this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -205,19 +181,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/BoardMember"
-
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -251,14 +218,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to add a member to this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to add a member to this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or user not found
           content:
@@ -292,14 +252,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to remove a member
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to remove a member"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or Member not found
           content:
@@ -331,19 +284,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/List"
-
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -387,14 +331,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to access this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to access this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -455,14 +392,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to update the list data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to update a list"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or List not found
           content:
@@ -483,14 +413,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to delete a list
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to delete a list"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or List not found
           content:
@@ -525,15 +448,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -581,14 +496,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to create a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to create a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or task not found
           content:
@@ -642,14 +550,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or task not found
           content:
@@ -696,14 +597,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to update a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to update a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or task not found
           content:
@@ -725,14 +619,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to delete a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to delete a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or Task not found
           content:
@@ -772,14 +659,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to assign a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to assign a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board, Task or User not found
           content:
@@ -799,14 +679,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to remove an assignment
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to remove an assignment"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or Task not found
           content:
@@ -1045,6 +918,8 @@ components:
           schema:
             type: string
           example: 'Bearer error="invalid_token"'
+    Forbid:
+      description: User not have permission to access the resource
 
   schemas:
     Board:
