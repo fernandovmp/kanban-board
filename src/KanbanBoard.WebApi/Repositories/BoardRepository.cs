@@ -463,6 +463,20 @@ namespace KanbanBoard.WebApi.Repositories
             await connection.ExecuteAsync(query, queryParams);
         }
 
+        public async Task RemoveTask(KanbanTask task)
+        {
+            string query = @"delete from assignments where taskId = @TaskId;
+            delete from listTasks where taskId = @TaskId;
+            delete from tasks where id = @TaskId";
+            object queryParams = new
+            {
+                TaskId = task.Id
+            };
+
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, queryParams);
+        }
+
         public async Task Update(Board board)
         {
             string query = @"update boards set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
