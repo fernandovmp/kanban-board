@@ -1,19 +1,22 @@
 import React from 'react';
-import { Modal } from '../../../components';
+import { Modal } from '../Modal';
 import { ButtonsWrapper, CancelButton, ConfirmButton, Header } from './styles';
 
 interface IDeleteModalProps {
     onCancel(): void;
     onConfirm(): void;
+    headerText?: string;
 }
 
 export const DeleteModal: React.FC<IDeleteModalProps> = ({
     onCancel,
     onConfirm,
+    children,
+    headerText,
 }) => {
     return (
-        <Modal title={<Header>Delete the board?</Header>}>
-            Are you sure that you want to delete the board?
+        <Modal title={<Header>{headerText}</Header>}>
+            {children}
             <ButtonsWrapper>
                 <CancelButton onClick={onCancel}>Cancel</CancelButton>
                 <ConfirmButton onClick={onConfirm}>Confirm</ConfirmButton>

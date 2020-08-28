@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import deleteIcon from '../../../assets/delete_outline.svg';
 import groupIcon from '../../../assets/group.svg';
-import { DefaultButton, EditableContent } from '../../../components';
+import {
+    DefaultButton,
+    DeleteModal,
+    EditableContent,
+} from '../../../components';
 import { apiPut } from '../../../services/kanbanApiService';
-import { DeleteModal } from '../DeleteModal';
 import { MembersModal } from '../MembersModal';
 import { BoardTitle, Header } from './styles';
 
@@ -69,7 +72,10 @@ export const BoardHeader: React.FC<IBoardHeaderProps> = ({ boardTitle }) => {
                 <DeleteModal
                     onCancel={() => setShowDeleteModal(false)}
                     onConfirm={handleConfirmDeletion}
-                />
+                    headerText="Delete the board?"
+                >
+                    Are you sure that you want to delete the board?
+                </DeleteModal>
             )}
             {showMembersModal && (
                 <MembersModal onClose={() => setShowMembersModal(false)} />
