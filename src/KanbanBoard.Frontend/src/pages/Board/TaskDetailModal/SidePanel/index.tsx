@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import assignmentIcon from '../../../../assets/assignment.svg';
 import deleteIcon from '../../../../assets/delete_outline.svg';
 import { DeleteModal } from '../../../../components';
-import { Task, User } from '../../../../models';
+import { BoardContext } from '../../../../contexts';
+import { Task, TaskList, User } from '../../../../models';
 import {
     apiDelete,
     isErrorResponse,
@@ -38,6 +39,7 @@ export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
     const [showAssignmentsModal, setShowAssignmentsModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [taskAssignments, setTaskAssignments] = useState<User[]>([]);
+    const boardContext = useContext(BoardContext);
     const history = useHistory();
     const { boardId } = useParams();
 
@@ -59,6 +61,26 @@ export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
             }
             return;
         }
+        const listId = task?.list ?? 0;
+        const updateList = (lists: TaskList[]) => {
+            const listWithContainsTheTask = lists.find(
+                (list) => list.id === listId
+            );
+            if (!listWithContainsTheTask) {
+                return lists;
+            }
+            const filteredLists = lists.filter((list) => list.id !== listId);
+            const updatedList = {
+                ...listWithContainsTheTask,
+                tasks: listWithContainsTheTask.tasks.filter(
+                    (_tasks) => _tasks.id !== taskId
+                ),
+            };
+            const finalLists = [...filteredLists, updatedList];
+            return finalLists.sort((a, b) => a.id - b.id);
+        };
+        boardContext.setLists(updateList(boardContext.lists));
+
         history.push(`/board/${boardId}`);
     };
 

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
-import { TaskList } from '../../../models';
+import { BoardContext } from '../../../contexts';
+import { SummarizedTask, TaskList } from '../../../models';
 import {
     apiPost,
     apiPut,
@@ -26,11 +27,14 @@ interface ITaskListProps {
 
 export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
     const [listTitle, setListTitle] = useState(taskList.title);
-    const [tasks, setTasks] = useState(taskList.tasks);
+    const [tasks, setTasks] = useState<SummarizedTask[]>([]);
     const [isCreatingTask, setIsCreatingTask] = useState(false);
     const [newTaskSummary, setNewTaskSummary] = useState('');
+    const boardContext = useContext(BoardContext);
     const history = useHistory();
     const { boardId } = useParams();
+
+    useEffect(() => setTasks(taskList.tasks), [taskList]);
 
     const handleCreateTask = async () => {
         setIsCreatingTask(false);
@@ -57,7 +61,24 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
             return;
         }
         const newTask = response.data!;
-        setTasks([...tasks, newTask]);
+        const updateList = (lists: TaskList[]) => {
+            const listWithContainsTheTask = lists.find(
+                (list) => list.id === taskList.id
+            );
+            if (!listWithContainsTheTask) {
+                return lists;
+            }
+            const filteredLists = lists.filter(
+                (list) => list.id !== taskList.id
+            );
+            const updatedList = {
+                ...listWithContainsTheTask,
+                tasks: [...listWithContainsTheTask.tasks, newTask],
+            };
+            const finalLists = [...filteredLists, updatedList];
+            return finalLists.sort((a, b) => a.id - b.id);
+        };
+        boardContext.setLists(updateList(boardContext.lists));
     };
 
     const handleEditListTitle = async (value: string) => {

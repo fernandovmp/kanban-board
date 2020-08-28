@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Route, useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../assets/add.svg';
 import { Input } from '../../components';
+import { BoardContext } from '../../contexts';
 import { Board, TaskList } from '../../models';
 import {
     apiGet,
@@ -87,42 +88,52 @@ export const BoardPage: React.FC = () => {
     };
 
     return (
-        <Main>
-            <BoardHeader boardTitle={board?.title ?? ''} />
-            <TaskListsWrapper>
-                {boardLists.map((list) => (
-                    <TaskListView key={list.id} taskList={list} />
-                ))}
-                {isCreatingList ? (
-                    <ListWrapper>
-                        <Input
-                            autoFocus
-                            value={newListTitle}
-                            onChange={(e) => setNewListTitle(e.target.value)}
-                        />
-                        <ButtonsWrapper>
-                            <CancelButton
-                                onClick={() => setIsCreatingList(false)}
-                            >
-                                CANCEL
-                            </CancelButton>
-                            <SaveButton onClick={handleCreateList}>
-                                SAVE
-                            </SaveButton>
-                        </ButtonsWrapper>
-                    </ListWrapper>
-                ) : (
-                    <NewListButton onClick={() => setIsCreatingList(true)}>
-                        <img src={addIcon} alt="New List" />
-                        New list
-                    </NewListButton>
-                )}
-            </TaskListsWrapper>
-            <Route
-                exact
-                path="/board/:boardId/task/:taskId"
-                component={TaskDetailModal}
-            />
-        </Main>
+        <BoardContext.Provider
+            value={{
+                board,
+                lists: boardLists,
+                setLists: setBoardLists,
+            }}
+        >
+            <Main>
+                <BoardHeader boardTitle={board?.title ?? ''} />
+                <TaskListsWrapper>
+                    {boardLists.map((list) => (
+                        <TaskListView key={list.id} taskList={list} />
+                    ))}
+                    {isCreatingList ? (
+                        <ListWrapper>
+                            <Input
+                                autoFocus
+                                value={newListTitle}
+                                onChange={(e) =>
+                                    setNewListTitle(e.target.value)
+                                }
+                            />
+                            <ButtonsWrapper>
+                                <CancelButton
+                                    onClick={() => setIsCreatingList(false)}
+                                >
+                                    CANCEL
+                                </CancelButton>
+                                <SaveButton onClick={handleCreateList}>
+                                    SAVE
+                                </SaveButton>
+                            </ButtonsWrapper>
+                        </ListWrapper>
+                    ) : (
+                        <NewListButton onClick={() => setIsCreatingList(true)}>
+                            <img src={addIcon} alt="New List" />
+                            New list
+                        </NewListButton>
+                    )}
+                </TaskListsWrapper>
+                <Route
+                    exact
+                    path="/board/:boardId/task/:taskId"
+                    component={TaskDetailModal}
+                />
+            </Main>
+        </BoardContext.Provider>
     );
 };
