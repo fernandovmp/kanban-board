@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import assignmentIcon from '../../../../assets/assignment.svg';
 import deleteIcon from '../../../../assets/delete_outline.svg';
+import { DeleteModal } from '../../../../components';
 import { Task, User } from '../../../../models';
+import {
+    apiDelete,
+    isErrorResponse,
+} from '../../../../services/kanbanApiService';
 import { EditAssignments } from '../EditAssignments';
 import {
     AssignedMemberName,
@@ -30,10 +36,31 @@ interface ISidePanelProps {
 export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
     const [selectedTagColor, setSelectedTagColor] = useState('');
     const [showAssignmentsModal, setShowAssignmentsModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [taskAssignments, setTaskAssignments] = useState<User[]>([]);
+    const history = useHistory();
+    const { boardId } = useParams();
 
     useEffect(() => setSelectedTagColor(`#${task?.tagColor}`), [task]);
     useEffect(() => setTaskAssignments(task?.assignments ?? []), [task]);
+
+    const handleTaskDeletion = async () => {
+        setShowDeleteModal(false);
+        const taskId = task?.id ?? 0;
+        const token = sessionStorage.getItem('jwtToken') ?? '';
+
+        const response = await apiDelete({
+            uri: `v1/boards/${boardId}/tasks/${taskId}`,
+            bearerToken: token,
+        });
+        if (response.data && isErrorResponse(response.data)) {
+            if (response.data.status === 401 || response.data.status === 403) {
+                history.push('/login');
+            }
+            return;
+        }
+        history.push(`/board/${boardId}`);
+    };
 
     return (
         <>
@@ -52,7 +79,7 @@ export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
                         />
                     ))}
                 </TagColors>
-                <Button>
+                <Button onClick={() => setShowDeleteModal(true)}>
                     <img src={deleteIcon} alt="Delete" /> DELETE TASK
                 </Button>
                 <AssignmentSectionTitle>
@@ -73,6 +100,19 @@ export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
                     onAssignmentsChange={setTaskAssignments}
                     onClose={() => setShowAssignmentsModal(false)}
                 />
+            )}
+            {showDeleteModal && (
+                <DeleteModal
+                    onCancel={() => setShowDeleteModal(false)}
+                    onConfirm={handleTaskDeletion}
+                    headerText="Delete the task?"
+                >
+                    <>
+                        Are you sure that you want to delete the Task?
+                        <br />
+                        This will also remove all the related assignments.
+                    </>
+                </DeleteModal>
             )}
         </>
     );
