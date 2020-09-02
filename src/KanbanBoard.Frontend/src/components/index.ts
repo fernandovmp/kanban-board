@@ -1,6 +1,7 @@
 export * from './AppBar';
 export * from './Button';
 export * from './Card';
+export * from './DeleteModal';
 export * from './EditableContent';
 export * from './FormField';
 export * from './Input';

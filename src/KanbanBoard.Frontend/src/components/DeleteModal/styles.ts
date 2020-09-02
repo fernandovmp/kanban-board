@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { DefaultButton, PrimaryButton } from '../../../components';
+import { DefaultButton, PrimaryButton } from '../Button';
 
 export const ButtonsWrapper = styled.div`
     margin-top: 30px;
