@@ -119,5 +119,33 @@ namespace KanbanBoard.WebApi.V1.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{listId}")]
+        public async Task<ActionResult> Delete(int boardId, int listId)
+        {
+            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember member = await _boardRepository.GetBoardMember(boardId, userId);
+            if (member is null)
+            {
+                return Forbid();
+            }
+
+            KanbanList list = new KanbanList
+            {
+                Board = new Board
+                {
+                    Id = boardId
+                },
+                Id = listId
+            };
+            await _boardRepository.RemoveList(list);
+            return NoContent();
+        }
     }
 }
