@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import addIcon from '../../../assets/add.svg';
+import optionsIcon from '../../../assets/more_vert.svg';
+import { IconButton } from '../../../components';
 import { BoardContext } from '../../../contexts';
 import { SummarizedTask, TaskList } from '../../../models';
 import {
@@ -8,11 +10,13 @@ import {
     apiPut,
     isErrorResponse,
 } from '../../../services/kanbanApiService';
+import { ListOptions } from './ListOptions';
 import {
     Button,
     ButtonsWrapper,
     CancelButton,
     EditableListTitle,
+    ListHeader,
     ListTitle,
     ListWrapper,
     NewTaskInput,
@@ -30,6 +34,7 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
     const [tasks, setTasks] = useState<SummarizedTask[]>([]);
     const [isCreatingTask, setIsCreatingTask] = useState(false);
     const [newTaskSummary, setNewTaskSummary] = useState('');
+    const [showListOptions, setShowListOptions] = useState(false);
     const boardContext = useContext(BoardContext);
     const history = useHistory();
     const { boardId } = useParams();
@@ -103,12 +108,24 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
 
     return (
         <ListWrapper>
-            <EditableListTitle
-                onEndEdit={handleEditListTitle}
-                initialInputValue={listTitle}
-            >
-                <ListTitle>{listTitle}</ListTitle>
-            </EditableListTitle>
+            <ListHeader>
+                <EditableListTitle
+                    onEndEdit={handleEditListTitle}
+                    initialInputValue={listTitle}
+                >
+                    <ListTitle>{listTitle}</ListTitle>
+                </EditableListTitle>
+                <IconButton
+                    onClick={() => setShowListOptions(true)}
+                    src={optionsIcon}
+                />
+                {showListOptions && (
+                    <ListOptions
+                        list={taskList}
+                        onClose={() => setShowListOptions(false)}
+                    />
+                )}
+            </ListHeader>
             {tasks.map((task) => (
                 <TaskCard key={task.id} task={task} />
             ))}

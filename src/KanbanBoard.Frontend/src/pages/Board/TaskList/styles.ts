@@ -58,7 +58,12 @@ export const SaveButton = styled(PrimaryButton)`
 `;
 
 export const EditableListTitle = styled(EditableContent)`
+    flex: 1;
     ${Input} {
         width: 100%;
     }
+`;
+
+export const ListHeader = styled.header`
+    display: flex;
 `;
