@@ -4,7 +4,7 @@ info:
   title: Kanban Board
 
 servers:
-  - url: '/api/v1'
+  - url: "/api/v1"
 
 paths:
   /boards:
@@ -415,14 +415,14 @@ paths:
         "403":
           $ref: "#/components/responses/Forbid"
         "404":
-          description: Board or List not found
+          description: Board not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
                 status: 404
-                message: "List not found"
+                message: "Board not found"
 
   /boards/{boardId}/tasks:
     parameters:

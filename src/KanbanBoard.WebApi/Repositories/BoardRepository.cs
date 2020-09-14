@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Dapper;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Services;
@@ -461,6 +463,38 @@ namespace KanbanBoard.WebApi.Repositories
 
             using IDbConnection connection = _connectionFactory.CreateConnection();
             await connection.ExecuteAsync(query, queryParams);
+        }
+
+        public async Task RemoveList(KanbanList list)
+        {
+            string getTasksQuery = @"select taskId from listTasks where listId = @ListId;";
+            object getTasksQueryParams = new
+            {
+                ListId = list.Id,
+            };
+
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            IEnumerable<int> tasks = await connection.QueryAsync<int>(getTasksQuery, getTasksQueryParams);
+
+            string deleteQuery = @"delete from lists where id = @ListId and boardId = @BoardId";
+            if (tasks.Count() > 0)
+            {
+                deleteQuery = @"delete from assignments where taskId = any (@Tasks);
+                delete from listTasks where listId = @ListId;
+                delete from tasks where id = any (@Tasks);"
+                + deleteQuery;
+            }
+
+            object deleteQueryParams = new
+            {
+                BoardId = list.Board.Id,
+                ListId = list.Id,
+                Tasks = tasks
+            };
+
+            await connection.ExecuteAsync(deleteQuery, deleteQueryParams);
+            transactionScope.Complete();
         }
 
         public async Task RemoveTask(KanbanTask task)
