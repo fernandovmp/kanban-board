@@ -20,6 +20,7 @@ namespace KanbanBoard.WebApi.Repositories
         Task InsertBoardMember(BoardMember boardMember);
         Task<KanbanList> InsertKanbanList(KanbanList list);
         Task<KanbanTask> InsertKanbanTask(KanbanTask task);
+        Task Remove(int boardId);
         Task RemoveAssignment(int taskId, BoardMember boardMember);
         Task RemoveBoardMember(BoardMember boardMember);
         Task RemoveList(KanbanList list);

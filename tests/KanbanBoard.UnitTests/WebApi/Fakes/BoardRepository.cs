@@ -199,5 +199,6 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
         public Task RemoveTask(KanbanTask task) => Task.CompletedTask;
 
         public Task RemoveList(KanbanList list) => Task.CompletedTask;
+        public Task Remove(int boardId) => Task.CompletedTask;
     }
 }
