@@ -7,7 +7,7 @@ import {
     DeleteModal,
     EditableContent,
 } from '../../../components';
-import { apiPut } from '../../../services/kanbanApiService';
+import { apiDelete, apiPut } from '../../../services/kanbanApiService';
 import { MembersModal } from '../MembersModal';
 import { BoardTitle, Header } from './styles';
 
@@ -30,7 +30,14 @@ export const BoardHeader: React.FC<IBoardHeaderProps> = ({ boardTitle }) => {
     const handleDeleteBoard = () => {
         setShowDeleteModal(true);
     };
-    const handleConfirmDeletion = () => {};
+    const handleConfirmDeletion = async () => {
+        const token = sessionStorage.getItem('jwtToken') ?? '';
+        await apiDelete({
+            uri: `v1/boards/${boardId}`,
+            bearerToken: token,
+        });
+        history.push('/');
+    };
 
     const handleEditBoardTitle = async (value: string) => {
         const newTitle = value.trim();

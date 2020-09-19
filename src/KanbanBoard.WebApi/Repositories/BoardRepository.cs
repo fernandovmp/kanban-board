@@ -12,6 +12,12 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class BoardRepository : IBoardRepository
     {
+        private const string DeleteBoardQuery = @"delete from listTasks where listId in (select id from lists where boardId = @BoardId);
+            delete from assignments where boardId = @BoardId;
+            delete from boardMembers where boardId = @BoardId;
+            delete from tasks where boardId = @BoardId;
+            delete from lists where boardId = @BoardId;
+            delete from boards where id = @BoardId;";
         private readonly IDbConnectionFactory _connectionFactory;
 
         public BoardRepository(IDbConnectionFactory connectionFactory)
@@ -435,6 +441,18 @@ namespace KanbanBoard.WebApi.Repositories
                 CreatedOn = task.CreatedOn,
                 ModifiedOn = task.ModifiedOn
             };
+        }
+
+        public async Task Remove(int boardId)
+        {
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using IDbConnection connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(DeleteBoardQuery, queryParams);
+            transactionScope.Complete();
         }
 
         public async Task RemoveAssignment(int taskId, BoardMember boardMember)
