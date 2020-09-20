@@ -9,6 +9,11 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        private const string ExistsWithEmailQuery = @"select 1 from users where email = @Email;";
+        private const string GetByIdQuery = @"select id, name, email from users where id = @Id;";
+        private const string GetByEmailWithPasswordQuery = @"select id, name, email, password from users where email = @Email;";
+        private const string InserQuery = @"insert into users (name, email, password, createdOn, modifiedOn)
+            values (@Name, @Email, @Password, @CreatedOn, @ModifiedOn) returning id;";
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
 
@@ -20,62 +25,40 @@ namespace KanbanBoard.WebApi.Repositories
 
         public async Task<bool> ExistsUserWithEmail(string email)
         {
-            string query = @"select 1 from users where email = @Email;";
-
             object queryParams = new
             {
                 Email = email
             };
-
             using IDbConnection connection = _connectionFactory.CreateConnection();
-
-            bool exists = await connection.ExecuteScalarAsync<bool>(query, queryParams);
-
+            bool exists = await connection.ExecuteScalarAsync<bool>(ExistsWithEmailQuery, queryParams);
             return exists;
         }
 
         public async Task<User> GetByEmailWithPassword(string email)
         {
-            string query = @"select id, name, email, password from users where email = @Email;";
-
             object queryParams = new
             {
                 Email = email
             };
-
             using IDbConnection connection = _connectionFactory.CreateConnection();
-            connection.Open();
-
-            User user = await connection.QueryFirstOrDefaultAsync<User>(query, queryParams);
-
+            User user = await connection.QueryFirstOrDefaultAsync<User>(GetByEmailWithPasswordQuery, queryParams);
             return user;
         }
 
         public async Task<User> GetById(int id)
         {
-            string query = @"select id, name, email from users where id = @Id;";
             object queryParams = new
             {
                 Id = id
             };
-
             using IDbConnection connection = _connectionFactory.CreateConnection();
-            connection.Open();
-
-            User user = await connection.QueryFirstOrDefaultAsync<User>(query, queryParams);
-
+            User user = await connection.QueryFirstOrDefaultAsync<User>(GetByIdQuery, queryParams);
             return user;
         }
 
         public async Task<User> Insert(User user)
         {
-            string query = @"
-            insert into users (name, email, password, createdOn, modifiedOn)
-            values (@Name, @Email, @Password, @CreatedOn, @ModifiedOn) returning id;
-            ";
-
             DateTime createdDate = _dateTimeProvider.UtcNow();
-
             object queryParams = new
             {
                 user.Name,
@@ -86,11 +69,7 @@ namespace KanbanBoard.WebApi.Repositories
             };
 
             using IDbConnection connection = _connectionFactory.CreateConnection();
-
-            connection.Open();
-
-            int userId = await connection.ExecuteScalarAsync<int>(query, queryParams);
-
+            int userId = await connection.ExecuteScalarAsync<int>(InserQuery, queryParams);
             return new User
             {
                 Id = userId,
