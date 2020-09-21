@@ -10,6 +10,7 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
     public class FakeBoardRepository : IBoardRepository
     {
         private readonly List<Board> _boards;
+        internal IReadOnlyCollection<Board> Boards => _boards;
 
         public FakeBoardRepository()
         {
