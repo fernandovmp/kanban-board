@@ -12,17 +12,10 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
 {
     [Trait("Category", "TasksController")]
-    public class ShowTests : ControllerTestsBase
+    public class ShowTests : TaskControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _controllerContext;
-
-        public ShowTests()
+        public ShowTests() : base()
         {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _controllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
         }
 
         [Fact]
@@ -32,11 +25,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -51,11 +47,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -75,11 +74,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -100,11 +102,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -126,11 +131,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -145,11 +153,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -169,11 +180,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 1;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -198,11 +212,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
 
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -217,11 +234,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 10;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -236,11 +256,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 10;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
@@ -260,11 +283,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
             int taskId = 10;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var tasksController = new TasksController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeTaskRepository,
+                fakeListRepository,
+                fakeMemberRepository)
             {
-                ControllerContext = _controllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardTaskViewModel> result = await tasksController.Show(boardId, taskId);
