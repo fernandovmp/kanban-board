@@ -84,12 +84,12 @@ namespace KanbanBoard.WebApi.Repositories
                         {
                             boardCache = board;
                         }
-                        if (member is { } && !boardCache.Members.Any(_member => _member.User.Id == user.Id))
+                        if (member is object && !boardCache.Members.Any(_member => _member.User.Id == user.Id))
                         {
                             member.User = user;
                             boardCache.Members.Add(member);
                         }
-                        if (list is { })
+                        if (list is object)
                         {
                             if (!listCache.ContainsKey(list.Id))
                             {
@@ -97,7 +97,7 @@ namespace KanbanBoard.WebApi.Repositories
                             }
                             board.Lists.Add(list);
                         }
-                        if (task is { })
+                        if (task is object)
                         {
                             task.List = list;
                             if (!taskCache.ContainsKey(task.Id))
