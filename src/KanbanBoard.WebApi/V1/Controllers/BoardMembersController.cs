@@ -19,14 +19,17 @@ namespace KanbanBoard.WebApi.V1.Controllers
     public class BoardMembersController : V1ControllerBase
     {
         private readonly IBoardRepository _boardRepository;
+        private readonly IBoardMemberRepository _memberRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public BoardMembersController(
             IBoardRepository boardRepository,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IBoardMemberRepository memberRepository)
         {
             _boardRepository = boardRepository;
             _dateTimeProvider = dateTimeProvider;
+            _memberRepository = memberRepository;
         }
 
         [HttpGet]
@@ -38,7 +41,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 return V1NotFound("Board not found");
             }
 
-            IEnumerable<BoardMember> members = await _boardRepository.GetAllBoardMembers(boardId);
+            IEnumerable<BoardMember> members = await _memberRepository.GetAllMembersOfTheBoard(boardId);
 
             int userId = int.Parse(HttpContext.User.Identity.Name);
             if (!members.Any(member => member.User.Id == userId))
@@ -69,7 +72,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 return V1NotFound("Board not found");
             }
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember userMember = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (userMember is null || !userMember.IsAdmin)
             {
                 return Forbid();
@@ -81,7 +84,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 return V1NotFound("User not found");
             }
 
-            bool alreadyIsMember = await _boardRepository.GetBoardMember(boardId, newMemberUser.Id) is { };
+            bool alreadyIsMember = await _memberRepository.GetByBoardIdAndUserId(boardId, newMemberUser.Id) is { };
             if (alreadyIsMember)
             {
                 return NoContent();
@@ -102,7 +105,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 CreatedOn = createdDate,
                 ModifiedOn = createdDate
             };
-            await _boardRepository.InsertBoardMember(member);
+            await _memberRepository.Insert(member);
 
             return NoContent();
         }
@@ -116,12 +119,12 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 return V1NotFound("Board not found");
             }
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember userMember = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (userMember is null || !userMember.IsAdmin)
             {
                 return Forbid();
             }
-            int membersCount = await _boardRepository.CountBoardMembers(boardId);
+            int membersCount = await _memberRepository.CountMembers(boardId);
             if (membersCount <= 1)
             {
                 return V1BadRequest("Board require at least one member");
@@ -138,7 +141,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                     Id = memberId
                 }
             };
-            await _boardRepository.RemoveBoardMember(member);
+            await _memberRepository.Remove(member);
             return NoContent();
         }
     }
