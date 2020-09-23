@@ -90,34 +90,13 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             _boards.Add(board);
         }
 
-        private Task<T> Async<T>(T result) => Task.FromResult(result);
-
-        public Task<bool> ExistsBoard(int boardId) => Async(_boards.Exists(board => board.Id == boardId));
+        public Task<bool> Exists(int boardId) => Async(_boards.Exists(board => board.Id == boardId));
 
         public Task<IEnumerable<Board>> GetAllUserBoards(int userId) =>
             Async(_boards.Where(board => board.Members.Any(member => member.User.Id == userId)));
 
-        public Task<Board> GetBoardByIdWithListsTasksAndMembers(int boardId) =>
+        public Task<Board> GetByIdWithListsTasksAndMembers(int boardId) =>
             Async(_boards.FirstOrDefault(board => board.Id == boardId));
-
-        public Task<KanbanList> GetBoardList(int boardId, int listId) =>
-            Async(_boards
-                .FirstOrDefault(board => board.Id == boardId)
-                ?.Lists
-                .FirstOrDefault(list => list.Id == listId));
-
-        public Task<BoardMember> GetBoardMember(int boardId, int userId) =>
-            Async(_boards
-                .FirstOrDefault(board => board.Id == boardId)
-                ?.Members
-                .FirstOrDefault(member => member.User.Id == userId));
-
-        public Task<KanbanTask> GetBoardTask(int boardId, int taskId) =>
-            Async(_boards
-                .FirstOrDefault(board => board.Id == boardId)
-                ?.Lists
-                .SelectMany(list => list.Tasks)
-                .FirstOrDefault(task => task.Id == taskId));
 
         public Task<Board> Insert(Board board) => Async(new Board
         {
@@ -130,76 +109,10 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes
             Title = board.Title
         });
 
-        public Task InsertBoardMember(BoardMember boardMember) => Async(new BoardMember
-        {
-            Board = boardMember.Board,
-            CreatedOn = boardMember.CreatedOn,
-            IsAdmin = boardMember.IsAdmin,
-            ModifiedOn = boardMember.ModifiedOn,
-            User = boardMember.User
-        });
-
-        public Task<KanbanList> InsertKanbanList(KanbanList list) => Async(new KanbanList
-        {
-            Id = GetMaxKanbanListId() + 1,
-            Board = list.Board,
-            CreatedOn = list.CreatedOn,
-            ModifiedOn = list.ModifiedOn,
-            Tasks = list.Tasks,
-            Title = list.Title
-        });
-
-        private int GetMaxKanbanListId() => _boards.SelectMany(board => board.Lists).Max(list => list.Id);
-
-        public Task<KanbanTask> InsertKanbanTask(KanbanTask task) => Async(new KanbanTask
-        {
-            Id = GetMaxKanbanTaskId() + 1,
-            Assignments = task.Assignments,
-            Board = task.Board,
-            CreatedOn = task.CreatedOn,
-            Description = task.Description,
-            List = task.List,
-            ModifiedOn = task.ModifiedOn,
-            Summary = task.Summary,
-            TagColor = task.TagColor
-        });
-
-        private int GetMaxKanbanTaskId() => _boards
-            .SelectMany(board => board.Lists)
-            .SelectMany(list => list.Tasks)
-            .Max(task => task.Id);
-
         public Task Update(Board board) => Task.CompletedTask;
 
-        public Task UpdateKanbanList(KanbanList list) => Task.CompletedTask;
-
-        public Task<IEnumerable<BoardMember>> GetAllBoardMembers(int boardId) => Async(_boards
-            .FirstOrDefault(board => board.Id == boardId)
-            .Members
-            .AsEnumerable());
-
-        public Task RemoveBoardMember(BoardMember boardMember) => Task.CompletedTask;
-
-        public Task<int> CountBoardMembers(int boardId) => Async(_boards
-            .FirstOrDefault(board => board.Id == boardId)
-            .Members
-            .Count);
-
-        public Task CreateAssignment(int taskId, BoardMember member) => Task.CompletedTask;
-
-        public Task<bool> ExistsAssignment(int taskId, BoardMember member) => Async(_boards
-            .FirstOrDefault(board => board.Id == member.Board.Id)
-            ?.Lists
-            .SelectMany(list => list.Tasks)
-            .FirstOrDefault(task => task.Id == taskId)
-            ?.Assignments
-            .Any(assignment => assignment.User.Id == member.User.Id) ?? false);
-
-        public Task RemoveAssignment(int taskId, BoardMember boardMember) => Task.CompletedTask;
-
-        public Task RemoveTask(KanbanTask task) => Task.CompletedTask;
-
-        public Task RemoveList(KanbanList list) => Task.CompletedTask;
         public Task Remove(int boardId) => Task.CompletedTask;
+
+        private Task<T> Async<T>(T result) => Task.FromResult(result);
     }
 }

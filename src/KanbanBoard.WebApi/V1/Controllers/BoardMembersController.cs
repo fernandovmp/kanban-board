@@ -35,7 +35,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BoardMemberViewModel>>> Index(int boardId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
@@ -66,7 +66,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
             int boardId,
             [FromServices] IUserRepository userRepository)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
@@ -113,7 +113,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpDelete("{memberId}")]
         public async Task<ActionResult> Delete(int boardId, int memberId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");

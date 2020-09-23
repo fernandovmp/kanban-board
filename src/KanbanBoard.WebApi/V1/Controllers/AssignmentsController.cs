@@ -33,7 +33,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpPut("{memberId}")]
         public async Task<ActionResult> Create(int boardId, int taskId, int memberId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
@@ -67,7 +67,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpDelete("{memberId}")]
         public async Task<ActionResult> Delete(int boardId, int taskId, int memberId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");

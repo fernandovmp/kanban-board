@@ -44,7 +44,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<KanbanListViewModel>> Create(PostListViewModel model, int boardId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
@@ -92,7 +92,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpPut("{listId}")]
         public async Task<ActionResult> Update(PostListViewModel model, int boardId, int listId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
@@ -129,7 +129,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpDelete("{listId}")]
         public async Task<ActionResult> Delete(int boardId, int listId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
