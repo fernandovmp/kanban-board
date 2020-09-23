@@ -19,34 +19,42 @@ namespace KanbanBoard.WebApi.V1.Controllers
     public class TasksController : V1ControllerBase
     {
         private readonly IBoardRepository _boardRepository;
+        private readonly IKanbanTaskRepository _taskRepository;
+        private readonly IKanbanListRepository _listRepository;
+        private readonly IBoardMemberRepository _memberRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public TasksController(
             IBoardRepository boardRepository,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IKanbanTaskRepository taskRepository,
+            IKanbanListRepository listRepository,
+            IBoardMemberRepository memberRepository)
         {
             _boardRepository = boardRepository;
             _dateTimeProvider = dateTimeProvider;
+            _taskRepository = taskRepository;
+            _listRepository = listRepository;
+            _memberRepository = memberRepository;
         }
 
         [HttpGet("{taskId}")]
         public async Task<ActionResult<BoardTaskViewModel>> Show(int boardId, int taskId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
             }
 
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember member = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember member = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (member is null)
             {
                 return Forbid();
             }
 
-            KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
-
+            KanbanTask task = await _taskRepository.GetByIdAndBoardId(taskId, boardId);
             if (task is null)
             {
                 return V1NotFound("Task not found");
@@ -73,20 +81,20 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<KanbanTaskViewModel>> Create(PostTaskViewModel model, int boardId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
             }
 
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember boardMember = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember boardMember = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (boardMember is null)
             {
                 return Forbid();
             }
 
-            KanbanList list = await _boardRepository.GetBoardList(boardId, model.List);
+            KanbanList list = await _listRepository.GetByIdAndBoardId(boardId, model.List);
             if (list is null)
             {
                 return Forbid();
@@ -107,7 +115,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 CreatedOn = createdDate,
                 ModifiedOn = createdDate
             };
-            KanbanTask createdTask = await _boardRepository.InsertKanbanTask(task);
+            KanbanTask createdTask = await _taskRepository.Insert(task);
 
             object routeValues = new
             {
@@ -139,27 +147,26 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpDelete("{taskId}")]
         public async Task<ActionResult> Delete(int boardId, int taskId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
             }
 
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember member = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember member = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (member is null)
             {
                 return Forbid();
             }
 
-            KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
-
+            KanbanTask task = await _taskRepository.GetByIdAndBoardId(boardId, taskId);
             if (task is null)
             {
                 return V1NotFound("Task not found");
             }
 
-            await _boardRepository.RemoveTask(task);
+            await _taskRepository.Remove(task);
             return NoContent();
         }
     }

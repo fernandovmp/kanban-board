@@ -13,20 +13,10 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTests
 {
     [Trait("Category", "BoardMembersController")]
-    public class IndexTests : ControllerTestsBase
+    public class IndexTests : BoardMembersControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _fakeControllerContext;
         private const int ExistentId = 1;
         private const int NonExistentId = 10;
-
-        public IndexTests()
-        {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
-        }
 
         [Fact]
         public async Task ShouldReturnOkWhenSuccess()
@@ -34,11 +24,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int boardId = ExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<IEnumerable<BoardMemberViewModel>> result = await boardMembersController.Index(boardId);
@@ -52,11 +43,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int boardId = ExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<IEnumerable<BoardMemberViewModel>> result = await boardMembersController.Index(boardId);
@@ -75,11 +67,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int boardId = NonExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<IEnumerable<BoardMemberViewModel>> result = await boardMembersController.Index(boardId);
@@ -93,11 +86,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int boardId = NonExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<IEnumerable<BoardMemberViewModel>> result = await boardMembersController.Index(boardId);
@@ -116,11 +110,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int boardId = NonExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<IEnumerable<BoardMemberViewModel>> result = await boardMembersController.Index(boardId);
@@ -142,11 +137,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult<IEnumerable<BoardMemberViewModel>> result = await boardMembersController.Index(boardId);

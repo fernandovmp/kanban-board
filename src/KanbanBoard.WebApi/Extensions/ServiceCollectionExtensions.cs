@@ -37,7 +37,11 @@ namespace KanbanBoard.WebApi.Extensions
         public static IServiceCollection AddRepositories(this IServiceCollection services) =>
             services
                 .AddSingleton<IUserRepository, UserRepository>()
-                .AddSingleton<IBoardRepository, BoardRepository>();
+                .AddSingleton<IBoardRepository, BoardRepository>()
+                .AddSingleton<IKanbanTaskRepository, KanbanTaskRepository>()
+                .AddSingleton<IKanbanListRepository, KanbanListRepository>()
+                .AddSingleton<IBoardMemberRepository, BoardMemberRepository>()
+                .AddSingleton<IAssignmentRepository, AssignmentRepository>();
 
         public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string connectionString) =>
             services

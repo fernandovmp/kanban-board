@@ -12,22 +12,16 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
 {
     [Trait("Category", "ListsController")]
-    public class UpdateTests : ControllerTestsBase
+    public class UpdateTests : ListsControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _fakeControllerContext;
         private readonly PostListViewModel _validPostListViewModel;
         private const int ExistentBoardId = 1;
         private const int ExistentListId = 1;
         private const int NonExistentBoardId = 10;
         private const int NonExistentListId = 10;
 
-        public UpdateTests()
+        public UpdateTests() : base()
         {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
             _validPostListViewModel = new PostListViewModel
             {
                 Title = "default",
@@ -42,11 +36,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -62,11 +58,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -82,11 +80,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -106,11 +106,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -132,11 +134,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -152,11 +156,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -176,11 +182,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             PostListViewModel model = _validPostListViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);
@@ -203,11 +211,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.ListsControllerTests
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
             var listsController = new ListsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository,
+                fakeListRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await listsController.Update(model, boardId, listId);

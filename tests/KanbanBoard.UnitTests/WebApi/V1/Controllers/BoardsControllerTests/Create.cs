@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using FluentAssertions;
-using KanbanBoard.UnitTests.WebApi.Fakes;
-using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
 using KanbanBoard.WebApi.V1.Controllers;
 using KanbanBoard.WebApi.V1.ViewModels;
@@ -12,18 +10,12 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
 {
     [Trait("Category", "BoardsController")]
-    public class CreateTests : ControllerTestsBase
+    public class CreateTests : BoardsControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _fakeControllerContext;
         private readonly PostBoardViewModel _validPostBoardViewModel;
 
-        public CreateTests()
+        public CreateTests() : base()
         {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
             _validPostBoardViewModel = new PostBoardViewModel
             {
                 Title = "project board",
@@ -36,11 +28,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             PostBoardViewModel model = _validPostBoardViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardViewModel> result = await boardsController.Create(model);
@@ -54,11 +47,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             PostBoardViewModel model = _validPostBoardViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardViewModel> result = await boardsController.Create(model);
@@ -77,11 +71,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             PostBoardViewModel model = _validPostBoardViewModel;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult<BoardViewModel> result = await boardsController.Create(model);

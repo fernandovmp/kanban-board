@@ -12,22 +12,12 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTests
 {
     [Trait("Category", "BoardMembersController")]
-    public class DeleteTests : ControllerTestsBase
+    public class DeleteTests : BoardMembersControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _fakeControllerContext;
         private const int ExistentBoardId = 1;
         private const int NonExistentBoardId = 10;
         private const int ExistentMemberId = 1;
         private const int NonExistentMemberId = 10;
-
-        public DeleteTests()
-        {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
-        }
 
         [Fact]
         public async Task ShouldReturnNoContentWhenSuccess()
@@ -36,11 +26,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int memberId = ExistentMemberId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);
@@ -55,11 +46,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int memberId = NonExistentMemberId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);
@@ -74,11 +66,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int memberId = ExistentMemberId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);
@@ -93,11 +86,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int memberId = ExistentMemberId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);
@@ -116,11 +110,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             int memberId = ExistentMemberId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);
@@ -142,11 +137,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);
@@ -162,11 +158,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardMembersControllerTest
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "2");
             var boardMembersController = new BoardMembersController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardMembersController.Delete(boardId, memberId);

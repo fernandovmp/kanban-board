@@ -14,43 +14,52 @@ namespace KanbanBoard.WebApi.V1.Controllers
     public class AssignmentsController : V1ControllerBase
     {
         private readonly IBoardRepository _boardRepository;
+        private readonly IBoardMemberRepository _memberRepository;
+        private readonly IKanbanTaskRepository _taskRepository;
+        private readonly IAssignmentRepository _assignmentRepository;
 
         public AssignmentsController(
-            IBoardRepository boardRepository)
+            IBoardRepository boardRepository,
+            IBoardMemberRepository memberRepository,
+            IKanbanTaskRepository taskRepository,
+            IAssignmentRepository assignmentRepository)
         {
             _boardRepository = boardRepository;
+            _memberRepository = memberRepository;
+            _taskRepository = taskRepository;
+            _assignmentRepository = assignmentRepository;
         }
 
         [HttpPut("{memberId}")]
         public async Task<ActionResult> Create(int boardId, int taskId, int memberId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
             }
 
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember userMember = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (userMember is null)
             {
                 return Forbid();
             }
-            KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
+            KanbanTask task = await _taskRepository.GetByIdAndBoardId(taskId, boardId);
             if (task is null)
             {
                 return V1NotFound("Task not found");
             }
-            BoardMember member = await _boardRepository.GetBoardMember(boardId, memberId);
+            BoardMember member = await _memberRepository.GetByBoardIdAndUserId(boardId, memberId);
             if (member is null)
             {
                 return V1NotFound("Member not found");
             }
 
-            bool existsAssignment = await _boardRepository.ExistsAssignment(taskId, member);
+            bool existsAssignment = await _assignmentRepository.ExistsAssignment(taskId, member);
             if (!existsAssignment)
             {
-                await _boardRepository.CreateAssignment(taskId, member);
+                await _assignmentRepository.Insert(taskId, member);
             }
             return NoContent();
         }
@@ -58,19 +67,19 @@ namespace KanbanBoard.WebApi.V1.Controllers
         [HttpDelete("{memberId}")]
         public async Task<ActionResult> Delete(int boardId, int taskId, int memberId)
         {
-            bool boardExists = await _boardRepository.ExistsBoard(boardId);
+            bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
             {
                 return V1NotFound("Board not found");
             }
 
             int userId = int.Parse(HttpContext.User.Identity.Name);
-            BoardMember userMember = await _boardRepository.GetBoardMember(boardId, userId);
+            BoardMember userMember = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
             if (userMember is null)
             {
                 return Forbid();
             }
-            KanbanTask task = await _boardRepository.GetBoardTask(boardId, taskId);
+            KanbanTask task = await _taskRepository.GetByIdAndBoardId(boardId, taskId);
             if (task is null)
             {
                 return V1NotFound("Task not found");
@@ -87,7 +96,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                     Id = boardId
                 }
             };
-            await _boardRepository.RemoveAssignment(taskId, member);
+            await _assignmentRepository.Remove(taskId, member);
 
             return NoContent();
         }
