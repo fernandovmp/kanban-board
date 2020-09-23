@@ -1,23 +1,17 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using KanbanBoard.UnitTests.WebApi.Fakes;
 using KanbanBoard.WebApi.Repositories;
-using KanbanBoard.WebApi.Services;
 using KanbanBoard.WebApi.V1.Controllers;
 using KanbanBoard.WebApi.V1.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Xunit;
 
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
 {
     [Trait("Category", "AssignmentsController")]
-    public class CreateTests : ControllerTestsBase
+    public class CreateTests : AssignmentsControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _fakeControllerContext;
         private const int ExistentBoardId = 1;
         private const int NonExistentBoardId = 10;
         private const int ExistentTaskId = 1;
@@ -26,23 +20,20 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
         private const int ExistentMemberIdWithAssignment = 1;
         private const int NonExistentMemberId = 10;
 
-        public CreateTests()
-        {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
-        }
-
         [Fact]
         public async Task ShouldReturnNoContentWhenSuccess()
         {
             int boardId = ExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -56,10 +47,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = ExistentMemberIdWithAssignment;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -73,10 +68,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = NonExistentMemberId;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -90,10 +89,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = NonExistentMemberId;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -111,10 +114,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = NonExistentMemberId;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -134,10 +141,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = NonExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -151,10 +162,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = NonExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -172,10 +187,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = ExistentBoardId;
             int taskId = NonExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -195,10 +214,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = NonExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -212,10 +235,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = NonExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -233,10 +260,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int boardId = NonExistentBoardId;
             int taskId = ExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
@@ -257,10 +288,14 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.AssignmentsControllerTests
             int taskId = ExistentTaskId;
             int memberId = ExistentMemberIdWithNoAssignments;
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
-            var assignmentsController = new AssignmentsController(_fakeBoardRepository)
+            var assignmentsController = new AssignmentsController(
+                fakeBoardRepository,
+                fakeMemberRepository,
+                fakeTaskRepository,
+                fakeAssignmentRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await assignmentsController.Create(boardId, taskId, memberId);
