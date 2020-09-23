@@ -1,9 +1,5 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using KanbanBoard.UnitTests.WebApi.Fakes;
-using KanbanBoard.UnitTests.WebApi.Mocks;
-using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
 using KanbanBoard.WebApi.V1.Controllers;
 using KanbanBoard.WebApi.V1.ViewModels;
@@ -14,20 +10,10 @@ using Xunit;
 namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
 {
     [Trait("Category", "BoardsController")]
-    public class DeleteTests : ControllerTestsBase
+    public class DeleteTests : BoardsControllerTestsBase
     {
-        private readonly IBoardRepository _fakeBoardRepository;
-        private readonly IUrlHelper _fakeUrlHelper;
-        private readonly ControllerContext _fakeControllerContext;
         private const int ExistentId = 1;
         private const int NonExistentId = 10;
-
-        public DeleteTests()
-        {
-            _fakeBoardRepository = new FakeBoardRepository();
-            _fakeUrlHelper = GetFakeUrlHelper(returnUrl: "Url");
-            _fakeControllerContext = GetFakeControlerContextWithFakeUser(identityName: "1");
-        }
 
         [Fact]
         public async Task DeleteShouldReturnNoContentWhenSuccess()
@@ -35,11 +21,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             int boardId = ExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardsController.Delete(boardId);
@@ -53,11 +40,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             int boardId = NonExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardsController.Delete(boardId);
@@ -71,11 +59,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             int boardId = NonExistentId;
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
-                ControllerContext = _fakeControllerContext,
-                Url = _fakeUrlHelper
+                ControllerContext = fakeControllerContext,
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardsController.Delete(boardId);
@@ -94,11 +83,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "10");
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardsController.Delete(boardId);
@@ -113,11 +103,12 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.BoardsControllerTests
             var fakeDateTimeProvider = new Mock<IDateTimeProvider>();
             ControllerContext context = GetFakeControlerContextWithFakeUser(identityName: "2");
             var boardsController = new BoardsController(
-                _fakeBoardRepository,
-                fakeDateTimeProvider.Object)
+                fakeBoardRepository,
+                fakeDateTimeProvider.Object,
+                fakeMemberRepository)
             {
                 ControllerContext = context,
-                Url = _fakeUrlHelper
+                Url = fakeUrlHelper
             };
 
             ActionResult result = await boardsController.Delete(boardId);
