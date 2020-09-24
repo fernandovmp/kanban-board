@@ -94,7 +94,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 return Forbid();
             }
 
-            KanbanList list = await _listRepository.GetByIdAndBoardId(boardId, model.List);
+            KanbanList list = await _listRepository.GetByIdAndBoardId(model.List, boardId);
             if (list is null)
             {
                 return Forbid();
