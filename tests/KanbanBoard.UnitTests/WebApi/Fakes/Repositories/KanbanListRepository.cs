@@ -15,6 +15,13 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes.Repositories
             _boards = new FakeBoardRepository().Boards;
         }
 
+        public Task<IEnumerable<KanbanList>> GetAllListsOfTheBoard(int boardId) => Async(
+            _boards
+                .FirstOrDefault(board => board.Id == boardId)
+                ?.Lists
+                .AsEnumerable()
+        );
+
         public Task<KanbanList> GetByIdAndBoardId(int listId, int boardId) => Async(
             _boards
                 .FirstOrDefault(board => board.Id == boardId)

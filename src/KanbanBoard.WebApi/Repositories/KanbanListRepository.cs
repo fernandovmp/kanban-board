@@ -11,6 +11,10 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class KanbanListRepository : RepositoryBase, IKanbanListRepository
     {
+        private const string GetAllListsOfTheBoardQuery = @"select lists.id, lists.title, lists.createdOn, lists.modifiedOn, listTasks.taskId
+            from lists
+            left join listTasks on listTasks.listId = lists.id
+            where lists.boardId = @BoardId;";
         private const string InsertQuery = @"insert into lists (boardId, title, createdOn, modifiedOn)
             values (@BoardId, @Title, @CreatedOn, @ModifiedOn) returning id;";
         private const string GetByIdAndBoardIdQuery = @"select title from lists where boardId = @BoardId and id = @ListId";
@@ -18,6 +22,37 @@ namespace KanbanBoard.WebApi.Repositories
 
         public KanbanListRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
+        }
+
+        public async Task<IEnumerable<KanbanList>> GetAllListsOfTheBoard(int boardId)
+        {
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+            using IDbConnection connection = connectionFactory.CreateConnection();
+            var listCache = new Dictionary<int, KanbanList>();
+            _ = await connection.QueryAsync<KanbanList, int?, KanbanList>(
+                GetAllListsOfTheBoardQuery,
+                map: (list, taskId) =>
+                {
+                    if (!listCache.ContainsKey(list.Id))
+                    {
+                        listCache.Add(list.Id, list);
+                    }
+                    if (taskId.HasValue)
+                    {
+                        KanbanList kanbanList = listCache[list.Id];
+                        kanbanList.Tasks.Add(new KanbanTask
+                        {
+                            Id = taskId.Value
+                        });
+                    }
+                    return list;
+                },
+                queryParams,
+                splitOn: "taskId");
+            return listCache.Select(list => list.Value);
         }
 
         public async Task<KanbanList> GetByIdAndBoardId(int listId, int boardId)
