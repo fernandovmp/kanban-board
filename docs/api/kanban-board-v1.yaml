@@ -367,6 +367,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BoardList"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/Forbid"
+        "404":
+          description: Board or List not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
     put:
       tags:
         - Lists
