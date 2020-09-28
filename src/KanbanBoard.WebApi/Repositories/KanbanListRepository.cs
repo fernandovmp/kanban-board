@@ -11,6 +11,16 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class KanbanListRepository : RepositoryBase, IKanbanListRepository
     {
+        private const string GetAllListsOfTheBoardQuery = @"select lists.id, lists.title, lists.createdOn, lists.modifiedOn, listTasks.taskId
+            from lists
+            left join listTasks on listTasks.listId = lists.id
+            where lists.boardId = @BoardId;";
+        private const string GetByIdAndBoardIdWithTasksQuery = @"select lists.title, tasks.id, tasks.summary, tasks.description, tasks.tagColor, assignments.userId
+            from lists
+            left join listTasks on listTasks.listId = lists.id
+            left join tasks on tasks.id = listTasks.taskId
+            left join assignments on assignments.taskId = tasks.id
+            where lists.id = @ListId and lists.boardId = @BoardId;";
         private const string InsertQuery = @"insert into lists (boardId, title, createdOn, modifiedOn)
             values (@BoardId, @Title, @CreatedOn, @ModifiedOn) returning id;";
         private const string GetByIdAndBoardIdQuery = @"select title from lists where boardId = @BoardId and id = @ListId";
@@ -18,6 +28,37 @@ namespace KanbanBoard.WebApi.Repositories
 
         public KanbanListRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
+        }
+
+        public async Task<IEnumerable<KanbanList>> GetAllListsOfTheBoard(int boardId)
+        {
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+            using IDbConnection connection = connectionFactory.CreateConnection();
+            var listCache = new Dictionary<int, KanbanList>();
+            _ = await connection.QueryAsync<KanbanList, int?, KanbanList>(
+                GetAllListsOfTheBoardQuery,
+                map: (list, taskId) =>
+                {
+                    if (!listCache.ContainsKey(list.Id))
+                    {
+                        listCache.Add(list.Id, list);
+                    }
+                    if (taskId.HasValue)
+                    {
+                        KanbanList kanbanList = listCache[list.Id];
+                        kanbanList.Tasks.Add(new KanbanTask
+                        {
+                            Id = taskId.Value
+                        });
+                    }
+                    return list;
+                },
+                queryParams,
+                splitOn: "taskId");
+            return listCache.Select(list => list.Value);
         }
 
         public async Task<KanbanList> GetByIdAndBoardId(int listId, int boardId)
@@ -38,6 +79,55 @@ namespace KanbanBoard.WebApi.Repositories
                 };
             }
             return list;
+        }
+
+        public async Task<KanbanList> GetByIdAndBoardIdWithTasks(int listId, int boardId)
+        {
+            object queryParams = new
+            {
+                ListId = listId,
+                BoardId = boardId
+            };
+            using IDbConnection connection = connectionFactory.CreateConnection();
+            KanbanList listCache = null;
+            var taskCache = new Dictionary<int, KanbanTask>();
+            _ = await connection.QueryAsync<KanbanList, KanbanTask, int?, KanbanList>(
+                GetByIdAndBoardIdWithTasksQuery,
+                map: (list, task, assignedMemberId) =>
+                {
+                    if (listCache is null)
+                    {
+                        listCache = list;
+                    }
+                    if (task is object)
+                    {
+                        if (!taskCache.ContainsKey(task.Id))
+                        {
+                            taskCache.Add(task.Id, task);
+                        }
+                        if (assignedMemberId.HasValue)
+                        {
+                            KanbanTask kanbanTask = taskCache[task.Id];
+                            kanbanTask.Assignments.Add(new BoardMember
+                            {
+                                User = new User
+                                {
+                                    Id = assignedMemberId.Value
+                                }
+                            });
+                        }
+                    }
+                    return list;
+                },
+                queryParams,
+                splitOn: "title,id,userId");
+
+            if (listCache is object)
+            {
+                listCache.Id = listId;
+                listCache.Tasks = taskCache.Select(task => task.Value).ToList();
+            }
+            return listCache;
         }
 
         public async Task<KanbanList> Insert(KanbanList list)
