@@ -18,8 +18,8 @@ namespace KanbanBoard.WebApi.Repositories
             left join users on users.id = assignments.userId
             left join listTasks on listTasks.taskId = tasks.id
             where tasks.boardId = @BoardId and tasks.id = @TaskId";
-        private const string InsertQuery = @"insert into tasks (summary, description, tagColor, createdOn, modifiedOn)
-            values (@Summary, @Description, @TagColor, @CreatedOn, @ModifiedOn) returning id;";
+        private const string InsertQuery = @"insert into tasks (summary, description, tagColor, boardId, createdOn, modifiedOn)
+            values (@Summary, @Description, @TagColor, @BoardId, @CreatedOn, @ModifiedOn) returning id;";
         private const string InsertListTaskQuery = @"insert into listTasks (listId, taskId) values (@ListId, @TaskId);";
 
         public KanbanTaskRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
@@ -79,7 +79,16 @@ namespace KanbanBoard.WebApi.Repositories
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using IDbConnection connection = connectionFactory.CreateConnection();
 
-            int taskId = await connection.ExecuteScalarAsync<int>(InsertQuery, task);
+            object insertParams = new
+            {
+                task.Summary,
+                task.Description,
+                task.TagColor,
+                BoardId = task.Board.Id,
+                task.CreatedOn,
+                task.ModifiedOn
+            };
+            int taskId = await connection.ExecuteScalarAsync<int>(InsertQuery, insertParams);
             object queryParams = new
             {
                 TaskId = taskId,
