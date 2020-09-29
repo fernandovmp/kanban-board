@@ -1,40 +1,79 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Docker.DotNet;
+using KanbanBoard.IntegrationTests.WebApi.Utilities;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Xunit;
 
 namespace KanbanBoard.IntegrationTests.WebApi
 {
-    public class TestFixture : IDisposable
+    public class TestFixture : IAsyncLifetime
     {
-        private const string ConnectionString =
-            "Host=localhost;Port=5432;Database=KanbanBoard;User Id=postgres;Password=postgres1234;";
-        public TestFixture()
+        private DockerClient DockerClient { get; set; }
+        private PostgresContainer PostgresContainer { get; set; }
+
+        public WebApplicationFactory<KanbanBoard.WebApi.Startup> Factory { get; private set; }
+
+        public async Task InitializeAsync()
         {
-            Factory = new WebApplicationFactory<KanbanBoard.WebApi.Startup>();
+            try
+            {
+                DockerClient = GetDockerClient();
+                PostgresContainer = new PostgresContainer();
+                await PostgresContainer.Start(DockerClient);
+                Factory = new WebApplicationFactory<KanbanBoard.WebApi.Startup>()
+                    .WithWebHostBuilder(builder =>
+                    {
+                        builder
+                            .ConfigureAppConfiguration((context, configurationBuilder) =>
+                            {
+                                configurationBuilder.AddInMemoryCollection(new Dictionary<string, string>
+                                {
+                                    ["ConnectionStrings:PostgresConnection"] = PostgresContainer.ConnectionString
+                                });
+                            });
+                    });
+            }
+            catch (Exception)
+            {
+                await PostgresContainer.Remove(DockerClient);
+                throw;
+            }
 
         }
 
-        public WebApplicationFactory<KanbanBoard.WebApi.Startup> Factory { get; }
+        private DockerClient GetDockerClient()
+        {
+            string dockerUri = IsRunningOnWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock";
+            return new DockerClientConfiguration(new Uri(dockerUri))
+                .CreateClient();
+        }
 
-        public void Dispose()
+        private bool IsRunningOnWindows() => Environment.OSVersion.Platform == PlatformID.Win32NT;
+
+        public async Task DisposeAsync()
         {
             Factory.Dispose();
+            await PostgresContainer.Remove(DockerClient);
+            DockerClient.Dispose();
         }
 
         public async Task CleanDatabase()
         {
             using IDbConnection connection =
-                new NpgsqlConnection(ConnectionString);
+                new NpgsqlConnection(PostgresContainer.ConnectionString);
             await connection.ExecuteAsync(@"delete from assignments;
             delete from listTasks;
             delete from tasks;
             delete from lists;
             delete from boardMembers;
-            delete from users;
-            delete from boards;");
+            delete from boards;
+            delete from users;");
         }
     }
 }
