@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.4" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.8" />
