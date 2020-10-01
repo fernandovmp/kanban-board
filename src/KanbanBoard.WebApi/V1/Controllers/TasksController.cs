@@ -2,12 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.Results;
+using KanbanBoard.WebApi.Extensions;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
+using KanbanBoard.WebApi.Repositories.QueryBuilder;
 using KanbanBoard.WebApi.Services;
+using KanbanBoard.WebApi.V1.Validations;
 using KanbanBoard.WebApi.V1.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Morcatko.AspNetCore.JsonMergePatch;
 
 namespace KanbanBoard.WebApi.V1.Controllers
 {
@@ -187,6 +193,41 @@ namespace KanbanBoard.WebApi.V1.Controllers
             };
 
             return CreatedAtAction(actionName: nameof(Show), routeValues, value: kanbanListViewModel);
+        }
+
+        [HttpPatch("{taskId}")]
+        [Consumes(JsonMergePatchDocument.ContentType)]
+        public async Task<ActionResult> Update(
+            [FromBody] JsonMergePatchDocument<PatchTaskViewModel> patchModel,
+            int boardId,
+            int taskId)
+        {
+            var validator = new PatchTaskValidator();
+            validator.ValidateAndEnsureModelStateIsValid(patchModel.Model);
+
+            bool boardExists = await _boardRepository.Exists(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember member = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
+            if (member is null)
+            {
+                return Forbid();
+            }
+
+            KanbanTask task = await _taskRepository.GetByIdAndBoardId(boardId, taskId);
+            if (task is null)
+            {
+                return V1NotFound("Task not found");
+            }
+
+            var patchQueryBuilder = new PatchTaskQueryBuilder(patchModel, taskId);
+
+            await _taskRepository.Update(patchQueryBuilder);
+            return NoContent();
         }
 
         [HttpDelete("{taskId}")]

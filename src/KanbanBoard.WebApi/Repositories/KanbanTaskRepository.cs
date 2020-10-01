@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
 using KanbanBoard.WebApi.Models;
+using KanbanBoard.WebApi.Repositories.QueryBuilder;
 using KanbanBoard.WebApi.Services;
 
 namespace KanbanBoard.WebApi.Repositories
@@ -169,6 +170,15 @@ namespace KanbanBoard.WebApi.Repositories
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using IDbConnection connection = connectionFactory.CreateConnection();
             await connection.ExecuteAsync(DeleteQuery, queryParams);
+            transactionScope.Complete();
+        }
+
+        public async Task Update(IPatchQueryBuilder<PatchTaskParams> patchTaskQueryBuilder)
+        {
+            (string query, PatchTaskParams queryParams) = patchTaskQueryBuilder.Build();
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using IDbConnection connection = connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, queryParams);
             transactionScope.Complete();
         }
     }
