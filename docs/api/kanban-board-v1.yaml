@@ -579,7 +579,7 @@ paths:
       summary: Updates a task partially
       requestBody:
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               type: object
               properties:
