@@ -38,6 +38,51 @@ namespace KanbanBoard.WebApi.V1.Controllers
             _memberRepository = memberRepository;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<KanbanTaskViewModel>> Index(int boardId)
+        {
+            bool boardExists = await _boardRepository.Exists(boardId);
+            if (!boardExists)
+            {
+                return V1NotFound("Board not found");
+            }
+
+            int userId = int.Parse(HttpContext.User.Identity.Name);
+            BoardMember member = await _memberRepository.GetByBoardIdAndUserId(boardId, userId);
+            if (member is null)
+            {
+                return Forbid();
+            }
+
+            IEnumerable<KanbanTask> tasks = await _taskRepository.GetAllTasksOfTheBoard(boardId);
+
+            IEnumerable<KanbanTaskViewModel> viewModel = tasks.Select(task => new KanbanTaskViewModel
+            {
+                Id = task.Id,
+                Summary = task.Summary,
+                Description = task.Description,
+                TagColor = task.TagColor,
+                List = ResolveListLink(boardId, task.List.Id),
+                AssignedTo = task.Assignments.Select(ResolveMemberUrl)
+            });
+            return Ok(viewModel);
+        }
+
+        private string ResolveListLink(int boardId, int listId) => Url
+            .ActionLink(action: nameof(ListsController.Show), controller: "Lists", new
+            {
+                version = "1",
+                boardId,
+                listId
+            });
+
+        private string ResolveMemberUrl(BoardMember member) =>
+            Url.ActionLink(nameof(UsersController.Show), "Users", new
+            {
+                version = "1",
+                userId = member.User.Id
+            });
+
         [HttpGet("{taskId}")]
         public async Task<ActionResult<BoardTaskViewModel>> Show(int boardId, int taskId)
         {

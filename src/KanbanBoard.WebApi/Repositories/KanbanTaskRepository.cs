@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
@@ -12,6 +14,11 @@ namespace KanbanBoard.WebApi.Repositories
         private const string DeleteQuery = @"delete from assignments where taskId = @TaskId;
             delete from listTasks where taskId = @TaskId;
             delete from tasks where id = @TaskId";
+        private const string GetAllTasksOfTheBoardQuery = @"select tasks.id, tasks.summary, tasks.description, tasks.tagColor,
+            listTasks.listId, assignments.userId from tasks
+            left join assignments on assignments.taskId = tasks.id
+            left join listTasks on listTasks.taskId = tasks.id
+            where tasks.boardId = @BoardId";
         private const string GetByIdAndBoardIdQuery = @"select tasks.summary, tasks.description, tasks.tagColor,
             listTasks.listId, users.id, users.name, users.email from tasks
             left join assignments on assignments.taskId = tasks.id
@@ -24,6 +31,49 @@ namespace KanbanBoard.WebApi.Repositories
 
         public KanbanTaskRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
+        }
+
+        public async Task<IEnumerable<KanbanTask>> GetAllTasksOfTheBoard(int boardId)
+        {
+            object queryParams = new
+            {
+                BoardId = boardId
+            };
+            using IDbConnection connection = connectionFactory.CreateConnection();
+
+            var taskCache = new Dictionary<int, KanbanTask>();
+            _ = await connection.QueryAsync<KanbanTask, int, int?, KanbanTask>(
+                GetAllTasksOfTheBoardQuery,
+                map: (task, listId, assignedUserId) =>
+                {
+                    if (!taskCache.ContainsKey(task.Id))
+                    {
+                        task.List = new KanbanList
+                        {
+                            Id = listId
+                        };
+                        taskCache.Add(task.Id, task);
+                    }
+                    KanbanTask kanbanTask = taskCache[task.Id];
+                    if (assignedUserId.HasValue)
+                    {
+                        kanbanTask.Assignments.Add(new BoardMember
+                        {
+                            User = new User
+                            {
+                                Id = assignedUserId.Value
+                            }
+                        });
+
+                    }
+                    return task;
+                },
+                queryParams,
+                splitOn: "id,listId,userId"
+            );
+
+            return taskCache.Select(task => task.Value);
+
         }
 
         public async Task<KanbanTask> GetByIdAndBoardId(int taskId, int boardId)
