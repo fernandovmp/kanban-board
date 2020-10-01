@@ -12,15 +12,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
+    <PackageReference Include="Morcatko.AspNetCore.JsonMergePatch.SystemText" Version="3.0.5" />
     <PackageReference Include="Npgsql" Version="4.1.4" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.6.2" />
   </ItemGroup>
 
   <Target Name="CopyOpenApiSpecification" BeforeTargets="PreBuildEvent">
-    <Copy
-      SourceFiles="../../docs/api/kanban-board-v1.yaml"
-      DestinationFiles="$(ProjectDir)/wwwroot/docs/v1/openapi.yaml"
-      SkipUnchangedFiles="true" />
+    <Copy SourceFiles="../../docs/api/kanban-board-v1.yaml" DestinationFiles="$(ProjectDir)/wwwroot/docs/v1/openapi.yaml" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
