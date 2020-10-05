@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Morcatko.AspNetCore.JsonMergePatch;
 
 namespace KanbanBoard.WebApi
 {
@@ -28,7 +29,8 @@ namespace KanbanBoard.WebApi
                 .AddFluentValidation(configuration =>
                 {
                     configuration.RegisterValidatorsFromAssemblyContaining<Startup>();
-                });
+                })
+                .AddSystemTextJsonMergePatch();
             services.AddPostgresDatabase(connectionString: Configuration.GetConnectionString("PostgresConnection"));
             services.AddApplicationCorsPolicy(configuration: Configuration);
             services.AddPasswordHasher(configuration: Configuration);

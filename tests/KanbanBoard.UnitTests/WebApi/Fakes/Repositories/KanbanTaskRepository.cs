@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
+using KanbanBoard.WebApi.Repositories.QueryBuilder;
 
 namespace KanbanBoard.UnitTests.WebApi.Fakes.Repositories
 {
@@ -14,6 +15,13 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes.Repositories
         {
             _boards = new FakeBoardRepository().Boards;
         }
+
+        public Task<IEnumerable<KanbanTask>> GetAllTasksOfTheBoard(int boardId) => Async(
+            _boards
+                .FirstOrDefault(board => board.Id == boardId)
+                ?.Lists
+                .SelectMany(list => list.Tasks)
+        );
 
         public Task<KanbanTask> GetByIdAndBoardId(int taskId, int boardId) => Async(
             _boards
@@ -43,5 +51,6 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes.Repositories
         private Task<T> Async<T>(T result) => Task.FromResult(result);
 
         public Task Remove(KanbanTask task) => Task.CompletedTask;
+        public Task Update(IPatchQueryBuilder<PatchTaskParams> patchTaskQueryBuilder) => Task.CompletedTask;
     }
 }
