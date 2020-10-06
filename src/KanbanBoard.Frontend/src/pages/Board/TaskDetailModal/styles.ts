@@ -55,16 +55,6 @@ export const SectionTitle = styled.h3`
     margin: 0;
 `;
 
-export const DescriptionCard = styled.div`
-    margin-top: 12px;
-    width: 100%;
-    padding: 12px;
-    background: white;
-    border-radius: 8px;
-    min-height: 100px;
-    font-size: 14px;
-`;
-
 export const EditableSummary = styled(EditableContent)`
     ${Input} {
         width: 100%;

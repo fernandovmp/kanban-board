@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import closeIcon from '../../../assets/close.svg';
-import { EditableContent, ModalPanel } from '../../../components';
+import { ModalPanel } from '../../../components';
 import { Task } from '../../../models';
 import {
     apiGet,
@@ -9,10 +9,10 @@ import {
     isErrorResponse,
 } from '../../../services/kanbanApiService';
 import { getJwtToken } from '../../../services/tokenService';
+import { EditableDescription } from './EditableDescription';
 import { SidePanel } from './SidePanel';
 import {
     CloseButton,
-    DescriptionCard,
     DescriptionWrapper,
     EditableSummary,
     ModalCard,
@@ -105,13 +105,9 @@ export const TaskDetailModal: React.FC = () => {
                     />
                     <DescriptionWrapper>
                         <SectionTitle>Description</SectionTitle>
-                        <EditableContent onEndEdit={() => {}}>
-                            <DescriptionCard>
-                                {(task?.description.length ?? 0) > 0
-                                    ? task?.description
-                                    : 'Adding a description...'}
-                            </DescriptionCard>
-                        </EditableContent>
+                        <EditableDescription
+                            taskDescription={task?.description ?? ''}
+                        />
                     </DescriptionWrapper>
                 </SummaryAndDescriptionSection>
                 <SidePanel task={task} />
