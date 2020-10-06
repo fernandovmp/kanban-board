@@ -52,11 +52,11 @@ function unauthorizedResponse() {
 }
 
 export async function apiGet<TResponse = any>(params: IApiActionParams) {
-    return await _apiAction<TResponse>({ ...params, method: 'GET' });
+    return _apiAction<TResponse>({ ...params, method: 'GET' });
 }
 
 export async function apiPost<TResponse = any>(params: IApiActionParams) {
-    return await _apiAction<TResponse>({ ...params, method: 'POST' });
+    return _apiAction<TResponse>({ ...params, method: 'POST' });
 }
 
 export async function apiPatch<TResponse = any>(params: IApiActionParams) {
@@ -68,11 +68,11 @@ export async function apiPatch<TResponse = any>(params: IApiActionParams) {
 }
 
 export async function apiPut<TResponse = any>(params: IApiActionParams) {
-    return await _apiAction<TResponse>({ ...params, method: 'PUT' });
+    return _apiAction<TResponse>({ ...params, method: 'PUT' });
 }
 
 export async function apiDelete<TResponse = any>(params: IApiActionParams) {
-    return await _apiAction<TResponse>({ ...params, method: 'DELETE' });
+    return _apiAction<TResponse>({ ...params, method: 'DELETE' });
 }
 
 async function _apiAction<TResponse = any>(
