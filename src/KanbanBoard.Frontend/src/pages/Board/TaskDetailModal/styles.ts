@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Card } from '../../../components';
+import { Card, EditableContent, Input } from '../../../components';
 
 export const ModalCard = styled(Card)`
     display: flex;
@@ -22,6 +22,7 @@ export const CloseButton = styled.img`
 
 export const TaskSummary = styled.h2`
     margin: 0;
+    height: 30px;
 `;
 
 interface ITaskTagProps {
@@ -62,4 +63,11 @@ export const DescriptionCard = styled.div`
     border-radius: 8px;
     min-height: 100px;
     font-size: 14px;
+`;
+
+export const EditableSummary = styled(EditableContent)`
+    ${Input} {
+        width: 100%;
+        height: 30px;
+    }
 `;

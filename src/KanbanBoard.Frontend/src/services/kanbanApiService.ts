@@ -23,17 +23,21 @@ export interface IApiResponse<T> {
 
 interface IApiFetchParams extends IApiActionParams {
     method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+    contentType?: 'application/json' | 'application/merge-patch+json';
 }
 
 function apiFetch(params: IApiFetchParams) {
-    const { uri, method, body, bearerToken } = params;
+    const { uri, method, body, bearerToken, contentType } = params;
     const url = `${baseUrl}/api/${uri}`;
     const authorizationHeader = bearerToken
         ? [['authorization', `Bearer ${bearerToken}`]]
         : [];
     return fetch(url, {
         method: method,
-        headers: [['content-type', 'application/json'], ...authorizationHeader],
+        headers: [
+            ['content-type', contentType ?? 'application/json'],
+            ...authorizationHeader,
+        ],
         body: body ? JSON.stringify(body) : undefined,
     });
 }
@@ -53,6 +57,14 @@ export async function apiGet<TResponse = any>(params: IApiActionParams) {
 
 export async function apiPost<TResponse = any>(params: IApiActionParams) {
     return await _apiAction<TResponse>({ ...params, method: 'POST' });
+}
+
+export async function apiPatch<TResponse = any>(params: IApiActionParams) {
+    return _apiAction<TResponse>({
+        ...params,
+        method: 'PATCH',
+        contentType: 'application/merge-patch+json',
+    });
 }
 
 export async function apiPut<TResponse = any>(params: IApiActionParams) {
