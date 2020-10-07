@@ -72,24 +72,9 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
             return;
         }
         const newTask = response.data!;
-        const updateList = (lists: TaskList[]) => {
-            const listWithContainsTheTask = lists.find(
-                (list) => list.id === taskList.id
-            );
-            if (!listWithContainsTheTask) {
-                return lists;
-            }
-            const filteredLists = lists.filter(
-                (list) => list.id !== taskList.id
-            );
-            const updatedList = {
-                ...listWithContainsTheTask,
-                tasks: [...listWithContainsTheTask.tasks, newTask],
-            };
-            const finalLists = [...filteredLists, updatedList];
-            return finalLists.sort((a, b) => a.id - b.id);
-        };
-        boardContext.setLists(updateList(boardContext.lists));
+        boardContext.setLists(
+            addTaskToList(boardContext.lists, taskList.id, newTask)
+        );
     };
 
     const handleEditListTitle = async (value: string) => {
