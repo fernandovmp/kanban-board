@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import closeIcon from '../../../assets/close.svg';
-import { EditableContent, ModalPanel } from '../../../components';
+import { ModalPanel } from '../../../components';
 import { Task } from '../../../models';
-import { apiGet, isErrorResponse } from '../../../services/kanbanApiService';
+import {
+    apiGet,
+    apiPatch,
+    isErrorResponse,
+} from '../../../services/kanbanApiService';
+import { getJwtToken } from '../../../services/tokenService';
+import { EditableDescription } from './EditableDescription';
 import { SidePanel } from './SidePanel';
 import {
     CloseButton,
-    DescriptionCard,
     DescriptionWrapper,
+    EditableSummary,
     ModalCard,
     SectionTitle,
     SummaryAndDescriptionSection,
@@ -18,6 +24,7 @@ import {
 
 export const TaskDetailModal: React.FC = () => {
     const [task, setTask] = useState<Task>();
+    const [summary, setSummary] = useState('');
     const history = useHistory();
     const { boardId, taskId } = useParams();
 
@@ -41,6 +48,7 @@ export const TaskDetailModal: React.FC = () => {
                 return;
             }
             setTask(response.data!);
+            setSummary(response.data!.summary);
         };
         fetchTask();
     }, [boardId, taskId, history]);
@@ -53,7 +61,25 @@ export const TaskDetailModal: React.FC = () => {
         event: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => event.stopPropagation();
 
-    const handleEditSummary = (value: string) => {};
+    const handleEditSummary = async (value: string) => {
+        const token = getJwtToken();
+        const newSummary = value.trim();
+        if (newSummary === '') return;
+        const response = await apiPatch({
+            uri: `v1/boards/${boardId}/tasks/${taskId}`,
+            body: {
+                summary: newSummary,
+            },
+            bearerToken: token,
+        });
+        if (response.data && isErrorResponse(response.data)) {
+            if (response.data.status === 401 || response.data.status === 403) {
+                history.push('/login');
+            }
+            return;
+        }
+        setSummary(value);
+    };
 
     return (
         <ModalPanel onClick={handleClose}>
@@ -64,9 +90,12 @@ export const TaskDetailModal: React.FC = () => {
                     onClick={handleClose}
                 />
                 <SummaryAndDescriptionSection>
-                    <EditableContent onEndEdit={handleEditSummary}>
-                        <TaskSummary>{task?.summary}</TaskSummary>
-                    </EditableContent>
+                    <EditableSummary
+                        initialInputValue={summary}
+                        onEndEdit={handleEditSummary}
+                    >
+                        <TaskSummary>{summary}</TaskSummary>
+                    </EditableSummary>
                     <TaskTag
                         color={
                             task !== undefined
@@ -76,13 +105,9 @@ export const TaskDetailModal: React.FC = () => {
                     />
                     <DescriptionWrapper>
                         <SectionTitle>Description</SectionTitle>
-                        <EditableContent onEndEdit={() => {}}>
-                            <DescriptionCard>
-                                {(task?.description.length ?? 0) > 0
-                                    ? task?.description
-                                    : 'Adding a description...'}
-                            </DescriptionCard>
-                        </EditableContent>
+                        <EditableDescription
+                            taskDescription={task?.description ?? ''}
+                        />
                     </DescriptionWrapper>
                 </SummaryAndDescriptionSection>
                 <SidePanel task={task} />

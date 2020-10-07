@@ -9,33 +9,21 @@ import {
     apiDelete,
     isErrorResponse,
 } from '../../../../services/kanbanApiService';
+import { EditableTagColor } from '../EditableTagColor';
 import { EditAssignments } from '../EditAssignments';
 import {
     AssignedMemberName,
     AssignmentSectionTitle,
     Button,
-    Color,
     SectionTitle,
     SidePanelWrapper,
-    TagColorInput,
-    TagColors,
 } from './styles';
-
-const colors = [
-    '#FFEA31',
-    '#FF3131',
-    '#0069E4',
-    '#00E409',
-    '#8E00E4',
-    '#9F9F9F',
-];
 
 interface ISidePanelProps {
     task?: Task;
 }
 
 export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
-    const [selectedTagColor, setSelectedTagColor] = useState('');
     const [showAssignmentsModal, setShowAssignmentsModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [taskAssignments, setTaskAssignments] = useState<User[]>([]);
@@ -43,7 +31,6 @@ export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
     const history = useHistory();
     const { boardId } = useParams();
 
-    useEffect(() => setSelectedTagColor(`#${task?.tagColor}`), [task]);
     useEffect(() => setTaskAssignments(task?.assignments ?? []), [task]);
 
     const handleTaskDeletion = async () => {
@@ -88,19 +75,7 @@ export const SidePanel: React.FC<ISidePanelProps> = ({ task }) => {
         <>
             <SidePanelWrapper>
                 <SectionTitle>Tag</SectionTitle>
-                <TagColorInput
-                    value={selectedTagColor}
-                    onChange={(e) => setSelectedTagColor(e.target.value)}
-                />
-                <TagColors>
-                    {colors.map((color, index) => (
-                        <Color
-                            key={index}
-                            color={color}
-                            onClick={() => setSelectedTagColor(color)}
-                        />
-                    ))}
-                </TagColors>
+                <EditableTagColor tagColor={task?.tagColor ?? ''} />
                 <Button onClick={() => setShowDeleteModal(true)}>
                     <img src={deleteIcon} alt="Delete" /> DELETE TASK
                 </Button>

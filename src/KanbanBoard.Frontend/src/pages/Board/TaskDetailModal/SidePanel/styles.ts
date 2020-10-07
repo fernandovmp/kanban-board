@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { DefaultButton, Input } from '../../../../components';
+import { DefaultButton } from '../../../../components';
 
 export const SidePanelWrapper = styled.section`
     margin-top: 30px;
@@ -11,29 +11,6 @@ export const SidePanelWrapper = styled.section`
 
 export const SectionTitle = styled.h3`
     margin: 0;
-`;
-
-export const TagColorInput = styled(Input)`
-    margin-top: 12px;
-`;
-
-export const TagColors = styled.ul`
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 0;
-`;
-
-interface IColorProps {
-    color: string;
-}
-
-export const Color = styled.li<IColorProps>`
-    width: 30px;
-    height: 30px;
-    background-color: ${(props) => props.color};
-    border-radius: 15px;
 `;
 
 export const Button = styled(DefaultButton)`
