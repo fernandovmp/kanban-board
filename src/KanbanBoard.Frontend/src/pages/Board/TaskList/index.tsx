@@ -80,7 +80,6 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
     const handleEditListTitle = async (value: string) => {
         const newTitle = value.trim();
         if (newTitle === '') return;
-        setListTitle(newTitle);
         const token = sessionStorage.getItem('jwtToken') ?? '';
         const response = await apiPut({
             uri: `v1/boards/${boardId}/lists/${taskList.id}`,
@@ -94,7 +93,9 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
             if (response.data.status === 401 || response.data.status === 403) {
                 history.push('/login');
             }
+            return;
         }
+        setListTitle(newTitle);
     };
 
     const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
