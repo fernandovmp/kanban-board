@@ -4,12 +4,18 @@ import addIcon from '../../../assets/add.svg';
 import optionsIcon from '../../../assets/more_vert.svg';
 import { IconButton } from '../../../components';
 import { BoardContext } from '../../../contexts';
+import {
+    addTaskToList,
+    removeTaskFromList,
+} from '../../../contexts/BoardContext/helpers';
 import { SummarizedTask, TaskList } from '../../../models';
 import {
+    apiPatch,
     apiPost,
     apiPut,
     isErrorResponse,
 } from '../../../services/kanbanApiService';
+import { getJwtToken } from '../../../services/tokenService';
 import { ListOptions } from './ListOptions';
 import {
     Button,
@@ -66,24 +72,9 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
             return;
         }
         const newTask = response.data!;
-        const updateList = (lists: TaskList[]) => {
-            const listWithContainsTheTask = lists.find(
-                (list) => list.id === taskList.id
-            );
-            if (!listWithContainsTheTask) {
-                return lists;
-            }
-            const filteredLists = lists.filter(
-                (list) => list.id !== taskList.id
-            );
-            const updatedList = {
-                ...listWithContainsTheTask,
-                tasks: [...listWithContainsTheTask.tasks, newTask],
-            };
-            const finalLists = [...filteredLists, updatedList];
-            return finalLists.sort((a, b) => a.id - b.id);
-        };
-        boardContext.setLists(updateList(boardContext.lists));
+        boardContext.setLists(
+            addTaskToList(boardContext.lists, taskList.id, newTask)
+        );
     };
 
     const handleEditListTitle = async (value: string) => {
@@ -106,8 +97,40 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
         }
     };
 
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const data = event.dataTransfer.getData('task');
+        const task = JSON.parse(data) as SummarizedTask;
+        if (tasks.find((_task) => _task.id === task.id)) return;
+
+        const listData = event.dataTransfer.getData('listId');
+        const listId = Number(listData);
+        let taskLists = removeTaskFromList(boardContext.lists, listId, task.id);
+        taskLists = addTaskToList(taskLists, taskList.id, task);
+        boardContext.setLists(taskLists);
+
+        const token = getJwtToken();
+        const response = await apiPatch({
+            uri: `v1/boards/${boardId}/tasks/${task.id}`,
+            body: {
+                list: taskList.id,
+            },
+            bearerToken: token,
+        });
+        if (response.data && isErrorResponse(response.data)) {
+            if (response.data.status === 401 || response.data.status === 403) {
+                history.push('/login');
+            }
+        }
+    };
+
     return (
-        <ListWrapper>
+        <ListWrapper onDragOver={handleDragOver} onDrop={handleDrop}>
             <ListHeader>
                 <EditableListTitle
                     onEndEdit={handleEditListTitle}
@@ -127,7 +150,7 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
                 )}
             </ListHeader>
             {tasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard key={task.id} task={task} listId={taskList.id} />
             ))}
             {isCreatingTask ? (
                 <>
