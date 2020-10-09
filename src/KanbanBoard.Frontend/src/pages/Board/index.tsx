@@ -11,8 +11,10 @@ import {
 } from '../../services/kanbanApiService';
 import { BoardHeader } from './BoardHeader';
 import {
+    BoardSection,
     ButtonsWrapper,
     CancelButton,
+    ListWrapper,
     Main,
     NewListButton,
     SaveButton,
@@ -20,7 +22,7 @@ import {
 } from './styles';
 import { TaskDetailModal } from './TaskDetailModal';
 import { TaskListView } from './TaskList';
-import { ListWrapper } from './TaskList/styles';
+import { ListContent } from './TaskList/styles';
 
 export const BoardPage: React.FC = () => {
     const [board, setBoard] = useState<Board>();
@@ -97,37 +99,47 @@ export const BoardPage: React.FC = () => {
         >
             <Main>
                 <BoardHeader boardTitle={board?.title ?? ''} />
-                <TaskListsWrapper>
-                    {boardLists.map((list) => (
-                        <TaskListView key={list.id} taskList={list} />
-                    ))}
-                    {isCreatingList ? (
+                <BoardSection>
+                    <TaskListsWrapper>
+                        {boardLists.map((list) => (
+                            <ListWrapper>
+                                <TaskListView key={list.id} taskList={list} />
+                            </ListWrapper>
+                        ))}
                         <ListWrapper>
-                            <Input
-                                autoFocus
-                                value={newListTitle}
-                                onChange={(e) =>
-                                    setNewListTitle(e.target.value)
-                                }
-                            />
-                            <ButtonsWrapper>
-                                <CancelButton
-                                    onClick={() => setIsCreatingList(false)}
+                            {isCreatingList ? (
+                                <ListContent>
+                                    <Input
+                                        autoFocus
+                                        value={newListTitle}
+                                        onChange={(e) =>
+                                            setNewListTitle(e.target.value)
+                                        }
+                                    />
+                                    <ButtonsWrapper>
+                                        <CancelButton
+                                            onClick={() =>
+                                                setIsCreatingList(false)
+                                            }
+                                        >
+                                            CANCEL
+                                        </CancelButton>
+                                        <SaveButton onClick={handleCreateList}>
+                                            SAVE
+                                        </SaveButton>
+                                    </ButtonsWrapper>
+                                </ListContent>
+                            ) : (
+                                <NewListButton
+                                    onClick={() => setIsCreatingList(true)}
                                 >
-                                    CANCEL
-                                </CancelButton>
-                                <SaveButton onClick={handleCreateList}>
-                                    SAVE
-                                </SaveButton>
-                            </ButtonsWrapper>
+                                    <img src={addIcon} alt="New List" />
+                                    New list
+                                </NewListButton>
+                            )}
                         </ListWrapper>
-                    ) : (
-                        <NewListButton onClick={() => setIsCreatingList(true)}>
-                            <img src={addIcon} alt="New List" />
-                            New list
-                        </NewListButton>
-                    )}
-                </TaskListsWrapper>
+                    </TaskListsWrapper>
+                </BoardSection>
                 <Route
                     exact
                     path="/board/:boardId/task/:taskId"

@@ -2,19 +2,37 @@ import styled from 'styled-components';
 import { DefaultButton, Input, PrimaryButton } from '../../components';
 
 export const Main = styled.main`
-    padding: 0 60px;
+    display: flex;
+    flex-direction: column;
+    height: 92%;
+`;
+
+export const BoardSection = styled.section`
+    position: relative;
+    flex-grow: 1;
 `;
 
 export const TaskListsWrapper = styled.div`
     display: flex;
-    gap: 20px;
     align-items: flex-start;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow-x: auto;
+    padding-left: 6px;
+`;
+
+export const ListWrapper = styled.div`
+    padding: 8px;
 `;
 
 export const NewListButton = styled(DefaultButton)`
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
-    width: 230px;
+    min-width: 230px;
+    padding: 4px;
 `;
 
 export const BoardTitleInput = styled(Input)`

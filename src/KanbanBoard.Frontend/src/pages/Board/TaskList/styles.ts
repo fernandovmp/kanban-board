@@ -7,9 +7,9 @@ import {
     PrimaryButton,
 } from '../../../components';
 
-export const ListWrapper = styled(Card)`
+export const ListContent = styled(Card)`
     background: #f0f0f0;
-    width: 240px;
+    min-width: 240px;
     padding: 10px 6px;
     display: flex;
     flex-direction: column;

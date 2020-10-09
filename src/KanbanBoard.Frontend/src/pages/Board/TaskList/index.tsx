@@ -22,9 +22,9 @@ import {
     ButtonsWrapper,
     CancelButton,
     EditableListTitle,
+    ListContent,
     ListHeader,
     ListTitle,
-    ListWrapper,
     NewTaskInput,
     SaveButton,
 } from './styles';
@@ -131,7 +131,7 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
     };
 
     return (
-        <ListWrapper onDragOver={handleDragOver} onDrop={handleDrop}>
+        <ListContent onDragOver={handleDragOver} onDrop={handleDrop}>
             <ListHeader>
                 <EditableListTitle
                     onEndEdit={handleEditListTitle}
@@ -175,6 +175,6 @@ export const TaskListView: React.FC<ITaskListProps> = ({ taskList }) => {
                     New Task
                 </Button>
             )}
-        </ListWrapper>
+        </ListContent>
     );
 };
