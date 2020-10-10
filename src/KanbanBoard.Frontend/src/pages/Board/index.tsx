@@ -102,8 +102,8 @@ export const BoardPage: React.FC = () => {
                 <BoardSection>
                     <TaskListsWrapper>
                         {boardLists.map((list) => (
-                            <ListWrapper>
-                                <TaskListView key={list.id} taskList={list} />
+                            <ListWrapper key={list.id}>
+                                <TaskListView taskList={list} />
                             </ListWrapper>
                         ))}
                         <ListWrapper>
