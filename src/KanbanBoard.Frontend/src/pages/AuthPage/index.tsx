@@ -10,6 +10,7 @@ import {
 import {
     AuthPageLink,
     AuthPageWrapper,
+    ErrorMessageText,
     Main,
     SubmitButton,
     Title,
@@ -29,6 +30,7 @@ type LoginResponse = {
 };
 
 export const AuthPage: React.FC = () => {
+    const [errorMessage, setErrorMessage] = useState('');
     const [formData, setFormData] = useState(defaultFormData);
     const [errors, setErrors] = useState<ValidationError[]>([]);
     const history = useHistory();
@@ -79,6 +81,7 @@ export const AuthPage: React.FC = () => {
             },
         });
         if (isErrorResponse(response.data)) {
+            setErrorMessage(response.data.message);
             const apiErrors = response.data.errors ?? [];
             setErrors(mapApiErrorsToValidationErrors(apiErrors));
             return;
@@ -99,6 +102,7 @@ export const AuthPage: React.FC = () => {
             },
         });
         if (isErrorResponse(response.data)) {
+            setErrorMessage(response.data.message);
             const apiErrors = response.data.errors ?? [];
             setErrors(mapApiErrorsToValidationErrors(apiErrors));
             return;
@@ -122,6 +126,9 @@ export const AuthPage: React.FC = () => {
         <Main>
             <AuthPageWrapper as="form" onSubmit={handleSubmit}>
                 <Title>Kanban Board</Title>
+                {errorMessage && (
+                    <ErrorMessageText>{errorMessage}</ErrorMessageText>
+                )}
                 <Route exact path="/signup">
                     <FormField
                         name="name"

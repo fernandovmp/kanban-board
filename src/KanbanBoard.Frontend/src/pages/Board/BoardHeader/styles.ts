@@ -5,7 +5,7 @@ export const Header = styled.header`
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
-    padding: 20px 0;
+    padding: 20px 12px;
 `;
 
 export const BoardTitle = styled.h2`

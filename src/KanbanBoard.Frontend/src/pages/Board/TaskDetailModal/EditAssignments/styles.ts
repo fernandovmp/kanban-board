@@ -21,6 +21,7 @@ export const EmailInput = styled(Input)`
 `;
 
 export const ButtonsWrapper = styled.div`
+    margin-top: 8px;
     display: flex;
     gap: 10px;
     justify-content: center;

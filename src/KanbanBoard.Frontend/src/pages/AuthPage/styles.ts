@@ -30,5 +30,14 @@ export const AuthPageLink = styled(Link)`
 export const Title = styled.h1`
     align-self: center;
     margin-top: 0;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
+`;
+
+export const ErrorMessageText = styled.p`
+    background-color: #ffbaba;
+    margin-bottom: -5px;
+    padding: 16px;
+    border-radius: 4px;
+    color: #ff0000;
+    font-size: smaller;
 `;

@@ -8,3 +8,4 @@ export * from './Input';
 export * from './Members';
 export * from './Modal';
 export * from './Overlay';
+export * from './ResizableTextArea';

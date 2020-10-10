@@ -7,7 +7,11 @@ import {
     DeleteModal,
     EditableContent,
 } from '../../../components';
-import { apiDelete, apiPut } from '../../../services/kanbanApiService';
+import {
+    apiDelete,
+    apiPut,
+    isErrorResponse,
+} from '../../../services/kanbanApiService';
 import { MembersModal } from '../MembersModal';
 import { BoardTitle, Header } from './styles';
 
@@ -48,13 +52,16 @@ export const BoardHeader: React.FC<IBoardHeaderProps> = ({ boardTitle }) => {
             history.push('/login');
             return;
         }
-        await apiPut({
+        const response = await apiPut({
             uri: `v1/boards/${boardId}`,
             bearerToken: token,
             body: {
                 title: newTitle,
             },
         });
+        if (response.data && isErrorResponse(response.data)) {
+            setTitle(title);
+        }
     };
 
     return (

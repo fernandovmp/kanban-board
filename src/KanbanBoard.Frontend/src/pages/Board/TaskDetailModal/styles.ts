@@ -1,14 +1,19 @@
 import styled from 'styled-components';
-import { Card, EditableContent, Input } from '../../../components';
+import { Card, EditableContent, Input, ModalPanel } from '../../../components';
+
+export const TaskModalPanel = styled(ModalPanel)`
+    overflow-y: auto;
+`;
 
 export const ModalCard = styled(Card)`
     display: flex;
     background: #f0f0f0;
     padding: 24px;
     margin: 30vh;
-    height: 80%;
+    min-height: 80%;
     width: 100%;
     position: relative;
+    top: 70px;
 `;
 
 export const CloseButton = styled.img`

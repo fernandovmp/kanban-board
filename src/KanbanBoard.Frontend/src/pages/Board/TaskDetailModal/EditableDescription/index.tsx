@@ -59,6 +59,7 @@ export const EditableDescription: React.FC<IEditableDescription> = ({
                     <DescriptionTextArea
                         value={newDescription}
                         onChange={(e) => setNewDescription(e.target.value)}
+                        minRows={5}
                         autoFocus
                     />
                     <ButtonsWrapper>

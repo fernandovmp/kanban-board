@@ -5,23 +5,28 @@ export const AppBarHeader = styled.header`
     background-color: var(--primary);
     align-items: center;
     justify-content: center;
-    height: 50px;
+    min-height: 50px;
     width: 100%;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
 `;
 
-export const ToolBar = styled.div`
+interface IToolBarProps {
+    align: 'left' | 'right';
+}
+
+export const ToolBar = styled.div<IToolBarProps>`
     flex: 1;
     display: flex;
-    justify-content: flex-end;
-    margin-right: 24px;
+    justify-content: ${(props) =>
+        props.align === 'right' ? 'flex-end' : 'flex-start'};
+    ${(props) => `margin-${props.align}`}: 24px;
 `;
 
 export const AppName = styled.strong`
     font-size: large;
 `;
 
-export const LogOutIcon = styled.img`
+export const Icon = styled.img`
     :hover {
         cursor: pointer;
     }
