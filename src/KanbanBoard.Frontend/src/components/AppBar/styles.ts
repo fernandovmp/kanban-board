@@ -5,7 +5,7 @@ export const AppBarHeader = styled.header`
     background-color: var(--primary);
     align-items: center;
     justify-content: center;
-    height: 50px;
+    min-height: 50px;
     width: 100%;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
 `;

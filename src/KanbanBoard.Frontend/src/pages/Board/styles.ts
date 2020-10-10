@@ -4,7 +4,7 @@ import { DefaultButton, Input, PrimaryButton } from '../../components';
 export const Main = styled.main`
     display: flex;
     flex-direction: column;
-    height: 92%;
+    flex-grow: 1;
 `;
 
 export const BoardSection = styled.section`
