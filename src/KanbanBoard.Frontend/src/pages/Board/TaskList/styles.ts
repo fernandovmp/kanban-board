@@ -5,6 +5,7 @@ import {
     EditableContent,
     Input,
     PrimaryButton,
+    ResizableTextArea,
 } from '../../../components';
 
 export const ListContent = styled(Card)`
@@ -25,10 +26,8 @@ export const Button = styled(DefaultButton)`
     font-size: small;
 `;
 
-export const NewTaskInput = styled.textarea`
+export const NewTaskInput = styled(ResizableTextArea)`
     border: none;
-    resize: vertical;
-    max-height: 200px;
     &:focus {
         outline: none;
     }
