@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { DefaultButton, PrimaryButton } from '../../../../components';
+import {
+    DefaultButton,
+    PrimaryButton,
+    ResizableTextArea,
+} from '../../../../components';
 
 export const DescriptionCard = styled.div`
     margin-top: 12px;
@@ -11,16 +15,14 @@ export const DescriptionCard = styled.div`
     font-size: 14px;
 `;
 
-export const DescriptionTextArea = styled.textarea`
+export const DescriptionTextArea = styled(ResizableTextArea)`
     margin-top: 12px;
     width: 100%;
     padding: 12px;
     background: white;
     border-radius: 8px;
-    min-height: 100px;
     font-size: 14px;
     border: none;
-    resize: vertical;
     &:focus {
         outline: none;
     }
