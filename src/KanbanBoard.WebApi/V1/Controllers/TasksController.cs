@@ -246,7 +246,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 return Forbid();
             }
 
-            KanbanTask task = await _taskRepository.GetByIdAndBoardId(boardId, taskId);
+            KanbanTask task = await _taskRepository.GetByIdAndBoardId(taskId, boardId);
             if (task is null)
             {
                 return V1NotFound("Task not found");
