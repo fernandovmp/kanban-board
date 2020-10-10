@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import closeIcon from '../../../assets/close.svg';
-import { ModalPanel } from '../../../components';
 import { Task } from '../../../models';
 import {
     apiGet,
@@ -18,6 +17,7 @@ import {
     ModalCard,
     SectionTitle,
     SummaryAndDescriptionSection,
+    TaskModalPanel,
     TaskSummary,
     TaskTag,
 } from './styles';
@@ -82,7 +82,7 @@ export const TaskDetailModal: React.FC = () => {
     };
 
     return (
-        <ModalPanel onClick={handleClose}>
+        <TaskModalPanel onClick={handleClose}>
             <ModalCard onClick={preventPropagation}>
                 <CloseButton
                     src={closeIcon}
@@ -112,6 +112,6 @@ export const TaskDetailModal: React.FC = () => {
                 </SummaryAndDescriptionSection>
                 <SidePanel task={task} />
             </ModalCard>
-        </ModalPanel>
+        </TaskModalPanel>
     );
 };
