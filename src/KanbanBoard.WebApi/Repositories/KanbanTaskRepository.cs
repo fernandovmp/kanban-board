@@ -12,23 +12,23 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class KanbanTaskRepository : RepositoryBase, IKanbanTaskRepository
     {
-        private const string DeleteQuery = @"delete from assignments where taskId = @TaskId;
-            delete from listTasks where taskId = @TaskId;
+        private const string DeleteQuery = @"delete from assignments where task_id = @TaskId;
+            delete from list_tasks where task_id = @TaskId;
             delete from tasks where id = @TaskId";
-        private const string GetAllTasksOfTheBoardQuery = @"select tasks.id, tasks.summary, tasks.description, tasks.tagColor,
-            listTasks.listId, assignments.userId from tasks
-            left join assignments on assignments.taskId = tasks.id
-            left join listTasks on listTasks.taskId = tasks.id
-            where tasks.boardId = @BoardId";
-        private const string GetByIdAndBoardIdQuery = @"select tasks.summary, tasks.description, tasks.tagColor,
-            listTasks.listId, users.id, users.name, users.email from tasks
-            left join assignments on assignments.taskId = tasks.id
-            left join users on users.id = assignments.userId
-            left join listTasks on listTasks.taskId = tasks.id
-            where tasks.boardId = @BoardId and tasks.id = @TaskId";
-        private const string InsertQuery = @"insert into tasks (summary, description, tagColor, boardId, createdOn, modifiedOn)
+        private const string GetAllTasksOfTheBoardQuery = @"select tasks.id, tasks.summary, tasks.description, tasks.tag_color,
+            listTasks.list_id, assignments.user_id from tasks
+            left join assignments on assignments.task_id = tasks.id
+            left join list_tasks on list_tasks.task_id = tasks.id
+            where tasks.board_id = @BoardId";
+        private const string GetByIdAndBoardIdQuery = @"select tasks.summary, tasks.description, tasks.tag_color,
+            list_tasks.list_id, users.id, users.name, users.email from tasks
+            left join assignments on assignments.task_id = tasks.id
+            left join users on users.id = assignments.user_id
+            left join list_tasks on list_tasks.task_id = tasks.id
+            where tasks.board_id = @BoardId and tasks.id = @TaskId";
+        private const string InsertQuery = @"insert into tasks (summary, description, tag_color, board_id, created_on, modified_on)
             values (@Summary, @Description, @TagColor, @BoardId, @CreatedOn, @ModifiedOn) returning id;";
-        private const string InsertListTaskQuery = @"insert into listTasks (listId, taskId) values (@ListId, @TaskId);";
+        private const string InsertListTaskQuery = @"insert into list_tasks (list_id, task_id) values (@ListId, @TaskId);";
 
         public KanbanTaskRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
@@ -70,7 +70,7 @@ namespace KanbanBoard.WebApi.Repositories
                     return task;
                 },
                 queryParams,
-                splitOn: "id,listId,userId"
+                splitOn: "id,list_id,user_id"
             );
 
             return taskCache.Select(task => task.Value);
@@ -110,7 +110,7 @@ namespace KanbanBoard.WebApi.Repositories
                     return task;
                 },
                 queryParams,
-                splitOn: "listId,id"
+                splitOn: "list_id,id"
             );
 
             if (kanbanTask is object)

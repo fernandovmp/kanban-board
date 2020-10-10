@@ -12,27 +12,27 @@ namespace KanbanBoard.WebApi.Repositories
     public class BoardRepository : IBoardRepository
     {
         private const string ExistsQuery = @"select 1 from boards where id = @Id;";
-        private const string DeleteBoardQuery = @"delete from listTasks where listId in (select id from lists where boardId = @BoardId);
-            delete from assignments where boardId = @BoardId;
-            delete from boardMembers where boardId = @BoardId;
-            delete from tasks where boardId = @BoardId;
-            delete from lists where boardId = @BoardId;
+        private const string DeleteBoardQuery = @"delete from list_tasks where list_id in (select id from lists where board_id = @BoardId);
+            delete from assignments where board_id = @BoardId;
+            delete from board_members where board_id = @BoardId;
+            delete from tasks where board_id = @BoardId;
+            delete from lists where board_id = @BoardId;
             delete from boards where id = @BoardId;";
-        private const string GetAllUserBoardsQuery = @"select boards.id, boards.title, boards.createdOn, boards.modifiedOn from boards
-            inner join boardmembers on boardmembers.boardId = boards.id
-            where boardmembers.userId = @UserId;";
-        private const string GetByIdWithListsTasksAndMembersQuery = @"select boards.title, users.id, users.name, users.email, boardMembers.isAdmin,
-            lists.id, lists.title, tasks.id, tasks.summary, tasks.tagColor, assignments.userId from boards
-            left join boardMembers on boardMembers.boardId = boards.Id
-            left join users on users.id = boardMembers.userId
-            left join lists on lists.boardId = boards.id
-            left join listTasks on listTasks.listId = lists.id
-            left join tasks on listTasks.taskId = tasks.id
-            left join assignments on assignments.taskId = tasks.id
+        private const string GetAllUserBoardsQuery = @"select boards.id, boards.title, boards.created_on, boards.modified_on from boards
+            inner join board_members on board_members.board_id = boards.id
+            where board_members.user_id = @UserId;";
+        private const string GetByIdWithListsTasksAndMembersQuery = @"select boards.title, users.id, users.name, users.email, board_members.is_admin,
+            lists.id, lists.title, tasks.id, tasks.summary, tasks.tag_color, assignments.user_id from boards
+            left join board_members on board_members.board_id = boards.Id
+            left join users on users.id = board_members.user_id
+            left join lists on lists.board_id = boards.id
+            left join list_tasks on list_tasks.list_id = lists.id
+            left join tasks on list_tasks.task_id = tasks.id
+            left join assignments on assignments.task_id = tasks.id
             where boards.id = @BoardId;";
-        private const string InsertQuery = @"insert into boards (title, createdOn, modifiedOn, createdBy)
+        private const string InsertQuery = @"insert into boards (title, created_on, modified_on, created_by)
             values (@Title, @CreatedOn, @ModifiedOn, @CreatedBy) returning id;";
-        private const string UpdateQuery = @"update boards set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
+        private const string UpdateQuery = @"update boards set title = @Title, modified_on = @ModifiedOn where id = @Id;";
         private readonly IDbConnectionFactory _connectionFactory;
 
         public BoardRepository(IDbConnectionFactory connectionFactory)
@@ -120,7 +120,7 @@ namespace KanbanBoard.WebApi.Repositories
                         return board;
                     },
                     queryParams,
-                    splitOn: "id,isAdmin,id,id,userId");
+                    splitOn: "id,is_admin,id,id,user_id");
             if (boardCache is null)
             {
                 return boardCache;

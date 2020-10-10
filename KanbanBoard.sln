@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KanbanBoard.UnitTests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KanbanBoard.IntegrationTests", "tests\KanbanBoard.IntegrationTests\KanbanBoard.IntegrationTests.csproj", "{97EE201F-C463-4F80-AAE2-5C45C43745B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KanbanBoard.Migrations", "src\KanbanBoard.Migrations\KanbanBoard.Migrations.csproj", "{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,10 +64,23 @@ Global
 		{97EE201F-C463-4F80-AAE2-5C45C43745B5}.Release|x64.Build.0 = Release|Any CPU
 		{97EE201F-C463-4F80-AAE2-5C45C43745B5}.Release|x86.ActiveCfg = Release|Any CPU
 		{97EE201F-C463-4F80-AAE2-5C45C43745B5}.Release|x86.Build.0 = Release|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Debug|x64.Build.0 = Debug|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Debug|x86.Build.0 = Debug|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Release|x64.ActiveCfg = Release|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Release|x64.Build.0 = Release|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Release|x86.ActiveCfg = Release|Any CPU
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{16142EED-E295-48B3-AF7C-8E3A30940CFA} = {87A1B440-95DF-4E61-9B0E-AB215D69DCEC}
 		{7E82C56B-A381-42D1-A496-E3EECAF18B4E} = {8435BB70-1780-4AB2-A934-BF091AFE9A4F}
 		{97EE201F-C463-4F80-AAE2-5C45C43745B5} = {8435BB70-1780-4AB2-A934-BF091AFE9A4F}
+		{15A2330E-A314-4CD7-A101-B1C71BF8BDD1} = {87A1B440-95DF-4E61-9B0E-AB215D69DCEC}
 	EndGlobalSection
 EndGlobal

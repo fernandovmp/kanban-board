@@ -8,9 +8,9 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class AssignmentRepository : RepositoryBase, IAssignmentRepository
     {
-        private const string DeleteQuery = @"delete from assignments where userId = @UserId and taskId = @TaskId and boardId = @BoardId;";
-        private const string InsertQuery = @"insert into assignments (boardId, userId, taskId) values (@BoardId, @UserId, @TaskId);";
-        private const string ExistsQuery = @"select 1 from assignments where taskId = @TaskId and boardId = @BoardId and userId = @UserId;";
+        private const string DeleteQuery = @"delete from assignments where user_id = @UserId and task_id = @TaskId and board_id = @BoardId;";
+        private const string InsertQuery = @"insert into assignments (board_id, user_id, task_id) values (@BoardId, @UserId, @TaskId);";
+        private const string ExistsQuery = @"select 1 from assignments where task_id = @TaskId and board_id = @BoardId and user_id = @UserId;";
 
         public AssignmentRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {

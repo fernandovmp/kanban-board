@@ -68,10 +68,10 @@ namespace KanbanBoard.IntegrationTests.WebApi
             using IDbConnection connection =
                 new NpgsqlConnection(PostgresContainer.ConnectionString);
             await connection.ExecuteAsync(@"delete from assignments;
-            delete from listTasks;
+            delete from list_tasks;
             delete from tasks;
             delete from lists;
-            delete from boardMembers;
+            delete from board_members;
             delete from boards;
             delete from users;");
         }

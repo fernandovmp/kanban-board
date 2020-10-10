@@ -38,6 +38,7 @@ namespace KanbanBoard.WebApi
             services.AddRepositories();
             services.SetupJwtAuth(configuration: Configuration);
             services.SetupApiVersioning();
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

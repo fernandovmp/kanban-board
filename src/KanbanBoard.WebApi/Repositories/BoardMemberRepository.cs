@@ -12,15 +12,15 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class BoardMemberRepository : RepositoryBase, IBoardMemberRepository
     {
-        private const string CountQuery = @"select Count(*) from boardMembers where boardId = @BoardId;";
-        private const string GetAllMembersOfTheBoardQuery = @"select users.id, users.name, users.email, boardMembers.isAdmin from boardMembers
-            inner join users on users.id = boardMembers.userId
-            where boardMembers.boardId = @BoardId;";
-        private const string GetByBoardIdAndUserIdQuery = @"select isAdmin from boardMembers where boardId = @BoardId and userId = @UserId;";
-        private const string InsertQuery = @"insert into boardMembers (boardId, userId, isAdmin, createdOn, modifiedOn)
+        private const string CountQuery = @"select Count(*) from board_members where board_id = @BoardId;";
+        private const string GetAllMembersOfTheBoardQuery = @"select users.id, users.name, users.email, board_members.is_admin from board_members
+            inner join users on users.id = board_members.user_id
+            where board_members.board_id = @BoardId;";
+        private const string GetByBoardIdAndUserIdQuery = @"select is_admin from board_members where board_id = @BoardId and user_id = @UserId;";
+        private const string InsertQuery = @"insert into board_members (board_id, user_id, is_admin, created_on, modified_on)
             values (@BoardId, @UserId, @IsAdmin, @CreatedOn, @ModifiedOn);";
-        private const string RemoveQuery = @"delete from assignments where boardId = @BoardId and userId = @UserId;
-            delete from boardMembers where boardId = @BoardId and userId = @UserId;";
+        private const string RemoveQuery = @"delete from assignments where board_id = @BoardId and user_id = @UserId;
+            delete from board_members where board_id = @BoardId and user_id = @UserId;";
 
         public BoardMemberRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
@@ -54,7 +54,7 @@ namespace KanbanBoard.WebApi.Repositories
                     return member;
                 },
                 queryParams,
-                splitOn: "id,isAdmin"
+                splitOn: "id,is_admin"
             );
 
             return boardMembers;

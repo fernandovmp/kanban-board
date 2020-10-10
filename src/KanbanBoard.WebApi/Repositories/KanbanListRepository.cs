@@ -11,20 +11,20 @@ namespace KanbanBoard.WebApi.Repositories
 {
     public class KanbanListRepository : RepositoryBase, IKanbanListRepository
     {
-        private const string GetAllListsOfTheBoardQuery = @"select lists.id, lists.title, lists.createdOn, lists.modifiedOn, listTasks.taskId
+        private const string GetAllListsOfTheBoardQuery = @"select lists.id, lists.title, lists.created_on, lists.modified_on, listTasks.task_id
             from lists
-            left join listTasks on listTasks.listId = lists.id
-            where lists.boardId = @BoardId;";
-        private const string GetByIdAndBoardIdWithTasksQuery = @"select lists.title, tasks.id, tasks.summary, tasks.description, tasks.tagColor, assignments.userId
+            left join list_tasks on list_tasks.list_id = lists.id
+            where lists.board_id = @BoardId;";
+        private const string GetByIdAndBoardIdWithTasksQuery = @"select lists.title, tasks.id, tasks.summary, tasks.description, tasks.tag_color, assignments.user_id
             from lists
-            left join listTasks on listTasks.listId = lists.id
-            left join tasks on tasks.id = listTasks.taskId
-            left join assignments on assignments.taskId = tasks.id
-            where lists.id = @ListId and lists.boardId = @BoardId;";
-        private const string InsertQuery = @"insert into lists (boardId, title, createdOn, modifiedOn)
+            left join list_tasks on list_tasks.list_id = lists.id
+            left join tasks on tasks.id = list_tasks.task_id
+            left join assignments on assignments.task_Id = tasks.id
+            where lists.id = @ListId and lists.board_id = @BoardId;";
+        private const string InsertQuery = @"insert into lists (board_id, title, created_on, modified_on)
             values (@BoardId, @Title, @CreatedOn, @ModifiedOn) returning id;";
-        private const string GetByIdAndBoardIdQuery = @"select title from lists where boardId = @BoardId and id = @ListId";
-        private const string UpdateQuery = @"update lists set title = @Title, modifiedOn = @ModifiedOn where id = @Id;";
+        private const string GetByIdAndBoardIdQuery = @"select title from lists where board_id = @BoardId and id = @ListId";
+        private const string UpdateQuery = @"update lists set title = @Title, modified_on = @ModifiedOn where id = @Id;";
 
         public KanbanListRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
@@ -57,7 +57,7 @@ namespace KanbanBoard.WebApi.Repositories
                     return list;
                 },
                 queryParams,
-                splitOn: "taskId");
+                splitOn: "task_id");
             return listCache.Select(list => list.Value);
         }
 
@@ -120,7 +120,7 @@ namespace KanbanBoard.WebApi.Repositories
                     return list;
                 },
                 queryParams,
-                splitOn: "title,id,userId");
+                splitOn: "title,id,user_id");
 
             if (listCache is object)
             {
@@ -153,7 +153,7 @@ namespace KanbanBoard.WebApi.Repositories
 
         public async Task Remove(KanbanList list)
         {
-            string getTasksQuery = @"select taskId from listTasks where listId = @ListId;";
+            const string GetTasksQuery = @"select task_id from list_tasks where list_id = @ListId;";
             object getTasksQueryParams = new
             {
                 ListId = list.Id,
@@ -161,13 +161,13 @@ namespace KanbanBoard.WebApi.Repositories
 
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using IDbConnection connection = connectionFactory.CreateConnection();
-            IEnumerable<int> tasks = await connection.QueryAsync<int>(getTasksQuery, getTasksQueryParams);
+            IEnumerable<int> tasks = await connection.QueryAsync<int>(GetTasksQuery, getTasksQueryParams);
 
-            string deleteQuery = @"delete from lists where id = @ListId and boardId = @BoardId";
+            string deleteQuery = @"delete from lists where id = @ListId and board_id = @BoardId";
             if (tasks.Count() > 0)
             {
-                deleteQuery = @"delete from assignments where taskId = any (@Tasks);
-                delete from listTasks where listId = @ListId;
+                deleteQuery = @"delete from assignments where task_id = any (@Tasks);
+                delete from list_tasks where list_id = @ListId;
                 delete from tasks where id = any (@Tasks);"
                 + deleteQuery;
             }
