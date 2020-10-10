@@ -12,7 +12,7 @@ namespace KanbanBoard.WebApi.Repositories
         private const string ExistsWithEmailQuery = @"select 1 from users where email = @Email;";
         private const string GetByIdQuery = @"select id, name, email from users where id = @Id;";
         private const string GetByEmailWithPasswordQuery = @"select id, name, email, password from users where email = @Email;";
-        private const string InserQuery = @"insert into users (name, email, password, createdOn, modifiedOn)
+        private const string InserQuery = @"insert into users (name, email, password, created_on, modified_on)
             values (@Name, @Email, @Password, @CreatedOn, @ModifiedOn) returning id;";
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IDateTimeProvider _dateTimeProvider;

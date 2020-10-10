@@ -25,7 +25,7 @@ namespace KanbanBoard.WebApi.Repositories.QueryBuilder
             foreach (Operation<PatchTaskViewModel> operation in _patchDocument.Operations)
             {
                 (string field, string paramName) = GetDatabaseFieldName(operation.path);
-                if (field == "listId")
+                if (field == "list_id")
                 {
                     withListPatch = true;
                     continue;
@@ -41,7 +41,7 @@ namespace KanbanBoard.WebApi.Repositories.QueryBuilder
             }
             if (withListPatch)
             {
-                query += "update listTasks set listId = @List where taskId = @Id;";
+                query += "update list_tasks set list_id = @List where task_id = @Id;";
             }
 
             PatchTaskViewModel patchModel = _patchDocument.Model;
@@ -61,8 +61,8 @@ namespace KanbanBoard.WebApi.Repositories.QueryBuilder
             {
                 "/summary" => ("summary", $"@{nameof(PatchTaskParams.Summary)}"),
                 "/description" => ("description", $"@{nameof(PatchTaskParams.Description)}"),
-                "/tagColor" => ("tagColor", $"@{nameof(PatchTaskParams.TagColor)}"),
-                "/list" => ("listId", "@List"),
+                "/tagColor" => ("tag_color", $"@{nameof(PatchTaskParams.TagColor)}"),
+                "/list" => ("list_id", "@List"),
                 _ => throw new Exception($"Property path \"{propertyPath}\" is not a valid property to build a patch query to {nameof(PatchTaskViewModel)}")
             };
 
