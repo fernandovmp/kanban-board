@@ -1,0 +1,33 @@
+version: "3"
+services:
+  db:
+    build:
+      context: database
+    environment:
+      POSTGRES_PASSWORD: postgres1234
+      POSTGRES_DB: KanbanBoard
+  webapi:
+    build:
+      context: .
+      dockerfile: src/KanbanBoard.WebApi/dockerfile
+    environment:
+      ConnectionStrings__PostgresConnection: "Host=db;Port=5432;Database=KanbanBoard;User Id=postgres;Password=postgres1234;"
+      CorsOptions__PolicyName: "KanbanApiPolicy"
+      CorsOptions__AllowedOrigin: "http://localhost:3000"
+      PasswordHasherOptions__Iterations: 10000
+      JwtToken__Audience: "KanbanWeb"
+      JwtToken__Issuer: "KanbanApi"
+      JwtToken__Key: "MDk4ZTM1NTdlOGNiNjgxYmYzYmE3NjNkZTc0NGJmYjJlOTM2MTU5YjMyOTM1YTc0NjBjMWUzYjMzMzgwYTZkMg"
+      JwtToken__Seconds: 6000000
+      PORT: 80
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+  webapp:
+    build:
+      context: ./src/KanbanBoard.Frontend
+      args:
+        KANBAN_API_URL: "http://localhost:5000"
+    ports:
+      - "3000:80"
