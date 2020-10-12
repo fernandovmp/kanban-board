@@ -111,6 +111,27 @@ To run the tests of all dotnet projects execute
 dotnet test --filter TestType!=Integration
 ```
 
+Add and fill the following properties on the [appsettings.json](./src/KanbanBoard.WebApi/appsettings.json)
+
+```json
+  "ConnectionStrings": {
+    "PostgresConnection": ""
+  },
+  "CorsOptions": {
+    "PolicyName": "KanbanCors",
+    "AllowedOrigin": ""
+  },
+  "PasswordHasherOptions": {
+    "Iterations": 10000
+  },
+  "JwtToken": {
+    "Audience": "KanbanWeb",
+    "Issuer": "KanbanApi",
+    "Key": "",
+    "Seconds": 600
+  }
+```
+
 And run the web API project with the following command.
 
 ```
