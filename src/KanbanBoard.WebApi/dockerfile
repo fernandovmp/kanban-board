@@ -1,0 +1,17 @@
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+WORKDIR /src/app
+
+COPY src/KanbanBoard.WebApi/*.csproj .
+RUN mkdir /docs && \
+    mkdir /docs/api && \
+    dotnet restore
+
+COPY src/KanbanBoard.WebApi .
+COPY docs/api/kanban-board-v1.yaml /docs/api
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=build /src/app/out .
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet KanbanBoard.WebApi.dll

@@ -3,6 +3,9 @@ info:
   version: v1
   title: Kanban Board
 
+servers:
+  - url: "/api/v1"
+
 paths:
   /boards:
     get:
@@ -11,13 +14,13 @@ paths:
       summary: Returns a list of boards owned by a user
       responses:
         "200":
-          description: A json array of boards with summary and id
+          description: A json array of boards with title and id
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#components/schemas/Board"
+                  $ref: "#/components/schemas/Board"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
     post:
@@ -33,7 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#components/schemas/Board"
+                $ref: "#/components/schemas/Board"
           headers:
             Location:
               description: URL where the resource can be accessed
@@ -41,17 +44,17 @@ paths:
                 type: string
                 format: uri
         "400":
-          description: Couldn't create the board due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
                 status: 400
-                message: "Couldn't create the board"
+                message: "One or more validation errors occurred."
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
+                  - message: "Title is mandatory"
+                    property: "Title"
 
         "401":
           $ref: "#/components/responses/UnauthorizedError"
@@ -78,7 +81,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  summary:
+                  title:
                     type: string
                   members:
                     type: array
@@ -88,19 +91,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/BoardList"
-
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -120,29 +114,21 @@ paths:
         "204":
           description: The board data was updated
         "400":
-          description: Couldn't update the board data due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't update the board data"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
-
+                  - message: "Title is mandatory"
+                    property: "Title"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to update the board data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to update this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -163,15 +149,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to delete the board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to delete this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -203,19 +181,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/BoardMember"
-
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -235,28 +204,21 @@ paths:
         "204":
           description: Member was added
         "400":
-          description: Couldn't add the member due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't add the member"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "IsAdmin is mandatory"
                     property: "IsAdmin"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to add a member to this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to add a member to this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or user not found
           content:
@@ -290,14 +252,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to remove a member
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to remove a member"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or Member not found
           content:
@@ -329,19 +284,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/List"
-
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -371,28 +317,21 @@ paths:
                 type: string
                 format: url
         "400":
-          description: Couldn't create the list due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the list"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
+                  - message: "Title is mandatory"
+                    property: "Title"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to access this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to access this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -428,6 +367,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BoardList"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/Forbid"
+        "404":
+          description: Board or List not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 404
+                message: "Board not found"
     put:
       tags:
         - Lists
@@ -438,29 +390,22 @@ paths:
         "204":
           description: The list data was updated
         "400":
-          description: Couldn't update the list data due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't update the list data"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
-                  - message: "Summary is mandatory"
-                    property: "Summary"
+                  - message: "Title is mandatory"
+                    property: "Title"
 
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to update the list data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to update a list"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or List not found
           content:
@@ -481,23 +426,16 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to delete a list
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to delete a list"
+          $ref: "#/components/responses/Forbid"
         "404":
-          description: Board or List not found
+          description: Board not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
                 status: 404
-                message: "List not found"
+                message: "Board not found"
 
   /boards/{boardId}/tasks:
     parameters:
@@ -523,15 +461,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
-
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board not found
           content:
@@ -561,14 +491,14 @@ paths:
                 type: string
                 format: url
         "400":
-          description: Couldn't create the task due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the task"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "Summary is mandatory"
                     property: "Summary"
@@ -579,14 +509,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to create a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to create a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or task not found
           content:
@@ -640,14 +563,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to view this board
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to view this board"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or task not found
           content:
@@ -663,7 +579,7 @@ paths:
       summary: Updates a task partially
       requestBody:
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               type: object
               properties:
@@ -680,28 +596,21 @@ paths:
         "204":
           description: Task was updated
         "400":
-          description: Couldn't create the task due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the task"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "TagColor must be a hexadecimal color value"
                     property: "TagColor"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to update a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to update a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or task not found
           content:
@@ -723,14 +632,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to delete a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to delete a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or Task not found
           content:
@@ -770,14 +672,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to assign a task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to assign a task"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board, Task or User not found
           content:
@@ -797,14 +692,7 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: User doesn't have permission to remove an assignment
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                status: 403
-                message: "User doesn't have permission to remove an assignment"
+          $ref: "#/components/responses/Forbid"
         "404":
           description: Board or Task not found
           content:
@@ -817,11 +705,12 @@ paths:
 
   /users:
     post:
-      security:
-        - {}: []
+      security: []
       tags:
         - Users
       summary: Register an user
+      requestBody:
+        $ref: "#/components/requestBodies/UserBody"
       responses:
         "201":
           description: User was created
@@ -836,19 +725,26 @@ paths:
                 type: string
                 format: url
         "400":
-          description: Couldn't create the user due to validations errors or malformed syntax
+          description: One or more validation errors occurred.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                status: 400,
-                message: "Couldn't create the user"
+                status: 400
+                message: "One or more validation errors occurred."
                 errors:
                   - message: "name is mandatory"
                     property: "name"
-                  - message: "email already in use"
-                    property: "email"
+        "409":
+          description: An error response with 409 status code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 409
+                message: "Email already in use"
 
   /users/{userId}:
     parameters:
@@ -883,8 +779,7 @@ paths:
 
   /login:
     post:
-      security:
-        - {}: []
+      security: []
       tags:
         - Users
       summary: Create and return a Json Web Token
@@ -941,7 +836,7 @@ components:
           schema:
             type: object
             properties:
-              summary:
+              title:
                 type: string
             required:
               - summary
@@ -952,7 +847,7 @@ components:
           schema:
             type: object
             properties:
-              summary:
+              title:
                 type: string
     TaskBody:
       required: true
@@ -1031,13 +926,13 @@ components:
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
-      content:
-        application/json:
+      headers:
+        www-authenticate:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            status: 401
-            message: "Unidentified user"
+            type: string
+          example: 'Bearer error="invalid_token"'
+    Forbid:
+      description: User not have permission to access the resource
 
   schemas:
     Board:
@@ -1045,7 +940,7 @@ components:
       properties:
         id:
           type: integer
-        summary:
+        title:
           type: string
         createdOn:
           type: string
@@ -1063,14 +958,8 @@ components:
       properties:
         id:
           type: integer
-        summary:
+        title:
           type: string
-        createdOn:
-          type: string
-          format: date-time
-        modifiedOn:
-          type: string
-          format: date-time
         tasks:
           type: array
           items:
@@ -1080,7 +969,7 @@ components:
       properties:
         id:
           type: integer
-        summary:
+        title:
           type: string
         tasks:
           type: array
@@ -1093,7 +982,7 @@ components:
           type: string
       required:
         - id
-        - summary
+        - title
         - tasks
         - createdOn
         - modifiedOn

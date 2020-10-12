@@ -13,63 +13,64 @@ many users.
 
 **Board**
 
-|   Field    |     type     | Key |               description               |
-| :--------: | :----------: | :-: | :-------------------------------------: |
-|     id     |     int      | PK  |                Board Id                 |
-|  summary   | varchar(150) |  -  |          Summary of the board           |
-| createdOn  | timestamp(2) |  -  |           Board creation date           |
-| modifiedOn | timestamp(2) |  -  | Latest date when the board was modified |
-| createdBy  |     int      | FK  |      User id who create the board       |
+|    Field    |     type     | Key |               description               |
+| :---------: | :----------: | :-: | :-------------------------------------: |
+|     id      |    serial    | PK  |                Board Id                 |
+|    title    | varchar(150) |  -  |           Title of the board            |
+| created_on  | timestamp(2) |  -  |           Board creation date           |
+| modified_on | timestamp(2) |  -  | Latest date when the board was modified |
+| created_by  |   integer    | FK  |      User id who create the board       |
 
 **List**
 
-|   Field    |     type     | Key |              description               |
-| :--------: | :----------: | :-: | :------------------------------------: |
-|     id     |     int      | PK  |                List Id                 |
-|  boardId   |     int      | FK  |   Board id that the list belongs to    |
-|  summary   |     text     |  -  |          Summary of the list           |
-| createdOn  | timestamp(2) |  -  |           List creation date           |
-| modifiedOn | timestamp(2) |  -  | Latest date when the list was modified |
+|    Field    |     type     | Key |              description               |
+| :---------: | :----------: | :-: | :------------------------------------: |
+|     id      |    serial    | PK  |                List Id                 |
+|  board_id   |   integer    | FK  |   Board id that the list belongs to    |
+|    title    | varchar(150) |  -  |           Title of the list            |
+| created_on  | timestamp(2) |  -  |           List creation date           |
+| modified_on | timestamp(2) |  -  | Latest date when the list was modified |
 
 **Task**
 
 |    Field    |     type     | Key |                description                |
 | :---------: | :----------: | :-: | :---------------------------------------: |
-|     id      |     int      | PK  |                  Task Id                  |
+|     id      |    serial    | PK  |                  Task Id                  |
 |   summary   |     text     |  -  |            Summary of the task            |
 | description |     text     |  -  |          Description of the task          |
-|  tagColor   |  varchar(6)  |  -  | Hexadecimal that represents the tag color |
-|  createdOn  | timestamp(2) |  -  |            Task creation date             |
-| modifiedOn  | timestamp(2) |  -  |  Latest date when the task was modified   |
+|  tag_color  |  varchar(6)  |  -  | Hexadecimal that represents the tag color |
+|  board_id   |   integer    | FK  |     Board id that the task belongs to     |
+| created_on  | timestamp(2) |  -  |            Task creation date             |
+| modified_on | timestamp(2) |  -  |  Latest date when the task was modified   |
 
 **List Task**
 
-| Field  | type | Key |           description            |
-| :----: | :--: | :-: | :------------------------------: |
-| listId | int  | PFK | List Id that the task belongs to |
-| taskId | int  | PFK |             Task id              |
+|  Field  |  type   | Key |           description            |
+| :-----: | :-----: | :-: | :------------------------------: |
+| list_id | integer | PFK | List Id that the task belongs to |
+| task_id | integer | PFK |             Task id              |
 
 **User**
 
 |  Field   |     type     | Key |        description        |
 | :------: | :----------: | :-: | :-----------------------: |
-|    id    |     int      | PK  |          User Id          |
+|    id    |    serial    | PK  |          User Id          |
 |   name   | varchar(100) |  -  |     Name of the user      |
 |  email   | varchar(320) |  -  |    E-mail of the user     |
 | password | varchar(75)  |  -  | Hash of the user password |
 
-**User board**
+**Board Members**
 
-|  Field  | type | Key |            description             |
-| :-----: | :--: | :-: | :--------------------------------: |
-| userId  | int  | PFK |              User id               |
-| boardId | int  | PFK |              Board id              |
-| isAdmin | bool |  -  | If the user is admin of that board |
+|  Field   |  type   | Key |            description             |
+| :------: | :-----: | :-: | :--------------------------------: |
+| user_id  | integer | PFK |              User id               |
+| board_id | integer | PFK |              Board id              |
+| is_admin |  bool   |  -  | If the user is admin of that board |
 
-**User task**
+**Assignments**
 
-|  Field  | type | Key |            description             |
-| :-----: | :--: | :-: | :--------------------------------: |
-| userId  | int  | PFK | User id that the task was assigned |
-| boardId | int  | PFK |   Board id that the task belongs   |
-| taskId  | int  | PFK |              Task id               |
+|  Field   |  type   | Key |            description             |
+| :------: | :-----: | :-: | :--------------------------------: |
+| user_id  | integer | PFK | User id that the task was assigned |
+| board_id | integer | PFK |   Board id that the task belongs   |
+| task_id  | integer | PFK |              Task id               |

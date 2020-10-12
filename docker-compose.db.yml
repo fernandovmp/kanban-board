@@ -1,0 +1,10 @@
+version: "3"
+services:
+  db:
+    build:
+      context: database
+    environment:
+      POSTGRES_PASSWORD: postgres1234
+      POSTGRES_DB: KanbanBoard
+    ports:
+      - "5432:5432"
