@@ -11,6 +11,7 @@ import {
 export const ListContent = styled(Card)`
     background: #f0f0f0;
     min-width: 240px;
+    max-width: 240px;
     padding: 10px 6px;
     display: flex;
     flex-direction: column;
