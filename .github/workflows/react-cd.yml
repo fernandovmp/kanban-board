@@ -1,0 +1,46 @@
+name: React CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - "src/KanbanBoard.Frontend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - run: sh src/KanbanBoard.Frontend/create-env-file.sh ${{ secrets.KANBAN_API_URL }}
+      - run: yarn --cwd src/KanbanBoard.Frontend
+      - run: yarn --cwd src/KanbanBoard.Frontend build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: react-build
+          path: src/KanbanBoard.Frontend/build
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: react-build
+          path: src/KanbanBoard.Frontend/build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          PROJECT_PATH: src/KanbanBoard.Frontend
