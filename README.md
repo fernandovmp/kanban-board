@@ -2,6 +2,8 @@
 
 Kanban board application to help organize and manage tasks.
 
+A live demo is available [here](https://kanban-board-web.web.app/), you can also access the [web API docs](https://api-kanban-board.herokuapp.com/docs).
+
 ![UI prototype](./docs/ui/Board.png)
 
 <p align="center">
@@ -27,11 +29,19 @@ coding and deploying phases.
     -   [PostgreSQL](https://www.postgresql.org/): Open Source Relational
         Database
     -   [Dapper](https://dapper-tutorial.net/dapper): Micro ORM
+    -   [FluentValidation](https://fluentvalidation.net/): A popular .NET library for building strongly-typed validation rules
+    -   [Morcatko.AspNetCore.JsonMergePatch](https://github.com/Morcatko/Morcatko.AspNetCore.JsonMergePatch): JsonMergePatch support for ASP.NET Core
+    -   [FluentMigrator](https://github.com/fluentmigrator/fluentmigrator): Migration framework for .NET
 -   Frontend
     -   [ReactJS](https://reactjs.org/): JavaScript library for building user
         interfaces
     -   [Typescript](https://www.typescriptlang.org/): Typed superset of
         JavaScript
+    -   [styled-components](https://styled-components.com/): Stylization library to React
+    -   [react-router-dom](https://reacttraining.com/react-router/web/guides/quick-start): Declarative routing for React
+-   [Heroku](https://www.heroku.com/): Heroku is a platform as a service (PaaS) that enables developers to build, run, and operate applications entirely in the cloud
+-   [Firebase](https://firebase.google.com/): A comprehensive app
+    development platform
 
 # Getting started
 
@@ -56,42 +66,21 @@ cd kanban-board
 Requires
 
 -   [Docker](https://docs.docker.com/get-docker/)
+-   [Docker Compose](https://docs.docker.com/compose/install/)
 
-**Back-end**
-
-Build the docker image
-
-```
-docker build -t kanban-api -f src/KanbanBoard.WebApi/dockerfile .
-```
-
-Run the image
+Run the following command to start database, backend and frontend
 
 ```
-docker run -d -p "5000:80" kanban-api
+docker-compose up -d
 ```
 
-**Front-end**
+ASP.NET Core API will be available in `http://localhost:5000`
+ReactJS app will be available in `http://localhost:3000`
 
-Go to the `KanbanBoard.Frontend` directory
-
-```
-cd src/KanbanBoard.Frontend
-```
-
-Build the docker image
-
-    ARGS:
-        - KANBAN_API_URL: Base url of the backend.
+To stop the application run
 
 ```
-docker build --build-arg KANBAN_API_URL=http://localhost:5000 -t kanban-frontend .
-```
-
-Run the image
-
-```
-docker run -p "3000:80" kanban-frontend
+docker-compose down
 ```
 
 ### Run without docker
@@ -119,7 +108,7 @@ dotnet build
 To run the tests of all dotnet projects execute
 
 ```
-dotnet test
+dotnet test --filter TestType!=Integration
 ```
 
 And run the web API project with the following command.
