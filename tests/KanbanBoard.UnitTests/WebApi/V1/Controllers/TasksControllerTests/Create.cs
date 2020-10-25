@@ -207,7 +207,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
         }
 
         [Fact]
-        public async Task CreateShouldReturnForbidWhenListNotBelongsToTheBoard()
+        public async Task CreateShouldReturnNotFoundWhenNotFoundTheListOnTheBoard()
         {
             var model = new PostTaskViewModel
             {
@@ -232,7 +232,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
 
             ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
 
-            result.Result.Should().BeOfType<ForbidResult>();
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
     }
 }

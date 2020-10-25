@@ -148,7 +148,7 @@ namespace KanbanBoard.WebApi.V1.Controllers
             KanbanList list = await _listRepository.GetByIdAndBoardId(model.List, boardId);
             if (list is null)
             {
-                return Forbid();
+                return V1NotFound("List not found");
             }
 
             var board = new Board
