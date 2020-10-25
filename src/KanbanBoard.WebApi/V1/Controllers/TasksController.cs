@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentValidation;
-using FluentValidation.Results;
 using KanbanBoard.WebApi.Extensions;
 using KanbanBoard.WebApi.Models;
 using KanbanBoard.WebApi.Repositories;
@@ -130,7 +128,10 @@ namespace KanbanBoard.WebApi.V1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<KanbanTaskViewModel>> Create(PostTaskViewModel model, int boardId)
+        public async Task<ActionResult<KanbanTaskViewModel>> Create(
+            PostTaskViewModel model,
+            int boardId,
+            [FromServices] IAssignmentRepository assignmentRepository)
         {
             bool boardExists = await _boardRepository.Exists(boardId);
             if (!boardExists)
@@ -167,6 +168,18 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 ModifiedOn = createdDate
             };
             KanbanTask createdTask = await _taskRepository.Insert(task);
+            IEnumerable<BoardMember> membersToAssign = model.AssignedTo.Select(memberId => new BoardMember
+            {
+                User = new User
+                {
+                    Id = memberId
+                },
+                Board = new Board
+                {
+                    Id = boardId,
+                }
+            });
+            await assignmentRepository.Insert(createdTask.Id, membersToAssign);
 
             object routeValues = new
             {
@@ -174,22 +187,14 @@ namespace KanbanBoard.WebApi.V1.Controllers
                 boardId,
                 taskId = createdTask.Id
             };
-            object listLinkValues = new
-            {
-                version = "1",
-                boardId,
-                listId = createdTask.List.Id
-            };
-            string listLink = Url
-                .ActionLink(action: nameof(ListsController.Show), controller: "Lists", listLinkValues);
             var kanbanListViewModel = new KanbanTaskViewModel
             {
                 Id = createdTask.Id,
                 Summary = createdTask.Summary,
                 Description = createdTask.Description,
                 TagColor = createdTask.TagColor,
-                AssignedTo = new List<string>(),
-                List = listLink
+                AssignedTo = membersToAssign.Select(ResolveMemberUrl),
+                List = ResolveListLink(boardId, createdTask.List.Id)
             };
 
             return CreatedAtAction(actionName: nameof(Show), routeValues, value: kanbanListViewModel);
