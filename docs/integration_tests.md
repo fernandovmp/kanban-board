@@ -19,7 +19,7 @@ First, you will need the docker image of the database, so build from the dockerf
 # Enter the database directory
 $ cd database
 # Build the docker image
-$ docker build -t kanban-db
+$ docker build -t kanban-db .
 ```
 
 Is important to set the image name as `kanban-db` because this is the image
