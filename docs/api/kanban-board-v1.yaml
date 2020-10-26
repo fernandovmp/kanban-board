@@ -511,7 +511,7 @@ paths:
         "403":
           $ref: "#/components/responses/Forbid"
         "404":
-          description: Board or task not found
+          description: Board, list or task not found
           content:
             application/json:
               schema:

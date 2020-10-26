@@ -28,5 +28,6 @@ namespace KanbanBoard.UnitTests.WebApi.Fakes.Repositories
 
         public Task Insert(int taskId, BoardMember member) => Task.CompletedTask;
         public Task Remove(int taskId, BoardMember boardMember) => Task.CompletedTask;
+        public Task Insert(int taskId, IEnumerable<BoardMember> members) => Task.CompletedTask;
     }
 }

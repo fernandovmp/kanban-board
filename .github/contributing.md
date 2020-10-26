@@ -1,7 +1,6 @@
 # Contributing
 
-Thanks to consider and take time to contribute with this project, any
-contribution is welcome and I'll be glad with it.
+Thanks for considering and take the time to contribute to this project, any contribution is welcome, and I'll be glad about it.
 
 Table of content:
 
@@ -14,9 +13,9 @@ Table of content:
 If you find a bug or have a suggestion you can open an
 [Issue](https://github.com/fernandovmp/kanban-board/issues/new).
 
--   By opening a issue to report a bug, explain the actual behavior and the
+-   By opening an issue to report a bug, explain the actual behavior and the
     expected behavior, this will help to fix it.
--   When giving a suggestion, describe mostly detailed you can, this will help
+-   When giving a suggestion, describe mostly as detailed you can, this will help
     to understand and assess whether it is suitable.
 
 ## Pull Requests
@@ -36,10 +35,11 @@ cd kanban-board
 ```
 
 Pull requests needs to target the `development` branch, to do so make sure you
-are in the development branch before create a new branch.
+are in the development branch before creating a new branch.
 
 ```
 git checkout development
+git pull origin development
 ```
 
 In the `development` branch create a new branch to make your changes.
@@ -48,7 +48,7 @@ In the `development` branch create a new branch to make your changes.
 git checkout -b my-branch
 ```
 
-After make your changes, push then to your github repository.
+After making your changes, push them to your Github repository.
 
 Commit messages should follow the
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
@@ -70,5 +70,5 @@ submit your pull request
 
 ## Run the project
 
-To run the project follow thee instructions in the
+To run the project follow these instructions in the
 [README](../README.md#how-to-run) file

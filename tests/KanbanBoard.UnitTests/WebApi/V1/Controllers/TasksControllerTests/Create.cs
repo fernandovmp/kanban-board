@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using KanbanBoard.UnitTests.WebApi.Fakes.Repositories;
+using KanbanBoard.WebApi.Repositories;
 using KanbanBoard.WebApi.Services;
 using KanbanBoard.WebApi.V1.Controllers;
 using KanbanBoard.WebApi.V1.ViewModels;
@@ -14,6 +16,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
     public class CreateTests : TaskControllerTestsBase
     {
         private readonly PostTaskViewModel _validPostTaskViewModel;
+        private readonly IAssignmentRepository _fakeAssignmentRepository;
 
         public CreateTests() : base()
         {
@@ -25,6 +28,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 List = 1,
                 TagColor = "FFFFFF"
             };
+            _fakeAssignmentRepository = new FakeAssignmentRepository();
         }
 
         [Fact]
@@ -44,7 +48,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result.Result.Should().BeOfType<CreatedAtActionResult>();
         }
@@ -66,7 +70,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result
                 .Result
@@ -93,7 +97,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result
                 .Result
@@ -122,7 +126,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
@@ -144,7 +148,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result
                 .Result
@@ -171,7 +175,7 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result
                 .Result
@@ -201,13 +205,13 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
             result.Result.Should().BeOfType<ForbidResult>();
         }
 
         [Fact]
-        public async Task CreateShouldReturnForbidWhenListNotBelongsToTheBoard()
+        public async Task CreateShouldReturnNotFoundWhenNotFoundTheListOnTheBoard()
         {
             var model = new PostTaskViewModel
             {
@@ -230,9 +234,9 @@ namespace KanbanBoard.UnitTests.WebApi.V1.Controllers.TasksControllerTests
                 Url = fakeUrlHelper
             };
 
-            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId);
+            ActionResult<KanbanTaskViewModel> result = await tasksController.Create(model, boardId, _fakeAssignmentRepository);
 
-            result.Result.Should().BeOfType<ForbidResult>();
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
     }
 }

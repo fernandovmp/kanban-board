@@ -1,4 +1,4 @@
-  
+
 name: .NET Core CI
 
 on:
@@ -8,15 +8,17 @@ on:
       - development
     paths:
       - 'src/KanbanBoard.WebApi/**'
-      - 'docs/api'
-    
+      - 'tests/**'
+      - 'docs/api/**'
+
   pull_request:
     branches:
       - master
       - development
     paths:
       - 'src/KanbanBoard.WebApi/**'
-      - 'docs/api'
+      - 'tests/**'
+      - 'docs/api/**'
 jobs:
   build:
 
@@ -34,3 +36,5 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal --filter TestType!=Integration
+    - name: Test with Postman Collection
+      run: sh postman-tests.sh
