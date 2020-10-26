@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using KanbanBoard.WebApi.Models;
@@ -29,14 +32,20 @@ namespace KanbanBoard.WebApi.Repositories
             return exists;
         }
 
-        public async Task Insert(int taskId, BoardMember member)
+        public Task Insert(int taskId, BoardMember member) => Insert(taskId, new BoardMember[] { member });
+
+        public async Task Insert(int taskId, IEnumerable<BoardMember> members)
         {
-            object queryParams = new
+            if (members.Count() == 0)
+            {
+                return;
+            }
+            IEnumerable queryParams = members.Select(member => new
             {
                 BoardId = member.Board.Id,
                 UserId = member.User.Id,
                 TaskId = taskId
-            };
+            });
             using IDbConnection connection = connectionFactory.CreateConnection();
             await connection.ExecuteAsync(InsertQuery, queryParams);
         }
