@@ -7,7 +7,7 @@ on:
       - master
     paths:
       - "src/KanbanBoard.WebApi/**"
-      - "docs/api"
+      - "docs/api/**"
 
 jobs:
   build:
@@ -24,6 +24,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity normal --filter TestType!=Integration
+      - name: Test with Postman Collection
+        run: sh postman-tests.sh
 
   deploy:
     needs: build
