@@ -155,7 +155,7 @@ yarn --cwd src/KanbanBoard.Frontend start
 ### Documentation
 
 In the [docs](./docs) directory you can find the the users histories, the Web
-API specification, the database model and the UI prototype for this project,
+API specification, the database model and the UI prototype for this project, and other additional instructions,
 this will give you a good idea of what expect of the project.
 
 ## Contributing
